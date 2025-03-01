@@ -13,9 +13,9 @@ export default function StatItem({
       <div className="flex flex-row gap-2 items-center">
         <ProficiencyBox ability={ability} />
         <p className="text-center">
-          {`${fullName} (${ability}): `}
-          <b>{abilityScore}</b> ({modifier})
+          <b>{abilityScore}</b> ({modifier}) {fullName}
         </p>
+        <p className="text-sm text-center">{`(${ability.toUpperCase()})`}</p>
       </div>
       <div className="flex flex-row gap-1 items-center">
         <StatButton

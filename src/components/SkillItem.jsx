@@ -6,9 +6,8 @@ export default function SkillItem({ skill, ability, modifier }) {
     <div className="flex flex-row gap-3 justify-between">
       <div className="flex flex-row gap-2 items-center">
         <ProficiencyBox ability={ability} />
-        <p className="text-center">
-          {`${skill}: (${modifier})`}
-        </p>
+        <p className="text-center">{`(${modifier}) ${skill}`}</p>
+        <p className="text-sm text-center">{`(${ability.toUpperCase()})`}</p>
       </div>
       <SkillButton skill={skill} modifier={modifier} />
     </div>

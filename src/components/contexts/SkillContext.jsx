@@ -23,16 +23,22 @@ export const skillIndexes = [
 ];
 
 const skillsObj = {};
-skillIndexes.map((index) => { skillsObj[index] = {ability_score: {}, desc: [], name: ""} });
-export const SkillContext = createContext(skillsObj);
+skillIndexes.map((index) => {
+  skillsObj[index] = { ability_score: {}, desc: [], name: "" };
+});
+export const SkillContext = createContext({
+  isFetching: true,
+  skillData: skillsObj,
+});
 
 export default function SkillContextProvider({ children }) {
+  const [isFetching, setIsFetching] = useState(true);
   const [skills, setSkills] = useState(skillsObj);
 
   useEffect(() => {
     async function fetchSkills() {
       const skillsData = await getAllSkills();
-      console.log(skillsData);
+      // console.log(skillsData);
 
       skillsData.map((skill) => {
         let { ability_score, desc, index, name } = skill;
@@ -42,7 +48,13 @@ export default function SkillContextProvider({ children }) {
     }
 
     fetchSkills();
+
+    return () => {
+      setIsFetching(false);
+    };
   }, []);
 
-  return <SkillContext value={skills}>{children}</SkillContext>;
+  const ctxVal = { isFetching, skillData: skills };
+
+  return <SkillContext value={ctxVal}>{children}</SkillContext>;
 }
