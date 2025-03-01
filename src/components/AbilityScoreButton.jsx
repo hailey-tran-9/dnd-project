@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { check, save } from "../roll.js";
 import { ChatContext } from "./contexts/ChatContext.jsx";
 
-export default function StatButton({
+export default function AbilityScoreButton({
   label,
   ability,
   modifier,

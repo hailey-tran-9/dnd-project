@@ -1,4 +1,4 @@
-import CharacterStats from "./CharacterStats.jsx";
+import CharacterAbilityScores from "./CharacterAbilityScores.jsx";
 import CharacterSkills from "./CharacterSkills.jsx";
 import CharacterFeatures from "./CharacterFeatures.jsx";
 import CharacterInventory from "./CharacterInventory.jsx";
@@ -13,7 +13,7 @@ export default function CharacterInfo() {
         <h1 className="text-center text-wrap">CHARACTER NAME</h1>
         <h2 className="text-center text-wrap">CLASS | LVL</h2>
       </header>
-      <CharacterStats />
+      <CharacterAbilityScores />
       <CharacterSkills />
       <CharacterFeatures />
       <CharacterInventory />

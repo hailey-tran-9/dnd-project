@@ -1,7 +1,7 @@
-import StatButton from "./StatButton.jsx";
+import AbilityScoreButton from "./AbilityScoreButton.jsx";
 import ProficiencyBox from "./ProficiencyBox.jsx";
 
-export default function StatItem({
+export default function AbilityScoreItem({
   ability,
   fullName,
   abilityScore,
@@ -18,13 +18,13 @@ export default function StatItem({
         <p className="text-sm text-center">{`(${ability.toUpperCase()})`}</p>
       </div>
       <div className="flex flex-row gap-1 items-center">
-        <StatButton
+        <AbilityScoreButton
           label="CHECK"
           ability={ability}
           modifier={modifier}
           proficiencyBonus={proficiencyBonus}
         />
-        <StatButton
+        <AbilityScoreButton
           label="SAVE"
           ability={ability}
           modifier={modifier}

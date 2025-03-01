@@ -7,9 +7,9 @@ import {
 } from "../contexts/AbilityScoreContext.jsx";
 
 import CharacterInfoBox from "./CharacterInfoBox.jsx";
-import StatItem from "../StatItem.jsx";
+import AbilityScoreItem from "../AbilityScoreItem.jsx";
 
-export default function CharacterStats() {
+export default function CharacterAbilityScores() {
   const charCtx = useContext(CharacterContext);
   const {isFetching, abilityScoreData} = useContext(AbilityScoreContext);
   const [content, setContent] = useState();
@@ -25,14 +25,14 @@ export default function CharacterStats() {
             let proficiencyBonus = charCtx.proficiencyBonus;
 
             return (
-              <StatItem
+              <AbilityScoreItem
                 key={`${index}Item`}
                 ability={index}
                 fullName={fullName}
                 abilityScore={abilityScore}
                 modifier={modifier}
                 proficiencyBonus={proficiencyBonus}
-              ></StatItem>
+              ></AbilityScoreItem>
             );
           })}
         </div>
