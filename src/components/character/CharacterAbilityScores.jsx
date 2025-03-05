@@ -10,7 +10,8 @@ import CharacterInfoBox from "./CharacterInfoBox.jsx";
 import AbilityScoreItem from "../AbilityScoreItem.jsx";
 
 export default function CharacterAbilityScores() {
-  const charCtx = useContext(CharacterContext);
+  const { charData } = useContext(CharacterContext);
+  const abilities = charData.abilities;
   const {isFetching, abilityScoreData} = useContext(AbilityScoreContext);
   const [content, setContent] = useState();
 
@@ -20,9 +21,9 @@ export default function CharacterAbilityScores() {
         <div className="flex flex-col gap-2">
           {abilityScoreIndexes.map((index) => {
             let fullName = abilityScoreData[index].full_name;
-            let abilityScore = charCtx.abilities[index].abilityScore;
-            let modifier = charCtx.abilities[index].modifier;
-            let proficiencyBonus = charCtx.proficiencyBonus;
+            let abilityScore = abilities[index].abilityScore;
+            let modifier = abilities[index].modifier;
+            let proficiencyBonus = charData.proficiencyBonus;
 
             return (
               <AbilityScoreItem

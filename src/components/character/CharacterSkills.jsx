@@ -5,7 +5,8 @@ import CharacterInfoBox from "./CharacterInfoBox.jsx";
 import SkillItem from "../SkillItem.jsx";
 
 export default function CharacterSkills() {
-  const { abilities } = useContext(CharacterContext);
+  const { charData } = useContext(CharacterContext);
+  const abilities = charData.abilities;
   const {isFetching, skillData} = useContext(SkillContext);
   const [content, setContent] = useState();
 
