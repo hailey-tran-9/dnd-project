@@ -7,8 +7,8 @@ import Game from "./components/Game.jsx";
 function App() {
   return (
     // <Login />
-    // <MainMenu />
-    <Game />
+    <MainMenu />
+    // <Game />
   );
 }
 
