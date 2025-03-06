@@ -1,17 +1,35 @@
-import { useState } from "react";
+import SelectionButton from "./SelectionButton.jsx";
 
-export default function Selection({ selectedTab, updateSelectedTab }) {
+export default function Selection({ props }) {
+  const {
+    selectedTab,
+    updateSelectedTab,
+    games,
+    updateGames,
+    characters,
+    updateCharacters,
+    maps,
+    updateMaps,
+    updateSelectedItem,
+  } = props;
+
   let listContent;
-  let ulRoundedClass;
+  let roundedClass;
   if (selectedTab === "Games") {
-    listContent = <li>Game 1</li>;
-    ulRoundedClass = "rounded-tr-md";
+    listContent = games.map((game) => (
+      <SelectionButton name={game.name} key={game.name} />
+    ));
+    roundedClass = "rounded-tr-md";
   } else if (selectedTab === "Characters") {
-    listContent = <li>Character 1</li>;
-    ulRoundedClass = "rounded-t-md";
+    listContent = characters.map((character) => (
+      <SelectionButton name={character.name} key={character.name} />
+    ));
+    roundedClass = "rounded-t-md";
   } else if (selectedTab === "Maps") {
-    listContent = <li>Map 1</li>;
-    ulRoundedClass = "rounded-tl-md";
+    listContent = maps.map((map) => (
+      <SelectionButton name={map.name} key={map.name} />
+    ));
+    roundedClass = "rounded-tl-md";
   }
 
   function handleGamesTabClick() {
@@ -29,10 +47,10 @@ export default function Selection({ selectedTab, updateSelectedTab }) {
   const padding = "p-2";
   const activeClasses = "bg-indigo-300 rounded-t-md " + padding;
   const inactiveClasses = "bg-white rounded-t-md " + padding;
-  const ulClasses = [
-    "bg-indigo-300 rounded-b-md grow",
+  const dynamicRoundedClasses = [
+    "flex flex-col bg-indigo-300 rounded-b-md pt-5 grow",
     padding,
-    ulRoundedClass,
+    roundedClass,
   ].join(" ");
 
   return (
@@ -62,7 +80,17 @@ export default function Selection({ selectedTab, updateSelectedTab }) {
           Maps
         </button>
       </div>
-      <ul className={ulClasses}>{listContent}</ul>
+      <div className={dynamicRoundedClasses}>
+        <button
+          type="button"
+          className="w-2/3 self-center bg-blue-50 hover:bg-blue-300 hover:text-white p-1 rounded-md"
+        >
+          + Create {selectedTab.slice(0, -1)}
+        </button>
+        <ul className={"bg-indigo-300 rounded-t-md " + padding}>
+          {listContent}
+        </ul>
+      </div>
     </div>
   );
 }

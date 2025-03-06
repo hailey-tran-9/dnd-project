@@ -1,7 +1,7 @@
 import "./App.css";
 
 import Login from "./components/Login.jsx";
-import MainMenu from "./components/MainMenu.jsx";
+import MainMenu from "./components/mainMenu/MainMenu.jsx";
 import Game from "./components/Game.jsx";
 
 function App() {
