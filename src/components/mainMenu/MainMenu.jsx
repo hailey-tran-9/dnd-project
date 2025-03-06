@@ -4,6 +4,8 @@ import Selection from "./Selection.jsx";
 import MainMenuInfo from "./MainMenuInfo.jsx";
 
 export default function MainMenu() {
+  const [isCreating, setIsCreating] = useState(false);
+
   const [games, setGames] = useState([]);
   const [characters, setCharacters] = useState([]);
   const [maps, setMaps] = useState([]);
@@ -16,6 +18,8 @@ export default function MainMenu() {
   });
 
   const selectionProps = {
+    isCreating,
+    updateIsCreating: setIsCreating,
     selectedTab,
     updateSelectedTab: setSelectedTab,
     games,
@@ -30,7 +34,12 @@ export default function MainMenu() {
   return (
     <div className="h-dvh flex flex-row p-16 gap-10">
       <Selection props={selectionProps} />
-      <MainMenuInfo selectedTab={selectedTab} selectedItem={selectedItem} />
+      <MainMenuInfo
+        isCreating={isCreating}
+        updateIsCreating={setIsCreating}
+        selectedTab={selectedTab}
+        selectedItem={selectedItem}
+      />
     </div>
   );
 }

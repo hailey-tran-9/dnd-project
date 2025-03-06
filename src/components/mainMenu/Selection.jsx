@@ -2,6 +2,8 @@ import SelectionButton from "./SelectionButton.jsx";
 
 export default function Selection({ props }) {
   const {
+    isCreating,
+    updateIsCreating,
     selectedTab,
     updateSelectedTab,
     games,
@@ -44,6 +46,10 @@ export default function Selection({ props }) {
     updateSelectedTab("Maps");
   }
 
+  function handleCreateClick() {
+    updateIsCreating(true);
+  }
+
   const padding = "p-2";
   const activeClasses = "bg-indigo-300 rounded-t-md " + padding;
   const inactiveClasses = "bg-white rounded-t-md " + padding;
@@ -84,6 +90,7 @@ export default function Selection({ props }) {
         <button
           type="button"
           className="w-2/3 self-center bg-blue-50 hover:bg-blue-300 hover:text-white p-1 rounded-md"
+          onClick={handleCreateClick}
         >
           + Create {selectedTab.slice(0, -1)}
         </button>
