@@ -12,7 +12,7 @@ export default function GameInfo({ selectedGame }) {
 
   return (
     <>
-      <h1>Game Title</h1>
+      <h1>{selectedGame.name}</h1>
       <div className="h-11/12 flex flex-row gap-12">
         <div className="w-1/3 flex flex-col">
           <h2 className="mb-2">Players</h2>

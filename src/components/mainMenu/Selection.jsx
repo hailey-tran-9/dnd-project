@@ -18,8 +18,17 @@ export default function Selection({ props }) {
   let listContent;
   let roundedClass;
   if (selectedTab === "Games") {
-    listContent = games.map((game) => (
-      <SelectionButton name={game.name} key={game.name} />
+    listContent = games.gameObjects.map((game, index) => (
+      <SelectionButton
+        name={game.name}
+        key={game.name}
+        onClick={() =>
+          updateSelectedItem((prevSelectedItem) => ({
+            ...prevSelectedItem,
+            game: games.gameObjects[index],
+          }))
+        }
+      />
     ));
     roundedClass = "rounded-tr-md";
   } else if (selectedTab === "Characters") {
@@ -54,7 +63,7 @@ export default function Selection({ props }) {
   const activeClasses = "bg-indigo-300 rounded-t-md " + padding;
   const inactiveClasses = "bg-white rounded-t-md " + padding;
   const dynamicRoundedClasses = [
-    "flex flex-col bg-indigo-300 rounded-b-md pt-5 grow",
+    "flex-1 flex-col bg-indigo-300 rounded-b-md pt-5",
     padding,
     roundedClass,
   ].join(" ");
@@ -94,9 +103,14 @@ export default function Selection({ props }) {
         >
           + Create {selectedTab.slice(0, -1)}
         </button>
-        <ul className={"bg-indigo-300 rounded-t-md " + padding}>
+        <div
+          className={
+            "flex flex-col bg-indigo-300 rounded-t-md overflow-y-auto gap-1 mt-3 " +
+            padding
+          }
+        >
           {listContent}
-        </ul>
+        </div>
       </div>
     </div>
   );

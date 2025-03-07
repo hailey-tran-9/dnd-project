@@ -3,17 +3,27 @@ import CharacterInfo from "./CharacterInfo.jsx";
 
 import GameCreation from "./GameCreation.jsx";
 
-export default function MainMenuInfo({
-  isCreating,
-  updateIsCreating,
-  selectedTab,
-  selectedItem,
-}) {
+export default function MainMenuInfo({ props }) {
+  const {
+    isCreating,
+    updateIsCreating,
+    selectedTab,
+    selectedItem,
+    games,
+    updateGames,
+  } = props;
+
   let infoContent;
 
   if (isCreating) {
     if (selectedTab === "Games") {
-      infoContent = <GameCreation updateIsCreating={updateIsCreating} />;
+      infoContent = (
+        <GameCreation
+          updateIsCreating={updateIsCreating}
+          games={games}
+          updateGames={updateGames}
+        />
+      );
     } else if (selectedTab === "Characters") {
       infoContent = <></>;
     } else if (selectedTab === "Maps") {
