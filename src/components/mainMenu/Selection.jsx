@@ -95,17 +95,17 @@ export default function Selection({ props }) {
           Maps
         </button>
       </div>
-      <div className={dynamicRoundedClasses}>
+      <div className={dynamicRoundedClasses + " justify-items-center overflow-y-auto"}>
         <button
           type="button"
-          className="w-2/3 self-center bg-blue-50 hover:bg-blue-300 hover:text-white p-1 rounded-md"
+          className="w-fit bg-blue-50 hover:bg-blue-300 hover:text-white p-1 px-3 rounded-md"
           onClick={handleCreateClick}
         >
           + Create {selectedTab.slice(0, -1)}
         </button>
         <div
           className={
-            "flex flex-col bg-indigo-300 rounded-t-md overflow-y-auto gap-1 mt-3 " +
+            "w-full flex flex-col bg-indigo-300 rounded-t-md gap-1 mt-3 pb-10 " +
             padding
           }
         >

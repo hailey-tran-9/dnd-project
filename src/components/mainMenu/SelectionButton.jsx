@@ -3,7 +3,7 @@ export default function SelectionButton({ name, ...props }) {
     <button
       key={name}
       type="button"
-      className="w-full bg-blue-50 hover:bg-sky-200 rounded-md p-0.5"
+      className="bg-blue-50 hover:bg-sky-200 rounded-md p-0.5"
       {...props}
     >
       {name}
