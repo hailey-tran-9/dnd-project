@@ -50,20 +50,19 @@ export default function CharacterCreation({
             required
           ></input>
         </div>
+
         <fieldset>
           <legend>Available Classes</legend>
-
           <div>
-            <input type="radio"></input>
-            <label>Class</label>
+            <input type="radio" id="Druid" name="classes"></input>
+            <label for="Druid">Druid</label>
           </div>
-
         </fieldset>
+
         <div className="mb-2">
           <label>Level</label>
           <input
-            className="bg-amber-300 rounded-md ml-3"
-            onChange={handleNameChange}
+            type="number"
             required
           ></input>
         </div>
