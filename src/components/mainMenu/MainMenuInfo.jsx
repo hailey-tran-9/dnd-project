@@ -2,6 +2,7 @@ import GameInfo from "./GameInfo.jsx";
 import CharacterInfo from "./CharacterInfo.jsx";
 
 import GameCreation from "./GameCreation.jsx";
+import CharacterCreation from "./CharacterCreation.jsx";
 
 export default function MainMenuInfo({ props }) {
   const {
@@ -11,6 +12,8 @@ export default function MainMenuInfo({ props }) {
     selectedItem,
     games,
     updateGames,
+    characters,
+    updateCharacters,
   } = props;
 
   let infoContent;
@@ -25,7 +28,13 @@ export default function MainMenuInfo({ props }) {
         />
       );
     } else if (selectedTab === "Characters") {
-      infoContent = <></>;
+      infoContent = (
+        <CharacterCreation
+          updateIsCreating={updateIsCreating}
+          characters={characters}
+          updateCharacters={updateCharacters}
+        />
+      );
     } else if (selectedTab === "Maps") {
       infoContent = <></>;
     }
@@ -48,7 +57,7 @@ export default function MainMenuInfo({ props }) {
   }
 
   return (
-    <div className="flex flex-col bg-amber-200 grow rounded-md p-10">
+    <div className="flex flex-col bg-amber-200 grow rounded-md p-10 overflow-y-auto">
       {infoContent}
     </div>
   );

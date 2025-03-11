@@ -12,8 +12,8 @@ export default function CharacterInfo({ selectedCharacter }) {
 
   return (
     <>
-      <h1>Character Name</h1>
-      <h2>Class | Lvl</h2>
+      <h1>{selectedCharacter.name}</h1>
+      <h2>{selectedCharacter.class} | {selectedCharacter.lvl}</h2>
       <div className="flex flex-row justify-around py-5">
         <AbilityScoreBox />
         <AbilityScoreBox />

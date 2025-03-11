@@ -1,4 +1,7 @@
 import { useState, useContext } from "react";
+import { capitalize } from "../../util.js";
+
+import { classIndexes } from "../contexts/ClassContext.jsx";
 
 export default function CharacterCreation({
   updateIsCreating,
@@ -6,20 +9,38 @@ export default function CharacterCreation({
   updateCharacters,
 }) {
   const [enteredName, setEnteredName] = useState("");
-  const [enteredClass, setEnteredClass] = useState("");
   const [enteredLvl, setEnteredLvl] = useState(1);
 
   function handleSubmit(event) {
     event.preventDefault();
 
+    const data = new FormData(event.target);
+
     // Check for validity
     if (!characters.characterNames.includes(enteredName)) {
-      updateGames((prevCharacters) => ({
+      updateCharacters((prevCharacters) => ({
         ...prevCharacters,
         ["characterNames"]: [...prevCharacters.characterNames, enteredName],
         ["characterObjects"]: [
           ...prevCharacters.characterObjects,
-          { name: enteredName, class: [], lvl: [] },
+          {
+            name: enteredName,
+            class: data.get("classes"),
+            lvl: enteredLvl,
+            abilities: {
+              str: { abilityScore: 1, modifier: 0, proficicent: false },
+              dex: { abilityScore: 1, modifier: 0, proficicent: false },
+              con: { abilityScore: 1, modifier: 0, proficicent: false },
+              int: { abilityScore: 1, modifier: 0, proficicent: false },
+              wis: { abilityScore: 1, modifier: 0, proficicent: false },
+              cha: { abilityScore: 1, modifier: 0, proficicent: false },
+            },
+            armorClass: 1,
+            proficiencyBonus: 0,
+            features: [],
+            inventory: [],
+            notes: [],
+          },
         ],
       }));
     } else {
@@ -30,7 +51,6 @@ export default function CharacterCreation({
 
     updateIsCreating(false);
     setEnteredName("");
-    setEnteredClass("");
     setEnteredLvl(1);
   }
 
@@ -38,11 +58,15 @@ export default function CharacterCreation({
     setEnteredName(event.target.value);
   }
 
+  function handleLvlChange(event) {
+    setEnteredLvl(event.target.value);
+  }
+
   return (
     <div className="self-center my-auto flex flex-col bg-white p-10 rounded-md">
-      <h1 className="mb-3">Game Creation</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-2">
+      <h1 className="mb-3">Character Creation</h1>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+        <div>
           <label>Character Name</label>
           <input
             className="bg-amber-300 rounded-md ml-3"
@@ -53,16 +77,31 @@ export default function CharacterCreation({
 
         <fieldset>
           <legend>Available Classes</legend>
-          <div>
-            <input type="radio" id="Druid" name="classes"></input>
-            <label for="Druid">Druid</label>
-          </div>
+          {classIndexes.map((className, index) => {
+            let capitalizedName = capitalize(className);
+
+            return (
+              <div key={capitalizedName + "Radio"}>
+                <input
+                  type="radio"
+                  id={capitalizedName}
+                  name="classes"
+                  value={capitalizedName}
+                ></input>
+                <label htmlFor={capitalizedName} className="ml-2">
+                  {capitalizedName}
+                </label>
+              </div>
+            );
+          })}
         </fieldset>
 
-        <div className="mb-2">
+        <div>
           <label>Level</label>
           <input
             type="number"
+            className="bg-amber-300 rounded-md ml-3"
+            onChange={handleLvlChange}
             required
           ></input>
         </div>

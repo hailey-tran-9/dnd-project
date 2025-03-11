@@ -10,7 +10,10 @@ export default function MainMenu() {
     gameNames: [],
     gameObjects: [],
   });
-  const [characters, setCharacters] = useState([]);
+  const [characters, setCharacters] = useState({
+    characterNames: [],
+    characterObjects: [],
+  });
   const [maps, setMaps] = useState([]);
 
   const [selectedTab, setSelectedTab] = useState("Games");

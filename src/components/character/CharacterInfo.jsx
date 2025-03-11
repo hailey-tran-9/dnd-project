@@ -5,8 +5,6 @@ import CharacterSkills from "./CharacterSkills.jsx";
 import CharacterFeatures from "./CharacterFeatures.jsx";
 import CharacterInventory from "./CharacterInventory.jsx";
 
-import { CharacterContext } from "../contexts/CharacterContext.jsx";
-
 export default function CharacterInfo() {
   const charCtx = useContext(CharacterContext);
 

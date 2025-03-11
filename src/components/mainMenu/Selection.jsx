@@ -32,8 +32,17 @@ export default function Selection({ props }) {
     ));
     roundedClass = "rounded-tr-md";
   } else if (selectedTab === "Characters") {
-    listContent = characters.map((character) => (
-      <SelectionButton name={character.name} key={character.name} />
+    listContent = characters.characterObjects.map((character, index) => (
+      <SelectionButton
+        name={character.name}
+        key={character.name}
+        onClick={() =>
+          updateSelectedItem((prevSelectedItem) => ({
+            ...prevSelectedItem,
+            character: characters.characterObjects[index],
+          }))
+        }
+      />
     ));
     roundedClass = "rounded-t-md";
   } else if (selectedTab === "Maps") {
@@ -95,7 +104,11 @@ export default function Selection({ props }) {
           Maps
         </button>
       </div>
-      <div className={dynamicRoundedClasses + " justify-items-center overflow-y-auto"}>
+      <div
+        className={
+          dynamicRoundedClasses + " justify-items-center overflow-y-auto"
+        }
+      >
         <button
           type="button"
           className="w-fit bg-blue-50 hover:bg-blue-300 hover:text-white p-1 px-3 rounded-md"
