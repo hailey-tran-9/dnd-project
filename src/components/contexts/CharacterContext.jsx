@@ -22,8 +22,8 @@ export const CharacterContext = createContext({
 
 export default function CharacterContextProvider({ children }) {
   const [charStates, setCharStates] = useState({
-    name: "CHARACTER NAME",
-    class: "CLASS",
+    name: "Name",
+    class: "Class",
     lvl: 1,
     abilities: {
       str: { abilityScore: 1, modifier: 0, proficicent: false },

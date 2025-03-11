@@ -16,14 +16,14 @@ export default function AbilityScoreButton({
   function handleCheck() {
     let roll = check(modifier);
     let chatMsg =
-      ability + " CHECK: " + roll.rollStr + " = " + roll.result.toString();
+      ability.toUpperCase() + " C: " + roll.rollStr + " = " + roll.result.toString();
     updateChatLog((prevChatLog) => [...prevChatLog, chatMsg]);
   }
 
   function handleSave() {
     let roll = save(modifier, proficiencyBonus);
     let chatMsg =
-      ability + " SAVE: " + roll.rollStr + " = " + roll.result.toString();
+    ability.toUpperCase() + " S: " + roll.rollStr + " = " + roll.result.toString();
     updateChatLog((prevChatLog) => [...prevChatLog, chatMsg]);
   }
 

@@ -9,7 +9,7 @@ export default function SkillButton({ skill, modifier }) {
     let roll = check(modifier);
     let chatMsg =
       skill.toUpperCase() +
-      " CHECK: " +
+      " C: " +
       roll.rollStr +
       " = " +
       roll.result.toString();

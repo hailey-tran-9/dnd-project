@@ -18,7 +18,7 @@ export default function CharacterAbilityScores() {
   useEffect(() => {
     if (!isFetching) {
       setContent(
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 overflow-x-hidden">
           {abilityScoreIndexes.map((index) => {
             let fullName = abilityScoreData[index].full_name;
             let abilityScore = abilities[index].abilityScore;

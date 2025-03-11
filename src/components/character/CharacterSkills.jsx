@@ -13,7 +13,7 @@ export default function CharacterSkills() {
   useEffect(() => {
     if (!isFetching && skillData["perception"].name) {
       setContent(
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 overflow-x-hidden">
           {skillIndexes.map((skill) => {
             let skillObj = skillData[skill];
             let ability = skillObj["ability_score"].index;

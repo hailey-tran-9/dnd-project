@@ -1,5 +1,5 @@
-import { useState, useContext } from "react";
-
+import { useEffect, useContext } from "react";
+import { CharacterContext } from "../contexts/CharacterContext.jsx";
 import CharacterAbilityScores from "./CharacterAbilityScores.jsx";
 import CharacterSkills from "./CharacterSkills.jsx";
 import CharacterFeatures from "./CharacterFeatures.jsx";
@@ -8,33 +8,7 @@ import CharacterInventory from "./CharacterInventory.jsx";
 import { CharacterContext } from "../contexts/CharacterContext.jsx";
 
 export default function CharacterInfo() {
-  const { charData, updateChar } = useContext(CharacterContext);
-  const [isEditing, setIsEditing] = useState(false);
-  const [enteredName, setEnteredName] = useState(charData.name);
-
-  function handleToggleEditing() {
-    if (isEditing) {
-      if (charData.name !== enteredName) {
-        updateChar((prevCharData) => ({
-          ...prevCharData,
-          ["name"]: enteredName,
-        }));
-      }
-    }
-
-    setIsEditing(!isEditing);
-  }
-
-  function handleNameOnChange(event) {
-    setEnteredName(event.target.value);
-  }
-
-  let characterName = <h1 className="text-center text-wrap">{charData.name}</h1>;
-  if (isEditing) {
-    characterName = (
-      <input value={enteredName} onChange={handleNameOnChange}></input>
-    );
-  }
+  const charCtx = useContext(CharacterContext);
 
   return (
     <section
@@ -49,8 +23,8 @@ export default function CharacterInfo() {
         {!isEditing ? "Edit" : "Finish Editing"}
       </button>
       <header>
-        {characterName}
-        <h2 className="text-center text-wrap">CLASS | LVL</h2>
+        <h1 className="text-center text-wrap">{charCtx.name}</h1>
+        <h2 className="text-center text-wrap">{charCtx.class} | {charCtx.lvl}</h2>
       </header>
       <CharacterAbilityScores />
       <CharacterSkills />
