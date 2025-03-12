@@ -1,4 +1,7 @@
+import { capitalize } from "../../util.js";
+
 import AbilityScoreBox from "./AbilityScoreBox.jsx";
+import { abilityScoreIndexes } from "../contexts/AbilityScoreContext.jsx";
 
 export default function CharacterInfo({ selectedCharacter }) {
   if (selectedCharacter === null) {
@@ -13,14 +16,17 @@ export default function CharacterInfo({ selectedCharacter }) {
   return (
     <>
       <h1>{selectedCharacter.name}</h1>
-      <h2>{selectedCharacter.class} | {selectedCharacter.lvl}</h2>
+      <h2>
+      {capitalize(selectedCharacter.race)} | {capitalize(selectedCharacter.class)} | {selectedCharacter.lvl}
+      </h2>
       <div className="flex flex-row justify-around py-5">
-        <AbilityScoreBox />
-        <AbilityScoreBox />
-        <AbilityScoreBox />
-        <AbilityScoreBox />
-        <AbilityScoreBox />
-        <AbilityScoreBox />
+        {abilityScoreIndexes.map((ability) => (
+          <AbilityScoreBox
+            key={ability + "ScoreBox"}
+            ability={ability}
+            proficient={selectedCharacter.abilities[ability].proficient}
+          />
+        ))}
       </div>
       <div className="grid grid-cols-3 gap-5 grow">
         <div className="flex flex-col bg-white rounded-lg p-5">

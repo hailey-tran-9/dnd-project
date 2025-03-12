@@ -32,7 +32,7 @@ export default function RaceContextProvider({ children }) {
       console.log(racesData);
 
       racesData.map((race) => {
-        let {} = race;
+        let { index } = race;
         races[index] = {};
       });
       setRaces({ ...races });
