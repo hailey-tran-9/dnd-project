@@ -17,7 +17,7 @@ export default function CharacterInfo({ selectedCharacter }) {
     <>
       <h1>{selectedCharacter.name}</h1>
       <h2>
-      {capitalize(selectedCharacter.race)} | {capitalize(selectedCharacter.class)} | {selectedCharacter.lvl}
+        {capitalize(selectedCharacter.race)} | {capitalize(selectedCharacter.class)} | {selectedCharacter.lvl}
       </h2>
       <div className="flex flex-row justify-around py-5">
         {abilityScoreIndexes.map((ability) => (

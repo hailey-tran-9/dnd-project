@@ -3,6 +3,7 @@ import { capitalize } from "../../util.js";
 
 import { classIndexes, ClassContext } from "../contexts/ClassContext.jsx";
 import { raceIndexes, RaceContext } from "../contexts/RaceContext.jsx";
+import Checkboxes from "../Checkboxes.jsx";
 
 export default function CharacterCreation({
   updateIsCreating,
@@ -19,62 +20,65 @@ export default function CharacterCreation({
   useEffect(() => {
     if (!isFetching) {
       if (enteredClass) {
-        console.log(classData[enteredClass]);
+        // console.log(classData[enteredClass]);
         let profChoices = classData[enteredClass]["proficiency_choices"];
         let equipOptions =
           classData[enteredClass]["starting_equipment_options"];
         setContent(
-          <div className="flex flex-col">
-            <h2>Proficiency Choices</h2>
-            {profChoices.map((profChoice, index) => (
-              <div key={"profChoice" + index}>
-                <label htmlFor={"profChoice" + index}>{profChoice.desc}:</label>
-                <select
-                  name={"profChoice" + index}
-                  id={"profChoice" + index}
-                  className="bg-amber-300 rounded-md ml-1"
-                >
-                  {profChoice.from.options.map((option, index2) => (
-                    <option
-                      key={"profChoice" + index + "Option" + index2}
-                      value={option.item.index}
-                    >
-                      {getOptionLabel(option.item.name)}
-                    </option>
-                  ))}
-                </select>
+          <>
+            <div className="mb-5">
+              <h2>Proficiency Choices</h2>
+              <div className="flex flex-col gap-2">
+                {profChoices.map((profChoice, index) => {
+                  let identifier = enteredClass + "ProfChoice" + index;
+                  return (
+                    <div key={identifier}>
+                      <p>{profChoice.desc}</p>
+                      <Checkboxes
+                        nameForInputs={identifier}
+                        inputProps={["item", "index"]}
+                        listOfInputs={profChoice.from.options}
+                        maxNumInputs={profChoice.choose}
+                      />
+                    </div>
+                  );
+                })}
               </div>
-            ))}
+            </div>
 
-            <h2 className="mt-2">Equipment Options</h2>
-            {equipOptions.map((equipOption, index) => (
-              <div key={"equipOption" + index}>
-                <label htmlFor={"equipOption" + index}>
-                  {equipOption.desc}:
-                </label>
-                <select
-                  name={"equipOption" + index}
-                  id={"equipOption" + index}
-                  className="bg-amber-300 rounded-md ml-1"
-                >
-                  {equipOption.from.options.map((option, index2) => {
-                    if (option["of"]) {
-                      return (
-                        <option
-                          key={"equipOption" + index + "Option" + index2}
-                          value={option["of"].index}
-                        >
-                          {getOptionLabel(option["of"].name)}
-                        </option>
-                      );
-                    } else {
-                      return;
-                    }
-                  })}
-                </select>
+            <div>
+              <h2>Equipment Options</h2>
+              <div className="flex flex-col gap-2">
+                {equipOptions.map((equipOption, index) => (
+                  <div key={"equipOption" + index}>
+                    <label htmlFor={"equipOption" + index}>
+                      {equipOption.desc}:
+                    </label>
+                    <select
+                      name={"equipOption" + index}
+                      id={"equipOption" + index}
+                      className="bg-amber-300 rounded-md ml-1"
+                    >
+                      {equipOption.from.options.map((option, index2) => {
+                        if (option["of"]) {
+                          return (
+                            <option
+                              key={"equipOption" + index + "Option" + index2}
+                              value={option["of"].index}
+                            >
+                              {getOptionLabel(option["of"].name)}
+                            </option>
+                          );
+                        } else {
+                          return;
+                        }
+                      })}
+                    </select>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          </>
         );
       }
     }
@@ -96,12 +100,36 @@ export default function CharacterCreation({
             class: enteredClass,
             lvl: enteredLvl,
             abilities: {
-              str: { abilityScore: 1, modifier: 0, proficient: checkProficiency("str") },
-              dex: { abilityScore: 1, modifier: 0, proficient: checkProficiency("dex") },
-              con: { abilityScore: 1, modifier: 0, proficient: checkProficiency("con") },
-              int: { abilityScore: 1, modifier: 0, proficient: checkProficiency("int") },
-              wis: { abilityScore: 1, modifier: 0, proficient: checkProficiency("wis") },
-              cha: { abilityScore: 1, modifier: 0, proficient: checkProficiency("cha") },
+              str: {
+                abilityScore: 1,
+                modifier: 0,
+                proficient: checkProficiency("str"),
+              },
+              dex: {
+                abilityScore: 1,
+                modifier: 0,
+                proficient: checkProficiency("dex"),
+              },
+              con: {
+                abilityScore: 1,
+                modifier: 0,
+                proficient: checkProficiency("con"),
+              },
+              int: {
+                abilityScore: 1,
+                modifier: 0,
+                proficient: checkProficiency("int"),
+              },
+              wis: {
+                abilityScore: 1,
+                modifier: 0,
+                proficient: checkProficiency("wis"),
+              },
+              cha: {
+                abilityScore: 1,
+                modifier: 0,
+                proficient: checkProficiency("cha"),
+              },
             },
             armorClass: 1,
             proficiencyBonus: 0,
@@ -139,7 +167,7 @@ export default function CharacterCreation({
   }
 
   function handleRaceChange(event) {
-    console.log(event.target.value);
+    // console.log(event.target.value);
     let currRace = event.target.value;
     if (currRace !== enteredRace) {
       setEnteredRace(currRace);
@@ -156,7 +184,7 @@ export default function CharacterCreation({
 
   function checkProficiency(ability) {
     let isProficient = false;
-    classData[enteredClass]["saving_throws"].forEach(st => {
+    classData[enteredClass]["saving_throws"].forEach((st) => {
       if (st.index === ability) {
         isProficient = true;
       }
@@ -165,8 +193,8 @@ export default function CharacterCreation({
   }
 
   return (
-    <div className="self-center my-auto flex flex-col bg-white p-10 rounded-md">
-      <h1 className="mb-3">Character Creation</h1>
+    <div className="w-7/8 self-center my-auto flex flex-col bg-white p-10 rounded-md">
+      <h1>Character Creation</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
         <div>
           <label>Character Name</label>
@@ -206,7 +234,7 @@ export default function CharacterCreation({
           </select>
         </div>
 
-        <div>
+        <div className="mb-5">
           <label htmlFor={"raceSelection"} className="mr-1">
             Available Races:
           </label>
