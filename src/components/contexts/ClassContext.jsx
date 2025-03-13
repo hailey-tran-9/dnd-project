@@ -40,7 +40,7 @@ export default function ClassContextProvider({ children }) {
   useEffect(() => {
     async function fetchClasses() {
       const classesData = await getAllClasses();
-      console.log(classesData);
+      // console.log(classesData);
 
       classesData.map((classs) => {
         let {

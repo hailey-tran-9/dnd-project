@@ -3,7 +3,11 @@ import { capitalize } from "../../util.js";
 
 import { classIndexes, ClassContext } from "../contexts/ClassContext.jsx";
 import { raceIndexes, RaceContext } from "../contexts/RaceContext.jsx";
+
 import Checkboxes from "../Checkboxes.jsx";
+import ClassChoices from "./ClassChoices.jsx";
+import EquipmentChoices from "./EquipmentChoices.jsx";
+import PointBuySystem from "./PointBuySystem.jsx";
 
 export default function CharacterCreation({
   updateIsCreating,
@@ -13,73 +17,27 @@ export default function CharacterCreation({
   const [enteredName, setEnteredName] = useState("");
   const [enteredLvl, setEnteredLvl] = useState(1);
   const { isFetching, classData } = useContext(ClassContext);
-  const [content, setContent] = useState();
+  const [content, setContent] = useState(<p>Loading class data...</p>);
   const [enteredClass, setEnteredClass] = useState(classIndexes[0]);
   const [enteredRace, setEnteredRace] = useState(raceIndexes[0]);
+  const [proficiencies, setProficiencies] = useState([]);
 
   useEffect(() => {
     if (!isFetching) {
       if (enteredClass) {
-        // console.log(classData[enteredClass]);
-        let profChoices = classData[enteredClass]["proficiency_choices"];
-        let equipOptions =
-          classData[enteredClass]["starting_equipment_options"];
+        console.log(classData[enteredClass]);
         setContent(
           <>
-            <div className="mb-5">
-              <h2>Proficiency Choices</h2>
-              <div className="flex flex-col gap-2">
-                {profChoices.map((profChoice, index) => {
-                  let identifier = enteredClass + "ProfChoice" + index;
-                  return (
-                    <div key={identifier}>
-                      <p>{profChoice.desc}</p>
-                      <Checkboxes
-                        nameForInputs={identifier}
-                        inputProps={["item", "index"]}
-                        listOfInputs={profChoice.from.options}
-                        maxNumInputs={profChoice.choose}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div>
-              <h2>Equipment Options</h2>
-              <div className="flex flex-col gap-2">
-                {equipOptions.map((equipOption, index) => (
-                  <div key={"equipOption" + index}>
-                    <label htmlFor={"equipOption" + index}>
-                      {equipOption.desc}:
-                    </label>
-                    <select
-                      name={"equipOption" + index}
-                      id={"equipOption" + index}
-                      className="bg-amber-300 rounded-md ml-1"
-                    >
-                      {equipOption.from.options.map((option, index2) => {
-                        if (option["of"]) {
-                          return (
-                            <option
-                              key={"equipOption" + index + "Option" + index2}
-                              value={option["of"].index}
-                            >
-                              {getOptionLabel(option["of"].name)}
-                            </option>
-                          );
-                        } else {
-                          return;
-                        }
-                      })}
-                    </select>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ClassChoices enteredClass={enteredClass} />
+            <EquipmentChoices enteredClass={enteredClass} />
           </>
         );
+
+        let newProficiencies = [];
+        classData[enteredClass]["saving_throws"].map((st) => {
+          newProficiencies.push(st.index);
+        });
+        setProficiencies(newProficiencies);
       }
     }
   }, [enteredClass]);
@@ -174,14 +132,6 @@ export default function CharacterCreation({
     }
   }
 
-  function getOptionLabel(item) {
-    if (item.includes(": ")) {
-      return item.split(" ")[1];
-    } else {
-      return item;
-    }
-  }
-
   function checkProficiency(ability) {
     let isProficient = false;
     classData[enteredClass]["saving_throws"].forEach((st) => {
@@ -193,7 +143,7 @@ export default function CharacterCreation({
   }
 
   return (
-    <div className="w-7/8 self-center my-auto flex flex-col bg-white p-10 rounded-md">
+    <div className="w-fit justify-self-center self-center my-auto flex flex-col bg-white p-10 px-24 rounded-md">
       <h1>Character Creation</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
         <div>
@@ -253,7 +203,9 @@ export default function CharacterCreation({
           </select>
         </div>
 
-        {content && content}
+        <PointBuySystem proficiencies={proficiencies} />
+
+        {content}
 
         <div className="flex flex-row justify-end mt-10 gap-2">
           <button

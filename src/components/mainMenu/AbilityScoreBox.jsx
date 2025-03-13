@@ -9,7 +9,7 @@ export default function AbilityScoreBox({ ability, proficient, ...props }) {
     <div className={classNames} {...props}>
       <p>{ability.toUpperCase()}</p>
       <p>
-        <b>12</b>
+        <b>8</b>
       </p>
       <p>(+0)</p>
     </div>

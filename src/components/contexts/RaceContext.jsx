@@ -29,7 +29,7 @@ export default function RaceContextProvider({ children }) {
   useEffect(() => {
     async function fetchRaces() {
       const racesData = await getAllRaces();
-      console.log(racesData);
+      // console.log(racesData);
 
       racesData.map((race) => {
         let { index } = race;
