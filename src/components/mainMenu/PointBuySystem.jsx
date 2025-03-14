@@ -52,7 +52,7 @@ export default function PointBuySystem({ proficiencies }) {
     <div className="flex flex-col gap-1">
       <h2>Point-Buy System</h2>
       <p>Points Left to Spend: {points}</p>
-      <div className="flex flex-row justify-around">
+      <div className="flex flex-row justify-evenly flex-wrap">
         {abilityScoreIndexes.map((ability) => (
           <PointBuyBox
             key={ability + "PointBuyBox"}

@@ -3,28 +3,46 @@ import { capitalize } from "../../util.js";
 
 import { classIndexes, ClassContext } from "../contexts/ClassContext.jsx";
 import { raceIndexes, RaceContext } from "../contexts/RaceContext.jsx";
+import { abilityScoreIndexes } from "../contexts/AbilityScoreContext.jsx";
+import { skillIndexes } from "../contexts/SkillContext.jsx";
 
 import Checkboxes from "../Checkboxes.jsx";
 import ClassChoices from "./ClassChoices.jsx";
 import EquipmentChoices from "./EquipmentChoices.jsx";
 import PointBuySystem from "./PointBuySystem.jsx";
+import { SkillContext } from "../contexts/SkillContext.jsx";
+import ProficiencyBox from "../ProficiencyBox.jsx";
 
 export default function CharacterCreation({
   updateIsCreating,
   characters,
   updateCharacters,
 }) {
-  const [enteredName, setEnteredName] = useState("");
-  const [enteredLvl, setEnteredLvl] = useState(1);
-  const { isFetching, classData } = useContext(ClassContext);
-  const [content, setContent] = useState(<p>Loading class data...</p>);
-  const [enteredClass, setEnteredClass] = useState(classIndexes[0]);
-  const [enteredRace, setEnteredRace] = useState(raceIndexes[0]);
+  const { isFetching: isFetchingClasses, classData } = useContext(ClassContext);
+  const { isFetching: isFetchingSkills, skillData } = useContext(SkillContext);
+
+  const [abilityScores, setAbilityScores] = useState(
+    Object.fromEntries(
+      abilityScoreIndexes.map((ability) => [
+        ability,
+        { score: 8, modifier: -2, proficient: false },
+      ])
+    )
+  );
   const [proficiencies, setProficiencies] = useState([]);
 
+  const [content, setContent] = useState(<p>Loading class data...</p>);
+  const [skills, setSkills] = useState(<p>Skills are still loading...</p>);
+
+  const [enteredName, setEnteredName] = useState("");
+  const [enteredLvl, setEnteredLvl] = useState(1);
+  const [enteredClass, setEnteredClass] = useState(classIndexes[0]);
+  const [enteredRace, setEnteredRace] = useState(raceIndexes[0]);
+
   useEffect(() => {
-    if (!isFetching) {
+    if (!isFetchingClasses) {
       if (enteredClass) {
+        console.log("classData");
         console.log(classData[enteredClass]);
         setContent(
           <>
@@ -39,6 +57,33 @@ export default function CharacterCreation({
         });
         setProficiencies(newProficiencies);
       }
+    }
+  }, [enteredClass]);
+
+  useEffect(() => {
+    if (!isFetchingSkills) {
+      setSkills(() => (
+        <div className="grid grid-cols-4 gap-2 justify-evenly">
+          {skillIndexes.map((skillIndex) => {
+            let skillObj = skillData[skillIndex];
+            let ability = skillObj["ability_score"]["index"];
+            let label = skillObj["name"];
+            // console.log(ability);
+            // console.log(label);
+
+            return (
+              <div className="flex flex-row gap-1" key={label}>
+                <ProficiencyBox ability={ability} />
+                <p className="text-center">
+                  <b>{abilityScores[ability]["score"]}</b> ({abilityScores[ability]["modifier"]}){" "}
+                  {label}
+                </p>
+                <p className="text-sm text-center">{`(${ability.toUpperCase()})`}</p>
+              </div>
+            );
+          })}
+        </div>
+      ));
     }
   }, [enteredClass]);
 
@@ -143,7 +188,7 @@ export default function CharacterCreation({
   }
 
   return (
-    <div className="w-fit justify-self-center self-center my-auto flex flex-col bg-white p-10 px-24 rounded-md">
+    <div className="grow flex flex-col bg-white p-16 rounded-md">
       <h1>Character Creation</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
         <div>
@@ -204,7 +249,7 @@ export default function CharacterCreation({
         </div>
 
         <PointBuySystem proficiencies={proficiencies} />
-
+        {skills}
         {content}
 
         <div className="flex flex-row justify-end mt-10 gap-2">

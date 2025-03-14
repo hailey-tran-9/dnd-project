@@ -1,7 +1,7 @@
 import "./App.css";
 
 // import AbilityScoreContextProvider from "./components/contexts/AbilityScoreContext.jsx";
-// import SkillContextProvider from "./components/contexts/SkillContext.jsx";
+import SkillContextProvider from "./components/contexts/SkillContext.jsx";
 // import CharacterContextProvider from "./components/contexts/CharacterContext.jsx";
 import ClassContextProvider from "./components/contexts/ClassContext.jsx";
 import RaceContextProvider from "./components/contexts/RaceContext.jsx";
@@ -18,29 +18,13 @@ function App() {
   return (
     <ClassContextProvider>
       <RaceContextProvider>
-        {/* <Login /> */}
-        <MainMenu />
-        {/* <Game /> */}
+        <SkillContextProvider>
+          {/* <Login /> */}
+          <MainMenu />
+          {/* <Game /> */}
+        </SkillContextProvider>
       </RaceContextProvider>
     </ClassContextProvider>
-
-    // <AbilityScoreContextProvider>
-    //   <SkillContextProvider>
-    //     <CharacterContextProvider>
-    //       <ClassContextProvider>
-    //         <ChatContextProvider>
-    //           <div className="flex flex-row">
-    //             <CharacterInfo />
-    //             <div className="h-dvh flex flex-col justify-between grow">
-    //               <Chat />
-    //               <Toolbar />
-    //             </div>
-    //           </div>
-    //         </ChatContextProvider>
-    //       </ClassContextProvider>
-    //     </CharacterContextProvider>
-    //   </SkillContextProvider>
-    // </AbilityScoreContextProvider>
   );
 }
 
