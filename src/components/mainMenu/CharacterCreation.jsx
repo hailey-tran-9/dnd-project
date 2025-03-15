@@ -68,24 +68,23 @@ export default function CharacterCreation({
             let skillObj = skillData[skillIndex];
             let ability = skillObj["ability_score"]["index"];
             let label = skillObj["name"];
-            // console.log(ability);
-            // console.log(label);
+            // console.log(label + ": " + ability);
 
             return (
-              <div className="flex flex-row gap-1" key={label}>
-                <ProficiencyBox ability={ability} />
-                <p className="text-center">
+              <div className="h-fit flex flex-row gap-1 text-nowrap" key={label}>
+                <ProficiencyBox isProficient={proficiencies.includes(ability)} />
+                <p className="w-fit text-center">
                   <b>{abilityScores[ability]["score"]}</b> ({abilityScores[ability]["modifier"]}){" "}
                   {label}
                 </p>
-                <p className="text-sm text-center">{`(${ability.toUpperCase()})`}</p>
+                <p className="text-sm text-center self-center">{`(${ability.toUpperCase()})`}</p>
               </div>
             );
           })}
         </div>
       ));
     }
-  }, [enteredClass]);
+  }, [proficiencies]);
 
   function handleSubmit(event) {
     event.preventDefault();
