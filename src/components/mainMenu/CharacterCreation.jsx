@@ -46,7 +46,10 @@ export default function CharacterCreation({
         console.log(classData[enteredClass]);
         setContent(
           <>
-            <ClassChoices enteredClass={enteredClass} />
+            <ClassChoices
+              enteredClass={enteredClass}
+              updateProficiencies={updateProficiencyStatus}
+            />
             <EquipmentChoices enteredClass={enteredClass} />
           </>
         );
@@ -63,7 +66,7 @@ export default function CharacterCreation({
   useEffect(() => {
     if (!isFetchingSkills) {
       setSkills(() => (
-        <div className="grid grid-cols-4 gap-2 justify-evenly">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 justify-evenly">
           {skillIndexes.map((skillIndex) => {
             let skillObj = skillData[skillIndex];
             let ability = skillObj["ability_score"]["index"];
@@ -71,11 +74,19 @@ export default function CharacterCreation({
             // console.log(label + ": " + ability);
 
             return (
-              <div className="h-fit flex flex-row gap-1 text-nowrap" key={label}>
-                <ProficiencyBox isProficient={proficiencies.includes(ability)} />
+              <div
+                className="h-fit flex flex-row gap-1 text-nowrap"
+                key={label}
+              >
+                <ProficiencyBox
+                  isProficient={proficiencies.includes(ability)}
+                />
                 <p className="w-fit text-center">
-                  <b>{abilityScores[ability]["score"]}</b> ({abilityScores[ability]["modifier"]}){" "}
-                  {label}
+                  (
+                  {abilityScores[ability]["modifier"] > 0
+                    ? "+" + abilityScores[ability]["modifier"]
+                    : abilityScores[ability]["modifier"]}
+                  ) {label}
                 </p>
                 <p className="text-sm text-center self-center">{`(${ability.toUpperCase()})`}</p>
               </div>
@@ -84,7 +95,7 @@ export default function CharacterCreation({
         </div>
       ));
     }
-  }, [proficiencies]);
+  }, [proficiencies, abilityScores]);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -176,14 +187,21 @@ export default function CharacterCreation({
     }
   }
 
-  function checkProficiency(ability) {
-    let isProficient = false;
-    classData[enteredClass]["saving_throws"].forEach((st) => {
-      if (st.index === ability) {
-        isProficient = true;
-      }
-    });
-    return isProficient;
+  function checkProficiency(abilityOrSkill) {
+    return proficiencies.includes(abilityOrSkill);
+  }
+
+  function updateProficiencyStatus(abilityOrSkill) {
+    if (checkProficiency(abilityOrSkill)) {
+      let index = proficiencies.indexOf(abilityOrSkill);
+      proficiencies.splice(index);
+      setProficiencies((prevProficiencies) => [...prevProficiencies]);
+    } else {
+      setProficiencies((prevProficiencies) => [
+        ...prevProficiencies,
+        abilityOrSkill,
+      ]);
+    }
   }
 
   return (
@@ -247,7 +265,10 @@ export default function CharacterCreation({
           </select>
         </div>
 
-        <PointBuySystem proficiencies={proficiencies} />
+        <PointBuySystem
+          proficiencies={proficiencies}
+          updateAbilityScores={setAbilityScores}
+        />
         {skills}
         {content}
 

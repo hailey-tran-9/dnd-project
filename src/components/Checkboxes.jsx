@@ -5,6 +5,7 @@ export default function Checkboxes({
   inputProps,
   listOfInputs,
   maxNumInputs,
+  updateProficiencies,
 }) {
   const [checkedState, setCheckedState] = useState(Array(listOfInputs.length).fill(false));
 
@@ -18,6 +19,8 @@ export default function Checkboxes({
       index === index2 ? !check : check
     );
     setCheckedState(updatedCheckedState);
+    console.log(getOptionIndex(event.target.value));
+    updateProficiencies(getOptionIndex(event.target.value));
   }
 
   return (
@@ -56,6 +59,16 @@ export default function Checkboxes({
 function getOptionLabel(item) {
   if (item.includes(": ")) {
     return item.split(" ")[1];
+  } else {
+    return item;
+  }
+}
+
+function getOptionIndex(item) {
+  if (item.includes(": ")) {
+    return item.split(" ")[1];
+  } else if (item.includes("-")) {
+    return item.split("-")[1];
   } else {
     return item;
   }

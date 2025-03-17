@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { abilityScoreIndexes } from "../contexts/AbilityScoreContext.jsx";
 import PointBuyBox from "./PointBuyBox.jsx";
+import { calculateAbilityModifier } from "../../util.js";
 
 // TODO: notif the user when an attempted dec/inc in score isn't valid
 
@@ -16,21 +17,36 @@ const pointMapping = {
   15: 9,
 };
 
-export default function PointBuySystem({ proficiencies }) {
+export default function PointBuySystem({ proficiencies, updateAbilityScores }) {
   const [points, setPoints] = useState(27);
   const [pointSystem, setPointSystem] = useState(
     abilityScoreIndexes.reduce((o, key) => ({ ...o, [key]: 8 }), {})
   );
+
+  // useEffect(() => {
+  //   updateAbilityScores(prevAbilityScores => ({
+
+  //   }))
+  // }, [pointSystem]);
 
   function incScore(ability) {
     let currScore = pointSystem[ability];
     if (currScore < 15) {
       let cost = pointMapping[currScore + 1] - pointMapping[currScore];
       if (points >= cost) {
+        let newScore = currScore + 1;
         setPoints((prevPoints) => prevPoints - cost);
         setPointSystem((prevPointSystem) => ({
           ...prevPointSystem,
-          [ability]: currScore + 1,
+          [ability]: newScore,
+        }));
+        updateAbilityScores((prevAbilityScores) => ({
+          ...prevAbilityScores,
+          [ability]: {
+            ...prevAbilityScores[ability],
+            score: newScore,
+            modifier: calculateAbilityModifier(newScore),
+          },
         }));
       }
     }

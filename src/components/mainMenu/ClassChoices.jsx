@@ -3,7 +3,7 @@ import { useEffect, useContext, useState } from "react";
 import { ClassContext } from "../contexts/ClassContext.jsx";
 import Checkboxes from "../Checkboxes.jsx";
 
-export default function ClassChoices({ enteredClass }) {
+export default function ClassChoices({ enteredClass, updateProficiencies }) {
   const { isFetching, classData } = useContext(ClassContext);
   const [content, setContent] = useState();
 
@@ -46,6 +46,7 @@ export default function ClassChoices({ enteredClass }) {
               inputProps={["item", "index"]}
               listOfInputs={profOption.from.options}
               maxNumInputs={profOption.choose}
+              updateProficiencies={updateProficiencies}
             />
           </div>
         );
