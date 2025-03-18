@@ -78,7 +78,7 @@ export default function ClassChoices({ enteredClass, updateProficiencies }) {
 
 function getOptionLabel(item) {
   if (item.includes(": ")) {
-    return item.split(" ")[1];
+    return item.split(": ")[1];
   } else {
     return item;
   }

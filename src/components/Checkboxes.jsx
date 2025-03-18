@@ -19,7 +19,6 @@ export default function Checkboxes({
       index === index2 ? !check : check
     );
     setCheckedState(updatedCheckedState);
-    console.log(getOptionIndex(event.target.value));
     updateProficiencies(getOptionIndex(event.target.value));
   }
 

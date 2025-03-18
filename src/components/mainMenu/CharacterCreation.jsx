@@ -44,6 +44,13 @@ export default function CharacterCreation({
       if (enteredClass) {
         console.log("classData");
         console.log(classData[enteredClass]);
+
+        let newProficiencies = [];
+        classData[enteredClass]["saving_throws"].map((st) => {
+          newProficiencies.push(st.index);
+        });
+        setProficiencies(newProficiencies);
+
         setContent(
           <>
             <ClassChoices
@@ -53,12 +60,6 @@ export default function CharacterCreation({
             <EquipmentChoices enteredClass={enteredClass} />
           </>
         );
-
-        let newProficiencies = [];
-        classData[enteredClass]["saving_throws"].map((st) => {
-          newProficiencies.push(st.index);
-        });
-        setProficiencies(newProficiencies);
       }
     }
   }, [enteredClass]);
@@ -66,7 +67,7 @@ export default function CharacterCreation({
   useEffect(() => {
     if (!isFetchingSkills) {
       setSkills(() => (
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 justify-evenly">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 justify-evenly mb-2">
           {skillIndexes.map((skillIndex) => {
             let skillObj = skillData[skillIndex];
             let ability = skillObj["ability_score"]["index"];
@@ -79,7 +80,10 @@ export default function CharacterCreation({
                 key={label}
               >
                 <ProficiencyBox
-                  isProficient={proficiencies.includes(ability)}
+                  isProficient={
+                    proficiencies.includes(ability) ||
+                    proficiencies.includes(skillIndex)
+                  }
                 />
                 <p className="w-fit text-center">
                   (
@@ -192,16 +196,20 @@ export default function CharacterCreation({
   }
 
   function updateProficiencyStatus(abilityOrSkill) {
-    if (checkProficiency(abilityOrSkill)) {
-      let index = proficiencies.indexOf(abilityOrSkill);
-      proficiencies.splice(index);
-      setProficiencies((prevProficiencies) => [...prevProficiencies]);
-    } else {
-      setProficiencies((prevProficiencies) => [
-        ...prevProficiencies,
-        abilityOrSkill,
-      ]);
-    }
+    // console.log("ab or skill: " + abilityOrSkill);
+    setProficiencies((prevProficiencies) => {
+      if (prevProficiencies) {
+        let index = prevProficiencies.indexOf(abilityOrSkill);
+        // console.log(index);
+
+        if (index > -1) {
+          // console.log("alr proficient, should remove proficiency");
+          return prevProficiencies.toSpliced(index, 1);
+        } else {
+          return [...prevProficiencies, abilityOrSkill];
+        }
+      }
+    });
   }
 
   return (
