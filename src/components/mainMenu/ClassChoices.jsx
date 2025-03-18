@@ -1,11 +1,58 @@
 import { useEffect, useContext, useState } from "react";
 
 import { ClassContext } from "../contexts/ClassContext.jsx";
+import { RaceContext } from "../contexts/RaceContext.jsx";
 import Checkboxes from "../Checkboxes.jsx";
 
-export default function ClassChoices({ enteredClass, updateProficiencies }) {
-  const { isFetching, classData } = useContext(ClassContext);
-  const [content, setContent] = useState();
+export default function ClassChoices({
+  enteredClass,
+  enteredRace,
+  updateProficiencies,
+}) {
+  const { isFetching: isFetchingClasses, classData } = useContext(ClassContext);
+  const { isFetching: isFetchingRaces, raceData } = useContext(RaceContext);
+
+  const [classProfChoices, setClassProfChoices] = useState(
+    <p>Class choices are still being loaded...</p>
+  );
+  const [raceProfChoices, setRaceProfChoices] = useState(
+    <p>Race choices are still being loaded...</p>
+  );
+
+  useEffect(() => {
+    if (!isFetchingClasses) {
+      if (enteredClass) {
+        // console.log(classData[enteredClass]);
+        let profChoices = classData[enteredClass]["proficiency_choices"];
+        setClassProfChoices(
+          <div className="flex flex-col gap-2">
+            {profChoices.map((profChoice, index) =>
+              getProficiencySelection(profChoice, index)
+            )}
+          </div>
+        );
+      }
+    }
+  }, [enteredClass]);
+
+  useEffect(() => {
+    if (!isFetchingRaces) {
+      if (enteredRace) {
+        console.log("ENTERED RACE: " + enteredRace);
+        console.log(raceData[enteredRace]);
+        let profChoices = raceData[enteredRace]["starting_proficiency_options"];
+        if (profChoices) {
+          // setRaceProfChoices(
+          //   <div className="flex flex-col gap-2">
+          //     {profChoices.map((profChoice, index) =>
+          //       getProficiencySelection(profChoice, index)
+          //     )}
+          //   </div>
+          // );
+        }
+      }
+    }
+  }, [enteredRace]);
 
   function getProficiencySelection(profOption, index) {
     if (profOption.from.options) {
@@ -54,26 +101,13 @@ export default function ClassChoices({ enteredClass, updateProficiencies }) {
     }
   }
 
-  useEffect(() => {
-    if (!isFetching) {
-      if (enteredClass) {
-        // console.log(classData[enteredClass]);
-        let profChoices = classData[enteredClass]["proficiency_choices"];
-        setContent(
-          <div className="mb-5">
-            <h2>Proficiency Choices</h2>
-            <div className="flex flex-col gap-2">
-              {profChoices.map((profChoice, index) =>
-                getProficiencySelection(profChoice, index)
-              )}
-            </div>
-          </div>
-        );
-      }
-    }
-  }, [enteredClass]);
-
-  return content ? content : <p>Class data is still being loaded...</p>;
+  return (
+    <div className="mb-5">
+      <h2>Proficiency Choices</h2>
+      {classProfChoices}
+      {raceProfChoices}
+    </div>
+  );
 }
 
 function getOptionLabel(item) {

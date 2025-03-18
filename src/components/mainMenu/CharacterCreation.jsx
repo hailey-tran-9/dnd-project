@@ -6,7 +6,6 @@ import { raceIndexes, RaceContext } from "../contexts/RaceContext.jsx";
 import { abilityScoreIndexes } from "../contexts/AbilityScoreContext.jsx";
 import { skillIndexes } from "../contexts/SkillContext.jsx";
 
-import Checkboxes from "../Checkboxes.jsx";
 import ClassChoices from "./ClassChoices.jsx";
 import EquipmentChoices from "./EquipmentChoices.jsx";
 import PointBuySystem from "./PointBuySystem.jsx";
@@ -19,6 +18,7 @@ export default function CharacterCreation({
   updateCharacters,
 }) {
   const { isFetching: isFetchingClasses, classData } = useContext(ClassContext);
+  // const { isFetching: isFetchingRaces, raceData } = useContext(RaceContext);
   const { isFetching: isFetchingSkills, skillData } = useContext(SkillContext);
 
   const [abilityScores, setAbilityScores] = useState(
@@ -32,7 +32,8 @@ export default function CharacterCreation({
   const [proficiencies, setProficiencies] = useState([]);
 
   const [content, setContent] = useState(<p>Loading class data...</p>);
-  const [skills, setSkills] = useState(<p>Skills are still loading...</p>);
+  const [race, setRace] = useState(<p>Loading race data...</p>);
+  const [skills, setSkills] = useState(<p>Loading skills data...</p>);
 
   const [enteredName, setEnteredName] = useState("");
   const [enteredLvl, setEnteredLvl] = useState(1);
@@ -42,8 +43,8 @@ export default function CharacterCreation({
   useEffect(() => {
     if (!isFetchingClasses) {
       if (enteredClass) {
-        console.log("classData");
-        console.log(classData[enteredClass]);
+        // console.log("classData");
+        // console.log(classData[enteredClass]);
 
         let newProficiencies = [];
         classData[enteredClass]["saving_throws"].map((st) => {
@@ -55,6 +56,7 @@ export default function CharacterCreation({
           <>
             <ClassChoices
               enteredClass={enteredClass}
+              enteredRace={enteredRace}
               updateProficiencies={updateProficiencyStatus}
             />
             <EquipmentChoices enteredClass={enteredClass} />
@@ -62,7 +64,7 @@ export default function CharacterCreation({
         );
       }
     }
-  }, [enteredClass]);
+  }, [enteredClass, enteredRace]);
 
   useEffect(() => {
     if (!isFetchingSkills) {

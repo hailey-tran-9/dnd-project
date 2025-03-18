@@ -32,8 +32,25 @@ export default function RaceContextProvider({ children }) {
       // console.log(racesData);
 
       racesData.map((race) => {
-        let { index } = race;
-        races[index] = {};
+        let {
+          index,
+          name,
+          speed,
+          ability_bonuses,
+          starting_proficiencies,
+          starting_proficiency_options,
+          languages,
+          traits,
+        } = race;
+        races[index] = {
+          name,
+          speed,
+          ability_bonuses,
+          starting_proficiencies,
+          starting_proficiency_options,
+          languages,
+          traits,
+        };
       });
       setRaces({ ...races });
     }
