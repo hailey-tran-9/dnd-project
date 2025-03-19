@@ -19,19 +19,22 @@ export default function Checkboxes({
       index === index2 ? !check : check
     );
     setCheckedState(updatedCheckedState);
+    // console.log(getOptionIndex(event.target.value));
     updateProficiencies(getOptionIndex(event.target.value));
   }
 
   return (
-    <fieldset className="grid grid-cols-4">
+    <fieldset className="grid grid-cols-3 xl:grid-cols-4">
       {listOfInputs.map((element, index) => {
         let identifier = element;
         for (let i = 0; i < inputProps.length; i++) {
           identifier = identifier[inputProps[i]];
         }
 
+        // console.log("identifier: " + identifier);
+
         return (
-          <div key={getOptionLabel(element.item.name)}>
+          <div key={getOptionIndex(element.item.name)}>
             <input
               type="checkbox"
               id={identifier}
@@ -46,7 +49,7 @@ export default function Checkboxes({
               }}
             />
             <label htmlFor={identifier}>
-              {getOptionLabel(element.item.name)}
+              {getOptionIndex(element.item.name)}
             </label>
           </div>
         );
@@ -55,19 +58,12 @@ export default function Checkboxes({
   );
 }
 
-function getOptionLabel(item) {
-  if (item.includes(": ")) {
-    return item.split(" ")[1];
-  } else {
-    return item;
-  }
-}
-
 function getOptionIndex(item) {
   if (item.includes(": ")) {
-    return item.split(" ")[1];
+    return item.split(": ")[1];
   } else if (item.includes("-")) {
-    return item.split("-")[1];
+    let strs = item.split("-").toSpliced(0, 1);
+    return strs.join("-");
   } else {
     return item;
   }

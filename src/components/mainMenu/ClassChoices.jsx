@@ -15,9 +15,7 @@ export default function ClassChoices({
   const [classProfChoices, setClassProfChoices] = useState(
     <p>Class choices are still being loaded...</p>
   );
-  const [raceProfChoices, setRaceProfChoices] = useState(
-    <p>Race choices are still being loaded...</p>
-  );
+  const [raceProfChoices, setRaceProfChoices] = useState(<></>);
 
   useEffect(() => {
     if (!isFetchingClasses) {
@@ -25,7 +23,7 @@ export default function ClassChoices({
         // console.log(classData[enteredClass]);
         let profChoices = classData[enteredClass]["proficiency_choices"];
         setClassProfChoices(
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col mb-2">
             {profChoices.map((profChoice, index) =>
               getProficiencySelection(profChoice, index)
             )}
@@ -42,19 +40,19 @@ export default function ClassChoices({
         console.log(raceData[enteredRace]);
         let profChoices = raceData[enteredRace]["starting_proficiency_options"];
         if (profChoices) {
-          // setRaceProfChoices(
-          //   <div className="flex flex-col gap-2">
-          //     {profChoices.map((profChoice, index) =>
-          //       getProficiencySelection(profChoice, index)
-          //     )}
-          //   </div>
-          // );
+          console.log(profChoices);
+          setRaceProfChoices(
+            <div className="flex flex-col">
+              <p>Choose {profChoices.choose} proficiencies:</p>
+              {getProficiencySelection(profChoices)}
+            </div>
+          );
         }
       }
     }
   }, [enteredRace]);
 
-  function getProficiencySelection(profOption, index) {
+  function getProficiencySelection(profOption, index=0) {
     if (profOption.from.options) {
       // console.log(profOption.from.options);
       let identifier = enteredClass + "ProfChoice" + index;
