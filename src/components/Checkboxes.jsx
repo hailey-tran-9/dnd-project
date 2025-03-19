@@ -24,7 +24,7 @@ export default function Checkboxes({
   }
 
   return (
-    <fieldset className="grid grid-cols-3 xl:grid-cols-4">
+    <fieldset className="grid grid-cols-3 xl:grid-cols-4 mb-1.5">
       {listOfInputs.map((element, index) => {
         let identifier = element;
         for (let i = 0; i < inputProps.length; i++) {
@@ -37,7 +37,7 @@ export default function Checkboxes({
           <div key={getOptionIndex(element.item.name)}>
             <input
               type="checkbox"
-              id={identifier}
+              id={identifier + "-" + nameForInputs}
               name={nameForInputs}
               value={identifier}
               checked={checkedState[index]}
@@ -48,7 +48,7 @@ export default function Checkboxes({
                 setCheckedState([...checkedState]);
               }}
             />
-            <label htmlFor={identifier}>
+            <label htmlFor={identifier + "-" + nameForInputs}>
               {getOptionIndex(element.item.name)}
             </label>
           </div>

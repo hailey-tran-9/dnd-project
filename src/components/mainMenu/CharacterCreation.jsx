@@ -69,7 +69,7 @@ export default function CharacterCreation({
   useEffect(() => {
     if (!isFetchingSkills) {
       setSkills(() => (
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 justify-evenly mb-2">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 justify-evenly mb-5">
           {skillIndexes.map((skillIndex) => {
             let skillObj = skillData[skillIndex];
             let ability = skillObj["ability_score"]["index"];
@@ -108,6 +108,16 @@ export default function CharacterCreation({
 
     // Check for validity
     if (!characters.characterNames.includes(enteredName)) {
+      proficiencies.map((prof) => {
+        if (abilityScoreIndexes.includes(prof)) {
+          abilityScores[prof]["proficient"] = true;
+        }
+      });
+
+      setAbilityScores((prevAbilityScores) => ({
+        ...prevAbilityScores,
+      }));
+
       updateCharacters((prevCharacters) => ({
         ...prevCharacters,
         ["characterNames"]: [...prevCharacters.characterNames, enteredName],
@@ -118,39 +128,9 @@ export default function CharacterCreation({
             race: enteredRace,
             class: enteredClass,
             lvl: enteredLvl,
-            abilities: {
-              str: {
-                abilityScore: 1,
-                modifier: 0,
-                proficient: checkProficiency("str"),
-              },
-              dex: {
-                abilityScore: 1,
-                modifier: 0,
-                proficient: checkProficiency("dex"),
-              },
-              con: {
-                abilityScore: 1,
-                modifier: 0,
-                proficient: checkProficiency("con"),
-              },
-              int: {
-                abilityScore: 1,
-                modifier: 0,
-                proficient: checkProficiency("int"),
-              },
-              wis: {
-                abilityScore: 1,
-                modifier: 0,
-                proficient: checkProficiency("wis"),
-              },
-              cha: {
-                abilityScore: 1,
-                modifier: 0,
-                proficient: checkProficiency("cha"),
-              },
-            },
-            armorClass: 1,
+            abilities: abilityScores,
+            armorClass: 10 + abilityScores["dex"]["modifier"],
+            proficiencies: proficiencies,
             proficiencyBonus: 0,
             features: [],
             inventory: [],

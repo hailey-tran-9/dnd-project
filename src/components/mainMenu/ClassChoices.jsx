@@ -4,6 +4,8 @@ import { ClassContext } from "../contexts/ClassContext.jsx";
 import { RaceContext } from "../contexts/RaceContext.jsx";
 import Checkboxes from "../Checkboxes.jsx";
 
+import { numToWord } from "../../util.js";
+
 export default function ClassChoices({
   enteredClass,
   enteredRace,
@@ -23,9 +25,9 @@ export default function ClassChoices({
         // console.log(classData[enteredClass]);
         let profChoices = classData[enteredClass]["proficiency_choices"];
         setClassProfChoices(
-          <div className="flex flex-col mb-2">
+          <div className="flex flex-col">
             {profChoices.map((profChoice, index) =>
-              getProficiencySelection(profChoice, index)
+              getProficiencySelection(profChoice, "class", index)
             )}
           </div>
         );
@@ -36,15 +38,14 @@ export default function ClassChoices({
   useEffect(() => {
     if (!isFetchingRaces) {
       if (enteredRace) {
-        console.log("ENTERED RACE: " + enteredRace);
-        console.log(raceData[enteredRace]);
+        // console.log("ENTERED RACE: " + enteredRace);
+        // console.log(raceData[enteredRace]);
         let profChoices = raceData[enteredRace]["starting_proficiency_options"];
         if (profChoices) {
-          console.log(profChoices);
           setRaceProfChoices(
             <div className="flex flex-col">
-              <p>Choose {profChoices.choose} proficiencies:</p>
-              {getProficiencySelection(profChoices)}
+              <p>Choose any {numToWord(profChoices.choose)}</p>
+              {getProficiencySelection(profChoices, "race")}
             </div>
           );
         }
@@ -52,10 +53,15 @@ export default function ClassChoices({
     }
   }, [enteredRace]);
 
-  function getProficiencySelection(profOption, index=0) {
+  function getProficiencySelection(profOption, classOrRace, index = 0) {
     if (profOption.from.options) {
       // console.log(profOption.from.options);
-      let identifier = enteredClass + "ProfChoice" + index;
+      let identifier;
+      if (classOrRace === "class") {
+        identifier = enteredClass + "ProfChoice" + index;
+      } else {
+        identifier = enteredRace + "ProfChoice" + index;
+      }
 
       if (profOption.from.options[0]["choice"]) {
         // console.log("PROF CHOICE");

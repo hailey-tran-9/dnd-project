@@ -1,4 +1,10 @@
-export default function AbilityScoreBox({ ability, proficient, ...props }) {
+export default function AbilityScoreBox({
+  ability,
+  score,
+  modifier,
+  proficient,
+  ...props
+}) {
   let classNames = "bg-white";
   if (proficient) {
     classNames = "bg-fuchsia-100";
@@ -9,9 +15,9 @@ export default function AbilityScoreBox({ ability, proficient, ...props }) {
     <div className={classNames} {...props}>
       <p>{ability.toUpperCase()}</p>
       <p>
-        <b>8</b>
+        <b>{score}</b>
       </p>
-      <p>(+0)</p>
+      <p>({modifier > 0 ? "+" + modifier : modifier})</p>
     </div>
   );
 }

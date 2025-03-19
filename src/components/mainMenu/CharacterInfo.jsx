@@ -24,7 +24,9 @@ export default function CharacterInfo({ selectedCharacter }) {
           <AbilityScoreBox
             key={ability + "ScoreBox"}
             ability={ability}
-            proficient={selectedCharacter.abilities[ability].proficient}
+            score={selectedCharacter.abilities[ability]["score"]}
+            modifier={selectedCharacter.abilities[ability]["modifier"]}
+            proficient={selectedCharacter.abilities[ability]["proficient"]}
           />
         ))}
       </div>
