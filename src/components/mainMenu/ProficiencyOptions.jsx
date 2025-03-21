@@ -6,7 +6,7 @@ import Checkboxes from "../Checkboxes.jsx";
 
 import { numToWord } from "../../util.js";
 
-export default function ClassChoices({
+export default function ProficiencyOptions({
   enteredClass,
   enteredRace,
   updateProficiencies,
@@ -38,8 +38,8 @@ export default function ClassChoices({
   useEffect(() => {
     if (!isFetchingRaces) {
       if (enteredRace) {
-        // console.log("ENTERED RACE: " + enteredRace);
-        // console.log(raceData[enteredRace]);
+        console.log("ENTERED RACE: " + enteredRace);
+        console.log(raceData[enteredRace]);
         let profChoices = raceData[enteredRace]["starting_proficiency_options"];
         if (profChoices) {
           setRaceProfChoices(

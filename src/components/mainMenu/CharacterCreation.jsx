@@ -6,7 +6,7 @@ import { raceIndexes, RaceContext } from "../contexts/RaceContext.jsx";
 import { abilityScoreIndexes } from "../contexts/AbilityScoreContext.jsx";
 import { skillIndexes } from "../contexts/SkillContext.jsx";
 
-import ClassChoices from "./ClassChoices.jsx";
+import ProficiencyOptions from "./ProficiencyOptions.jsx";
 import EquipmentChoices from "./EquipmentChoices.jsx";
 import PointBuySystem from "./PointBuySystem.jsx";
 import { SkillContext } from "../contexts/SkillContext.jsx";
@@ -18,7 +18,7 @@ export default function CharacterCreation({
   updateCharacters,
 }) {
   const { isFetching: isFetchingClasses, classData } = useContext(ClassContext);
-  // const { isFetching: isFetchingRaces, raceData } = useContext(RaceContext);
+  const { isFetching: isFetchingRaces, raceData } = useContext(RaceContext);
   const { isFetching: isFetchingSkills, skillData } = useContext(SkillContext);
 
   const [abilityScores, setAbilityScores] = useState(
@@ -30,6 +30,9 @@ export default function CharacterCreation({
     )
   );
   const [proficiencies, setProficiencies] = useState([]);
+  const [languages, setLanguages] = useState([]);
+  const [moveSpeed, setMoveSpeed] = useState(0);
+  const [traits, setTraits] = useState([]);
 
   const [content, setContent] = useState(<p>Loading class data...</p>);
   const [race, setRace] = useState(<p>Loading race data...</p>);
@@ -54,7 +57,7 @@ export default function CharacterCreation({
 
         setContent(
           <>
-            <ClassChoices
+            <ProficiencyOptions
               enteredClass={enteredClass}
               enteredRace={enteredRace}
               updateProficiencies={updateProficiencyStatus}
@@ -103,6 +106,16 @@ export default function CharacterCreation({
     }
   }, [proficiencies, abilityScores]);
 
+  useEffect(() => {
+    if (!isFetchingRaces) {
+      const currRace = raceData[enteredRace];
+
+      setLanguages(currRace["languages"].map((language) => language["name"]));
+      setMoveSpeed(currRace["speed"]);
+      setTraits(currRace["traits"].map((trait) => trait["name"]));
+    }
+  }, [enteredRace]);
+
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -132,7 +145,8 @@ export default function CharacterCreation({
             armorClass: 10 + abilityScores["dex"]["modifier"],
             proficiencies: proficiencies,
             proficiencyBonus: 0,
-            features: [],
+            moveSpeed,
+            features: { languages, traits },
             inventory: [],
             notes: [],
           },
