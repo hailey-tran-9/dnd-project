@@ -38,8 +38,8 @@ export default function ProficiencyOptions({
   useEffect(() => {
     if (!isFetchingRaces) {
       if (enteredRace) {
-        console.log("ENTERED RACE: " + enteredRace);
-        console.log(raceData[enteredRace]);
+        // console.log("ENTERED RACE: " + enteredRace);
+        // console.log(raceData[enteredRace]);
         let profChoices = raceData[enteredRace]["starting_proficiency_options"];
         if (profChoices) {
           setRaceProfChoices(

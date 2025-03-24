@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { capitalize } from "../../util.js";
+import { capitalize, calculateAbilityModifier } from "../../util.js";
 
 import { classIndexes, ClassContext } from "../contexts/ClassContext.jsx";
 import { raceIndexes, RaceContext } from "../contexts/RaceContext.jsx";
@@ -125,6 +125,15 @@ export default function CharacterCreation({
         if (abilityScoreIndexes.includes(prof)) {
           abilityScores[prof]["proficient"] = true;
         }
+      });
+
+      const currRace = raceData[enteredRace];
+      currRace["ability_bonuses"].map((ab) => {
+        let abIndex = ab["ability_score"]["index"];
+        // console.log("add " + ab["bonus"] + " to " + abIndex);
+        let newScore = abilityScores[abIndex]["score"] + ab["bonus"];
+        abilityScores[abIndex]["score"] = newScore;
+        abilityScores[abIndex]["modifier"] = calculateAbilityModifier(newScore);
       });
 
       setAbilityScores((prevAbilityScores) => ({
