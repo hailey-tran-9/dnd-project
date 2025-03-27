@@ -1,10 +1,13 @@
 import { useState, useEffect, useContext } from "react";
+import { useDispatch } from "react-redux";
 import { capitalize, calculateAbilityModifier } from "../../util.js";
 
 import { classIndexes, ClassContext } from "../contexts/ClassContext.jsx";
 import { raceIndexes, RaceContext } from "../contexts/RaceContext.jsx";
 import { abilityScoreIndexes } from "../contexts/AbilityScoreContext.jsx";
 import { skillIndexes } from "../contexts/SkillContext.jsx";
+
+import { charactersActions } from "../../store/characters-slice.js";
 
 import ProficiencyOptions from "./ProficiencyOptions.jsx";
 import EquipmentChoices from "./EquipmentChoices.jsx";
@@ -17,6 +20,8 @@ export default function CharacterCreation({
   characters,
   updateCharacters,
 }) {
+  const dispatch = useDispatch();
+
   const { isFetching: isFetchingClasses, classData } = useContext(ClassContext);
   const { isFetching: isFetchingRaces, raceData } = useContext(RaceContext);
   const { isFetching: isFetchingSkills, skillData } = useContext(SkillContext);
@@ -161,6 +166,23 @@ export default function CharacterCreation({
           },
         ],
       }));
+
+      dispatch(
+        charactersActions.createCharacter({
+          name: enteredName,
+          race: enteredRace,
+          characterClass: enteredClass,
+          lvl: enteredLvl,
+          abilitiesAndSkills: abilityScores,
+          armorClass: 10 + abilityScores["dex"]["modifier"],
+          proficiencies,
+          proficiencyBonus: 0,
+          moveSpeed,
+          features: { languages, traits },
+          inventory: [],
+          notes: [],
+        })
+      );
     } else {
       console.log(
         "A character with the same name already exists. Use unique names."
