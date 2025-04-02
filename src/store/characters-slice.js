@@ -5,8 +5,13 @@ const charactersSlice = createSlice({
   initialState: {
     characters: [],
     numberOfCharacters: 0,
+    changed: false,
   },
   reducers: {
+    loadCharacters(state, action) {
+      state.characters = action.payload.characters;
+      state.numberOfCharacters = action.payload.numberOfCharacters;
+    },
     createCharacter(state, action) {
       //   let {
       //     name,
@@ -27,11 +32,13 @@ const charactersSlice = createSlice({
       // TODO: generate a unique characterID
       state.characters.push({ userID: "testUserID", inGames: [], characterID: "testCharacterID", ...action.payload });
       state.numberOfCharacters++;
+      state.changed = true;
     },
     deleteCharacter(state, action) {
         // TODO: remove this character from any associated games
         state.characters = state.characters.filter((character) => character.characterID !== action.payload);
         state.numberOfCharacters--;
+        state.changed = true;
     },
     changeName(state, action) {
         let {characterID, newName} = action.payload;
@@ -43,6 +50,7 @@ const charactersSlice = createSlice({
         }
 
         character.name = newName;
+        state.changed = true;
     }
   },
 });

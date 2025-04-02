@@ -20,7 +20,7 @@ export default function CharacterInfo({ selectedCharacter }) {
           <h1>{selectedCharacter.name}</h1>
           <h2>
             {capitalize(selectedCharacter.race)} |{" "}
-            {capitalize(selectedCharacter.class)} | {selectedCharacter.lvl}
+            {capitalize(selectedCharacter.characterClass)} | {selectedCharacter.lvl}
           </h2>
         </div>
         <div className="flex flex-col self-center">
@@ -33,9 +33,9 @@ export default function CharacterInfo({ selectedCharacter }) {
           <AbilityScoreBox
             key={ability + "ScoreBox"}
             ability={ability}
-            score={selectedCharacter.abilities[ability]["score"]}
-            modifier={selectedCharacter.abilities[ability]["modifier"]}
-            proficient={selectedCharacter.abilities[ability]["proficient"]}
+            score={selectedCharacter.abilitiesAndSkills[ability]["score"]}
+            modifier={selectedCharacter.abilitiesAndSkills[ability]["modifier"]}
+            proficient={selectedCharacter.abilitiesAndSkills[ability]["proficient"]}
           />
         ))}
       </div>

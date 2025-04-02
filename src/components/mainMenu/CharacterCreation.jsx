@@ -15,11 +15,7 @@ import PointBuySystem from "./PointBuySystem.jsx";
 import { SkillContext } from "../contexts/SkillContext.jsx";
 import ProficiencyBox from "../ProficiencyBox.jsx";
 
-export default function CharacterCreation({
-  updateIsCreating,
-  characters,
-  updateCharacters,
-}) {
+export default function CharacterCreation({ updateIsCreating }) {
   const dispatch = useDispatch();
 
   const { isFetching: isFetchingClasses, classData } = useContext(ClassContext);
@@ -39,8 +35,7 @@ export default function CharacterCreation({
   const [moveSpeed, setMoveSpeed] = useState(0);
   const [traits, setTraits] = useState([]);
 
-  const [content, setContent] = useState(<p>Loading class data...</p>);
-  const [race, setRace] = useState(<p>Loading race data...</p>);
+  const [abilitySkillOptions, setAbilitySkillOptions] = useState(<p>Loading class data...</p>);
   const [skills, setSkills] = useState(<p>Loading skills data...</p>);
 
   const [enteredName, setEnteredName] = useState("");
@@ -60,7 +55,7 @@ export default function CharacterCreation({
         });
         setProficiencies(newProficiencies);
 
-        setContent(
+        setAbilitySkillOptions(
           <>
             <ProficiencyOptions
               enteredClass={enteredClass}
@@ -124,70 +119,41 @@ export default function CharacterCreation({
   function handleSubmit(event) {
     event.preventDefault();
 
-    // Check for validity
-    if (!characters.characterNames.includes(enteredName)) {
-      proficiencies.map((prof) => {
-        if (abilityScoreIndexes.includes(prof)) {
-          abilityScores[prof]["proficient"] = true;
-        }
-      });
+    proficiencies.map((prof) => {
+      if (abilityScoreIndexes.includes(prof)) {
+        abilityScores[prof]["proficient"] = true;
+      }
+    });
 
-      const currRace = raceData[enteredRace];
-      currRace["ability_bonuses"].map((ab) => {
-        let abIndex = ab["ability_score"]["index"];
-        // console.log("add " + ab["bonus"] + " to " + abIndex);
-        let newScore = abilityScores[abIndex]["score"] + ab["bonus"];
-        abilityScores[abIndex]["score"] = newScore;
-        abilityScores[abIndex]["modifier"] = calculateAbilityModifier(newScore);
-      });
+    const currRace = raceData[enteredRace];
+    currRace["ability_bonuses"].map((ab) => {
+      let abIndex = ab["ability_score"]["index"];
+      // console.log("add " + ab["bonus"] + " to " + abIndex);
+      let newScore = abilityScores[abIndex]["score"] + ab["bonus"];
+      abilityScores[abIndex]["score"] = newScore;
+      abilityScores[abIndex]["modifier"] = calculateAbilityModifier(newScore);
+    });
 
-      setAbilityScores((prevAbilityScores) => ({
-        ...prevAbilityScores,
-      }));
+    setAbilityScores((prevAbilityScores) => ({
+      ...prevAbilityScores,
+    }));
 
-      updateCharacters((prevCharacters) => ({
-        ...prevCharacters,
-        ["characterNames"]: [...prevCharacters.characterNames, enteredName],
-        ["characterObjects"]: [
-          ...prevCharacters.characterObjects,
-          {
-            name: enteredName,
-            race: enteredRace,
-            class: enteredClass,
-            lvl: enteredLvl,
-            abilities: abilityScores,
-            armorClass: 10 + abilityScores["dex"]["modifier"],
-            proficiencies: proficiencies,
-            proficiencyBonus: 0,
-            moveSpeed,
-            features: { languages, traits },
-            inventory: [],
-            notes: [],
-          },
-        ],
-      }));
-
-      dispatch(
-        charactersActions.createCharacter({
-          name: enteredName,
-          race: enteredRace,
-          characterClass: enteredClass,
-          lvl: enteredLvl,
-          abilitiesAndSkills: abilityScores,
-          armorClass: 10 + abilityScores["dex"]["modifier"],
-          proficiencies,
-          proficiencyBonus: 0,
-          moveSpeed,
-          features: { languages, traits },
-          inventory: [],
-          notes: [],
-        })
-      );
-    } else {
-      console.log(
-        "A character with the same name already exists. Use unique names."
-      );
-    }
+    dispatch(
+      charactersActions.createCharacter({
+        name: enteredName,
+        race: enteredRace,
+        characterClass: enteredClass,
+        lvl: enteredLvl,
+        abilitiesAndSkills: abilityScores,
+        armorClass: 10 + abilityScores["dex"]["modifier"],
+        proficiencies,
+        proficiencyBonus: 0,
+        moveSpeed,
+        features: { languages, traits },
+        inventory: [],
+        notes: [],
+      })
+    );
 
     updateIsCreating(false);
     setEnteredName("");
@@ -216,10 +182,6 @@ export default function CharacterCreation({
     if (currRace !== enteredRace) {
       setEnteredRace(currRace);
     }
-  }
-
-  function checkProficiency(abilityOrSkill) {
-    return proficiencies.includes(abilityOrSkill);
   }
 
   function updateProficiencyStatus(abilityOrSkill) {
@@ -305,7 +267,7 @@ export default function CharacterCreation({
           updateAbilityScores={setAbilityScores}
         />
         {skills}
-        {content}
+        {abilitySkillOptions}
 
         <div className="flex flex-row justify-end mt-10 gap-2">
           <button

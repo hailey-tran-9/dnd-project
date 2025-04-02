@@ -10,10 +10,6 @@ export default function MainMenu() {
     gameNames: [],
     gameObjects: [],
   });
-  const [characters, setCharacters] = useState({
-    characterNames: [],
-    characterObjects: [],
-  });
   const [maps, setMaps] = useState([]);
 
   const [selectedTab, setSelectedTab] = useState("Games");
@@ -30,8 +26,6 @@ export default function MainMenu() {
     updateSelectedTab: setSelectedTab,
     games,
     updateGames: setGames,
-    characters,
-    updateCharacters: setCharacters,
     maps,
     updateMaps: setMaps,
     selectedItem,

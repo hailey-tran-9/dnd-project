@@ -12,8 +12,6 @@ export default function MainMenuInfo({ props }) {
     selectedItem,
     games,
     updateGames,
-    characters,
-    updateCharacters,
   } = props;
 
   let infoContent;
@@ -31,8 +29,6 @@ export default function MainMenuInfo({ props }) {
       infoContent = (
         <CharacterCreation
           updateIsCreating={updateIsCreating}
-          characters={characters}
-          updateCharacters={updateCharacters}
         />
       );
     } else if (selectedTab === "Maps") {

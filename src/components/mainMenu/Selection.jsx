@@ -1,6 +1,12 @@
+import { useSelector, useDispatch } from "react-redux";
+
 import SelectionButton from "./SelectionButton.jsx";
 
 export default function Selection({ props }) {
+  const dispatch = useDispatch();
+  const characterData = useSelector((state) => state.characters);
+  const characters = characterData.characters;
+
   const {
     isCreating,
     updateIsCreating,
@@ -8,8 +14,6 @@ export default function Selection({ props }) {
     updateSelectedTab,
     games,
     updateGames,
-    characters,
-    updateCharacters,
     maps,
     updateMaps,
     updateSelectedItem,
@@ -22,26 +26,32 @@ export default function Selection({ props }) {
       <SelectionButton
         name={game.name}
         key={game.name}
-        onClick={() =>
+        onClick={() => {
+          if (isCreating) {
+            return;
+          }
           updateSelectedItem((prevSelectedItem) => ({
             ...prevSelectedItem,
             game: games.gameObjects[index],
-          }))
-        }
+          }));
+        }}
       />
     ));
     roundedClass = "rounded-tr-md";
   } else if (selectedTab === "Characters") {
-    listContent = characters.characterObjects.map((character, index) => (
+    listContent = characters.map((character, index) => (
       <SelectionButton
         name={character.name}
-        key={character.name}
-        onClick={() =>
+        key={character.name + index}
+        onClick={() => {
+          if (isCreating) {
+            return;
+          }
           updateSelectedItem((prevSelectedItem) => ({
             ...prevSelectedItem,
-            character: characters.characterObjects[index],
-          }))
-        }
+            character,
+          }));
+        }}
       />
     ));
     roundedClass = "rounded-t-md";
