@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useContext, useState } from "react";
 import { CharacterContext } from "../contexts/CharacterContext.jsx";
 import CharacterAbilityScores from "./CharacterAbilityScores.jsx";
 import CharacterSkills from "./CharacterSkills.jsx";
@@ -7,6 +7,11 @@ import CharacterInventory from "./CharacterInventory.jsx";
 
 export default function CharacterInfo() {
   const charCtx = useContext(CharacterContext);
+  const [isEditing, setIsEditing] = useState(false);
+
+  function handleToggleEditing() {
+    setIsEditing((prevIsEditing) => !prevIsEditing);
+  }
 
   return (
     <section
@@ -22,7 +27,9 @@ export default function CharacterInfo() {
       </button>
       <header>
         <h1 className="text-center text-wrap">{charCtx.name}</h1>
-        <h2 className="text-center text-wrap">{charCtx.class} | {charCtx.lvl}</h2>
+        <h2 className="text-center text-wrap">
+          {charCtx.class} | {charCtx.lvl}
+        </h2>
       </header>
       <CharacterAbilityScores />
       <CharacterSkills />

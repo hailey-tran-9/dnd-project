@@ -1,36 +1,60 @@
 import { useEffect } from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import {
   sendCharactersData,
   fetchCharactersData,
 } from "./store/characters-actions.js";
+import { sendGamesData, fetchGamesData } from "./store/games-actions.js";
+
+import { loader as inviteLoader } from "./pages/Invite.jsx";
 
 import "./App.css";
 
-// import AbilityScoreContextProvider from "./components/contexts/AbilityScoreContext.jsx";
-import SkillContextProvider from "./components/contexts/SkillContext.jsx";
-// import CharacterContextProvider from "./components/contexts/CharacterContext.jsx";
-import ClassContextProvider from "./components/contexts/ClassContext.jsx";
-import RaceContextProvider from "./components/contexts/RaceContext.jsx";
-// import ChatContextProvider from "./components/contexts/ChatContext.jsx";
-// import CharacterInfo from "./components/character/CharacterInfo.jsx";
-// import Chat from "./components/Chat.jsx";
-// import Toolbar from "./components/Toolbar.jsx";
+import RootLayout from "./pages/Root.jsx";
+import HomePage from "./pages/Home.jsx";
 
-import Login from "./components/Login.jsx";
 import MainMenu from "./components/mainMenu/MainMenu.jsx";
 import Game from "./components/Game.jsx";
+import InvitePage from "./pages/Invite.jsx";
 
 let isInitial = true;
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      // { index: true, element: <HomePage /> },
+      // { path: ":user", element: <MainMenu /> },
+      { index: true, element: <MainMenu /> },
+
+      {
+        path: "games",
+        children: [
+          { path: ":gameID", element: <Game /> },
+          {
+            path: "invite/:gameID",
+            element: <InvitePage />,
+            loader: inviteLoader,
+          },
+        ],
+      },
+    ],
+  },
+]);
 
 function App() {
   const dispatch = useDispatch();
   const charactersData = useSelector((state) => state.characters);
+  const gamesData = useSelector((state) => state.games);
 
   useEffect(() => {
     // Get the user's pre-existing characters
     dispatch(fetchCharactersData());
+
+    dispatch(fetchGamesData());
   }, [dispatch]);
 
   useEffect(() => {
@@ -43,19 +67,13 @@ function App() {
       // Update the database's character data
       dispatch(sendCharactersData(charactersData));
     }
-  }, [charactersData, dispatch]);
 
-  return (
-    <ClassContextProvider>
-      <RaceContextProvider>
-        <SkillContextProvider>
-          {/* <Login /> */}
-          <MainMenu />
-          {/* <Game /> */}
-        </SkillContextProvider>
-      </RaceContextProvider>
-    </ClassContextProvider>
-  );
+    if (gamesData.changed) {
+      dispatch(sendGamesData(gamesData));
+    }
+  }, [charactersData, gamesData, dispatch]);
+
+  return <RouterProvider router={router} />;
 }
 
 export default App;

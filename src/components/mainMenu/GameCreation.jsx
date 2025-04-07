@@ -1,26 +1,23 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 
-export default function GameCreation({ updateIsCreating, games, updateGames }) {
+import { gamesActions } from "../../store/games-slice";
+
+export default function GameCreation({ updateIsCreating }) {
+  const dispatch = useDispatch();
   const [enteredName, setEnteredName] = useState("");
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    // Check for validity
-    if (!games.gameNames.includes(enteredName)) {
-      updateGames((prevGames) => ({
-        ...prevGames,
-        ["gameNames"]: [...prevGames.gameNames, enteredName],
-        ["gameObjects"]: [
-          ...prevGames.gameObjects,
-          { name: enteredName, playersInGame: [], gameSessions: [] },
-        ],
-      }));
-    } else {
-      console.log(
-        "A game with the same name already exists. Use unique names."
-      );
-    }
+    dispatch(
+      gamesActions.createGame({
+        name: enteredName,
+        charactersInGame: [],
+        mapsInGame: [],
+        sessions: [],
+      })
+    );
 
     updateIsCreating(false);
     setEnteredName("");

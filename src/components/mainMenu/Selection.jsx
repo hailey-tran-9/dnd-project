@@ -1,19 +1,18 @@
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 import SelectionButton from "./SelectionButton.jsx";
 
 export default function Selection({ props }) {
-  const dispatch = useDispatch();
-  const characterData = useSelector((state) => state.characters);
-  const characters = characterData.characters;
+  const charactersData = useSelector((state) => state.characters);
+  const characters = charactersData.characters;
+  const gamesData = useSelector((state) => state.games);
+  const games = gamesData.games;
 
   const {
     isCreating,
     updateIsCreating,
     selectedTab,
     updateSelectedTab,
-    games,
-    updateGames,
     maps,
     updateMaps,
     updateSelectedItem,
@@ -22,17 +21,17 @@ export default function Selection({ props }) {
   let listContent;
   let roundedClass;
   if (selectedTab === "Games") {
-    listContent = games.gameObjects.map((game, index) => (
+    listContent = games.map((game, index) => (
       <SelectionButton
         name={game.name}
-        key={game.name}
+        key={game.name + index}
         onClick={() => {
           if (isCreating) {
             return;
           }
           updateSelectedItem((prevSelectedItem) => ({
             ...prevSelectedItem,
-            game: games.gameObjects[index],
+            game,
           }));
         }}
       />
