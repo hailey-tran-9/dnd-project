@@ -4,7 +4,7 @@ import { ClassContext } from "../contexts/ClassContext.jsx";
 import { RaceContext } from "../contexts/RaceContext.jsx";
 import Checkboxes from "../Checkboxes.jsx";
 
-import { numToWord } from "../../util.js";
+import { numToWord } from "../../util/util.js";
 
 export default function ProficiencyOptions({
   enteredClass,

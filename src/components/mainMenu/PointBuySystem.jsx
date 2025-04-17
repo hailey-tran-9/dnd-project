@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 import { abilityScoreIndexes } from "../contexts/AbilityScoreContext.jsx";
 import PointBuyBox from "./PointBuyBox.jsx";
-import { calculateAbilityModifier } from "../../util.js";
+import { calculateAbilityModifier } from "../../util/util.js";
 
 // TODO: notif the user when an attempted dec/inc in score isn't valid
 

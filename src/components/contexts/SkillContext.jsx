@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { getAllSkills } from "../../api.js";
+import { getAllSkills } from "../../util/api.js";
 
 export const skillIndexes = [
   "acrobatics",

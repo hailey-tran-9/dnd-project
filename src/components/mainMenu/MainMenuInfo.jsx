@@ -2,7 +2,8 @@ import GameInfo from "./GameInfo.jsx";
 import CharacterInfo from "./CharacterInfo.jsx";
 
 import GameCreation from "./GameCreation.jsx";
-import CharacterCreation from "./CharacterCreation.jsx";
+// import CharacterCreation from "./CharacterCreation.jsx";
+import CharacterCreation from "./characters/CharacterCreation.jsx";
 
 export default function MainMenuInfo({ props }) {
   const {

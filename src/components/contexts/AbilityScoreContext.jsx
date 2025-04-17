@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { getAllAbilityScores } from "../../api.js";
+import { getAllAbilityScores } from "../../util/api.js";
 
 export const abilityScoreIndexes = ["str", "dex", "con", "int", "wis", "cha"];
 

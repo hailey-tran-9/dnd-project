@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import { calculateAbilityModifier } from "../../util.js";
+import { calculateAbilityModifier } from "../../util/util.js";
 
 export const CharacterContext = createContext({
   charData: {

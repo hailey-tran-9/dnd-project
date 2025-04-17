@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
-import { capitalize, calculateAbilityModifier } from "../../util.js";
+import { capitalize, calculateAbilityModifier } from "../../util/util.js";
 
 import { classIndexes, ClassContext } from "../contexts/ClassContext.jsx";
 import { raceIndexes, RaceContext } from "../contexts/RaceContext.jsx";

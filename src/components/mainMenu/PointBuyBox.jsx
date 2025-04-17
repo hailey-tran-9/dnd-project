@@ -1,4 +1,4 @@
-import { calculateAbilityModifier } from "../../util.js";
+import { calculateAbilityModifier } from "../../util/util.js";
 
 export default function PointBuyBox({
   ability,

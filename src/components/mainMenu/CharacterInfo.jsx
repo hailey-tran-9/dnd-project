@@ -1,4 +1,4 @@
-import { capitalize } from "../../util.js";
+import { capitalize } from "../../util/util.js";
 
 import AbilityScoreBox from "./AbilityScoreBox.jsx";
 import { abilityScoreIndexes } from "../contexts/AbilityScoreContext.jsx";

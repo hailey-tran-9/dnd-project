@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { getAllSpells } from "../api.js";
+import { getAllSpells } from "../util/api.js";
 import { CharacterContext } from "./contexts/CharacterContext.jsx";
 
 export default function Toolbar() {

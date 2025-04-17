@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { getAllClasses } from "../../api.js";
+import { getAllClasses } from "../../util/api.js";
 
 export const classIndexes = [
   "barbarian",

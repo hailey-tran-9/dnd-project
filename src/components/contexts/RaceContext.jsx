@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { getAllRaces } from "../../api.js";
+import { getAllRaces } from "../../util/api.js";
 
 export const raceIndexes = [
   "dragonborn",

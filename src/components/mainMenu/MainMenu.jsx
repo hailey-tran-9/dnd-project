@@ -35,7 +35,7 @@ export default function MainMenu() {
   return (
     <div className="h-dvh flex flex-row p-16 gap-10">
       <Selection props={props} />
-      <MainMenuInfo props={props}/>
+      <MainMenuInfo props={props} />
     </div>
   );
 }

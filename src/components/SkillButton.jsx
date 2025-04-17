@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { check } from "../roll.js";
+import { check } from "../util/roll.js";
 import { ChatContext } from "./contexts/ChatContext.jsx";
 
 export default function SkillButton({ skill, modifier }) {
