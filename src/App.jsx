@@ -18,6 +18,7 @@ import HomePage from "./pages/Home.jsx";
 import MainMenu from "./components/mainMenu/MainMenu.jsx";
 import Game from "./components/Game.jsx";
 import InvitePage from "./pages/Invite.jsx";
+import Games from "./pages/Games.jsx";
 
 let isInitial = true;
 
@@ -26,14 +27,15 @@ const router = createBrowserRouter([
     path: "/",
     element: <RootLayout />,
     children: [
-      // { index: true, element: <HomePage /> },
+      { index: true, element: <HomePage /> },
       // { path: ":user", element: <MainMenu /> },
-      { index: true, element: <MainMenu /> },
+      // { index: true, element: <MainMenu /> },
 
       {
         path: "games",
         children: [
-          { path: ":gameID", element: <Game /> },
+          { index: true, element: <Games /> },
+          // { path: ":gameID", element: <Game /> },
           {
             path: "invite/:gameID",
             element: <InvitePage />,

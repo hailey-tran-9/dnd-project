@@ -1,22 +1,26 @@
 export default function Button({
-  caption,
-  bgColor = "bg-white",
-  hoverColor = "hover:bg-gray-50",
-  textColor = "text-black",
-  padding = "p-2",
-  pl = null,
-  pr = null,
-  rounded = "rounded-md",
+  className,
+  bgColor = "bg-[#8E1616]",
+  hoverColor = "hover:bg-[#B91C1C]",
+  textColor = "text-white",
+  padding = "px-6 pt-1 pb-2",
+  rounded = "rounded-xl",
+  children,
   ...props
 }) {
-  let classes = bgColor + " " + hoverColor + " " + textColor + " " + padding;
-  if (pl) {
-    classes += " " + pl;
-  }
-  if (pr) {
-    classes += " " + pr;
-  }
-  classes += " " + rounded;
+  let classes = [
+    "h-fit justify-center align-middle",
+    bgColor,
+    hoverColor,
+    textColor,
+    padding,
+    rounded,
+    className,
+  ];
 
-  return <button className={classes} {...props}>{caption}</button>;
+  return (
+    <button className={classes.join(" ")} {...props}>
+      {children}
+    </button>
+  );
 }

@@ -1,0 +1,12 @@
+#navbar {
+    width: 100%;
+    background-color: black;
+    color: white;
+    font-size: 2.25rem;
+    font-weight: 550;
+}
+
+#navbar h1 {
+    font-size: 3rem;
+    font-weight: 650;
+}
