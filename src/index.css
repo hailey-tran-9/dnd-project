@@ -1,6 +1,23 @@
 @import "tailwindcss";
 
-body {
-    background-color: #F8EEDF;
-    font-size: 1.5rem;
+body,
+#root {
+  min-width: 100%;
+  min-height: 100%;
+  background-color: #f8eedf;
+  font-size: 1.5rem;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+.charInfoBox h3 {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.15rem;
 }

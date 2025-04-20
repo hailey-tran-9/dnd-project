@@ -1,4 +1,4 @@
-function HomePage() {
+export default function HomePage() {
   return (
     <>
       <h1>Home Page</h1>
@@ -7,4 +7,8 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export async function clientLoader() {
+  return {
+    title: "Home Page",
+  };
+}

@@ -1,0 +1,143 @@
+import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
+import { gamesActions } from "../store/games-slice";
+
+import Button from "../components/Button";
+import Info from "../components/Info";
+import Selection from "../components/Selection";
+import Player from "../components/mainMenu/games/Player";
+import Session from "../components/mainMenu/games/Session";
+import GameCreation from "../components/mainMenu/games/GameCreation";
+
+// const TEST_GAMES = ["Strahd", "Witchlight", "Icewind Dale"];
+
+export default function Games() {
+  const [isCreatingGame, setIsCreatingGame] = useState(false);
+  const [selectedGame, setSelectedGame] = useState();
+
+  const dispatch = useDispatch();
+  const games = useSelector((state) => state.games.games);
+  console.log(games);
+
+  function handleStartCreatingGame() {
+    if (!isCreatingGame) {
+      setIsCreatingGame(true);
+    }
+  }
+
+  function handleStopCreatingGame() {
+    setIsCreatingGame(false);
+  }
+
+  function handleSelectGame(game) {
+    setSelectedGame(game);
+  }
+
+  function handleDeleteGame(gameID) {
+    setSelectedGame(undefined);
+    dispatch(gamesActions.deleteGame(gameID));
+  }
+
+  let content;
+
+  if (isCreatingGame) {
+    content = <GameCreation cancelFn={handleStopCreatingGame} />;
+  } else if (selectedGame == undefined) {
+    content = (
+      <div className="h-[75vh] text-center content-center">
+        <h2>A game hasn't been selected yet.</h2>
+        <p>Select a game or create a new one!</p>
+      </div>
+    );
+  } else {
+    content = (
+      <>
+        <div className="flex flex-row justify-between mb-10">
+          <h1>Strahd</h1>
+          <div>
+            <Button className="mr-5">Enter Game</Button>
+            <Button onClick={() => handleDeleteGame(selectedGame.gameID)}>
+              Delete
+            </Button>
+          </div>
+        </div>
+        <div className="grid grid-cols-3">
+          <div className="flex flex-col gap-10">
+            <h2>Players</h2>
+            <ul className="flex flex-col gap-10">
+              <Player />
+              <Player />
+              <Player />
+              <Player />
+            </ul>
+          </div>
+          <div className="col-span-2 flex flex-col gap-10">
+            <h2>Sessions</h2>
+            <ul className="flex flex-col gap-5">
+              <Session />
+              <Session />
+              <Session />
+              <Session />
+              <Session />
+              <Session />
+              <Session />
+            </ul>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <section id="user-games" className="flex flex-row">
+      <Selection>
+        <Button onClick={handleStartCreatingGame}>+ Create Game</Button>
+        <ul className="flex flex-col mt-10">
+          {games.map((game) => (
+            <Button key={game.name} onClick={() => handleSelectGame(game)}>
+              {game.name}
+            </Button>
+          ))}
+        </ul>
+      </Selection>
+
+      <Info>{content}</Info>
+    </section>
+  );
+}
+
+export async function clientLoader() {
+  return {
+    title: "Games",
+  };
+}
+
+export async function clientAction({ request }) {
+  const data = await request.formData();
+
+  const gameData = {
+    name: data.get("game-name"),
+    charactersInGame: [],
+    mapsInGame: [],
+    sessions: [],
+  };
+
+  let url = "http://localhost:5173/games";
+  const response = await fetch(url, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(gameData),
+  });
+
+  if (!response.ok) {
+    throw new Response(
+      JSON.stringify({ message: "Could not create a game." }),
+      { status: 500 }
+    );
+  }
+
+  return redirect("/games");
+}

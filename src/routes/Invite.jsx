@@ -21,3 +21,9 @@ export async function loader({ request, params }) {
 
   return gameID;
 }
+
+export async function clientLoader() {
+  return {
+    title: "Invite Page",
+  };
+}

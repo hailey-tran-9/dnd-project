@@ -1,46 +1,31 @@
-import { useEffect } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { createBrowserRouter, RouterProvider } from "react-router";
 
-import {
-  sendCharactersData,
-  fetchCharactersData,
-} from "./store/characters-actions.js";
-import { sendGamesData, fetchGamesData } from "./store/games-actions.js";
-
-import { loader as inviteLoader } from "./pages/Invite.jsx";
-
-import "./App.css";
-
-import RootLayout from "./pages/Root.jsx";
-import HomePage from "./pages/Home.jsx";
-
-import MainMenu from "./components/mainMenu/MainMenu.jsx";
-import Game from "./components/Game.jsx";
-import InvitePage from "./pages/Invite.jsx";
-import Games from "./pages/Games.jsx";
-
-let isInitial = true;
+function convert(page) {
+  let { clientLoader, clientAction, default: Component, ...rest } = page;
+  return {
+    ...rest,
+    loader: clientLoader,
+    action: clientAction,
+    Component,
+  };
+}
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayout />,
+    lazy: () => import("./pages/Root.jsx").then(convert),
     children: [
-      { index: true, element: <HomePage /> },
-      // { path: ":user", element: <MainMenu /> },
-      // { index: true, element: <MainMenu /> },
-
+      { index: true, lazy: () => import("./pages/Home.jsx").then(convert), },
       {
         path: "games",
         children: [
-          { index: true, element: <Games /> },
-          // { path: ":gameID", element: <Game /> },
-          {
-            path: "invite/:gameID",
-            element: <InvitePage />,
-            loader: inviteLoader,
-          },
+          { index: true, lazy: () => import("./pages/Games.jsx").then(convert), },
+          // { path: ":gameID", Component: Game },
+          // {
+          //   path: "invite/:gameID",
+          //   Component: InvitePage,
+          //   loader: inviteLoader,
+          // },
         ],
       },
     ],
@@ -48,33 +33,6 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const dispatch = useDispatch();
-  const charactersData = useSelector((state) => state.characters);
-  const gamesData = useSelector((state) => state.games);
-
-  useEffect(() => {
-    // Get the user's pre-existing characters
-    dispatch(fetchCharactersData());
-
-    dispatch(fetchGamesData());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (isInitial) {
-      isInitial = false;
-      return;
-    }
-
-    if (charactersData.changed) {
-      // Update the database's character data
-      dispatch(sendCharactersData(charactersData));
-    }
-
-    if (gamesData.changed) {
-      dispatch(sendGamesData(gamesData));
-    }
-  }, [charactersData, gamesData, dispatch]);
-
   return <RouterProvider router={router} />;
 }
 
