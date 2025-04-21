@@ -10,15 +10,13 @@ import Player from "../components/mainMenu/games/Player";
 import Session from "../components/mainMenu/games/Session";
 import GameCreation from "../components/mainMenu/games/GameCreation";
 
-// const TEST_GAMES = ["Strahd", "Witchlight", "Icewind Dale"];
-
 export default function Games() {
   const [isCreatingGame, setIsCreatingGame] = useState(false);
   const [selectedGame, setSelectedGame] = useState();
 
   const dispatch = useDispatch();
   const games = useSelector((state) => state.games.games);
-  console.log(games);
+  // console.log(games);
 
   function handleStartCreatingGame() {
     if (!isCreatingGame) {
@@ -31,7 +29,9 @@ export default function Games() {
   }
 
   function handleSelectGame(game) {
-    setSelectedGame(game);
+    if (selectedGame !== game) {
+      setSelectedGame(game);
+    }
   }
 
   function handleDeleteGame(gameID) {
@@ -39,10 +39,30 @@ export default function Games() {
     dispatch(gamesActions.deleteGame(gameID));
   }
 
+  function handleSubmit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+
+    const gameData = {
+      name: data["game-name"],
+      charactersInGame: [],
+      mapsInGame: [],
+      sessions: [],
+    };
+    // console.log(gameData);
+
+    dispatch(gamesActions.createGame(gameData));
+
+    handleStopCreatingGame();
+  }
+
   let content;
 
   if (isCreatingGame) {
-    content = <GameCreation cancelFn={handleStopCreatingGame} />;
+    content = (
+      <GameCreation cancelFn={handleStopCreatingGame} submitFn={handleSubmit} />
+    );
   } else if (selectedGame == undefined) {
     content = (
       <div className="h-[75vh] text-center content-center">
@@ -54,7 +74,7 @@ export default function Games() {
     content = (
       <>
         <div className="flex flex-row justify-between mb-10">
-          <h1>Strahd</h1>
+          <h1>{selectedGame.name}</h1>
           <div>
             <Button className="mr-5">Enter Game</Button>
             <Button onClick={() => handleDeleteGame(selectedGame.gameID)}>
@@ -111,33 +131,4 @@ export async function clientLoader() {
   return {
     title: "Games",
   };
-}
-
-export async function clientAction({ request }) {
-  const data = await request.formData();
-
-  const gameData = {
-    name: data.get("game-name"),
-    charactersInGame: [],
-    mapsInGame: [],
-    sessions: [],
-  };
-
-  let url = "http://localhost:5173/games";
-  const response = await fetch(url, {
-    method: "post",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(gameData),
-  });
-
-  if (!response.ok) {
-    throw new Response(
-      JSON.stringify({ message: "Could not create a game." }),
-      { status: 500 }
-    );
-  }
-
-  return redirect("/games");
 }

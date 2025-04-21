@@ -1,12 +1,12 @@
-import { Form, redirect } from "react-router";
+import { Form } from "react-router";
 
 import Button from "../../Button";
 import Input from "../../Input";
 
-export default function GameCreation({ cancelFn }) {
+export default function GameCreation({ cancelFn, submitFn }) {
 
   return (
-    <Form method="post">
+    <Form onSubmit={submitFn}>
       <div className="flex flex-row justify-between mb-10">
         <h1>Game Creation</h1>
         <Button type="button" onClick={cancelFn}>
