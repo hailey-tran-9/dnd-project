@@ -14,6 +14,7 @@ const client = new ApolloClient({
 });
 
 import store from "./store/index.js";
+import Fallback from "./routes/Fallback.jsx";
 
 export function Layout({ children }) {
   return (
@@ -46,7 +47,7 @@ export function Layout({ children }) {
 }
 
 export function HydrateFallback() {
-  return <p>TODO: FALLBACK PAGE</p>;
+  return <Fallback />;
 }
 
 export default function Root() {

@@ -6,7 +6,7 @@ export default function AbilityScoreBox({
   ...props
 }) {
   let classes = [
-    "flex flex-col text-[2rem] px-15 py-10 rounded-lg text-center justify-center",
+    "flex flex-col text-[2rem] px-[3vw] py-[3vh] md:px-[2vw] md:py-[2.5vh] rounded-lg text-center justify-center",
   ];
   if (proficient) {
     classes.push("bg-[#FFF8ED]");

@@ -6,10 +6,12 @@ import { gamesActions } from "../store/games-slice";
 import Button from "../components/Button";
 import Info from "../components/Info";
 import Selection from "../components/Selection";
-import CharacterCreation from "../components/mainMenu/characters/CharacterCreation";
+import CharacterCreation from "../components/mainMenu/characters/creation/CharacterCreation";
 
-import { abilityScoreIndexes } from "../components/contexts/AbilityScoreContext";
-import AbilityScoreBox from "../components/mainMenu/characters/AbilityScoreBox";
+import Inventory from "../components/mainMenu/characters/Inventory";
+import Header from "../components/mainMenu/characters/Header";
+import AbilityScores from "../components/mainMenu/characters/AbilityScores";
+import Features from "../components/mainMenu/characters/Features";
 
 export default function Characters() {
   const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
@@ -83,21 +85,11 @@ export default function Characters() {
       </div>
     );
   } else {
-    console.log(selectedCharacter);
+    // console.log(selectedCharacter);
     content = (
       <>
         <div className="flex flex-row justify-between items-center">
-          <div className="flex flex-row gap-10 items-center">
-            <div className="w-30 h-30 bg-white rounded-2xl"></div>
-            <div className="flex flex-col">
-              <h1>{selectedCharacter.name}</h1>
-              <div className="flex flex-row gap-24">
-                <h3>{selectedCharacter.race}</h3>
-                <h3>{`${selectedCharacter.characterClass} ${selectedCharacter.lvl}`}</h3>
-              </div>
-            </div>
-          </div>
-
+          <Header selectedCharacter={selectedCharacter} />
           <div>
             <Button className="mr-5">Edit</Button>
             <Button
@@ -109,52 +101,12 @@ export default function Characters() {
             </Button>
           </div>
         </div>
-        <div className="flex flex-col my-5">
-          <h2>Ability Scores</h2>
-          <div className="flex flex-row gap-10 self-center">
-            {abilityScoreIndexes.map((ability) => {
-              let abilityStats = selectedCharacter.abilitiesAndSkills[ability];
-              return (
-                <AbilityScoreBox
-                  ability={ability}
-                  score={abilityStats.score}
-                  modifier={abilityStats.modifier}
-                  proficient={abilityStats.proficient}
-                  key={selectedCharacter.characterID + "-" + ability}
-                />
-              );
-            })}
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <h2>Class & Race Features</h2>
-          <div className="flex flex-row gap-[40%]">
-            <div className="flex flex-col">
-              <h3>Languages</h3>
-              <ul>
-                {selectedCharacter.features.languages &&
-                  selectedCharacter.features.languages.map((language) => (
-                    <li key={language}>{language}</li>
-                  ))}
-              </ul>
-            </div>
-
-            <div className="flex flex-col">
-              <h3>Traits</h3>
-              <ul>
-                {selectedCharacter.features.traits &&
-                  selectedCharacter.features.traits.map((trait) => (
-                    <li key={trait}>{trait}</li>
-                  ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <h2>Inventory</h2>
-        </div>
+        <AbilityScores selectedCharacter={selectedCharacter} />
+        <Features selectedCharacter={selectedCharacter} />
+        <Inventory />
         <div className="flex flex-col">
           <h2>Notes</h2>
+          <div className="h-[15vh] bg-white rounded-xl mt-3"></div>
         </div>
       </>
     );
@@ -177,7 +129,7 @@ export default function Characters() {
           ))}
         </ul>
       </Selection>
-      <Info>{content}</Info>
+      <Info gap="gap-15">{content}</Info>
     </section>
   );
 }

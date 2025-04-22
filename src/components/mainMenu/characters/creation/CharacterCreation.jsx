@@ -2,15 +2,15 @@ import { useState } from "react";
 import { useQuery } from "@apollo/client";
 import { Form } from "react-router";
 
-import { GET_CLASSES, GET_CLASS } from "../../../util/graphql";
-import { capitalize } from "../../../util/util";
+import { GET_CLASS } from "../../../../util/graphql";
+import { capitalize } from "../../../../util/util";
 
-import LoadingIndicator from "../../LoadingIndicator";
-import ErrorIndicator from "../../ErrorIndicator";
-import Button from "../../Button";
-import Input from "../../Input";
+import LoadingIndicator from "../../../LoadingIndicator";
+import ErrorIndicator from "../../../ErrorIndicator";
+import Button from "../../../Button";
+import Input from "../../../Input";
 
-import { classIndexes } from "../../contexts/ClassContext";
+import { classIndexes } from "../../../contexts/ClassContext";
 
 export default function CharacterCreation({ cancelFn, submitFn }) {
   const [enteredClass, setEnteredClass] = useState(classIndexes[0]);
@@ -53,7 +53,7 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
           name={"character-class"}
           id={"character-class"}
           onChange={handleClassChange}
-          className="bg-white rounded-md"
+          className="bg-white rounded-md text-[2rem]"
           required
         >
           {classIndexes.map((className) => (
@@ -91,22 +91,24 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
             required
           />
         </div>
-        <div>
-          <label
-            htmlFor="character-race"
-            className="text-black text-[2.5rem] font-[500] mr-10"
-          >
-            Race
-          </label>
-          <Input
-            id="character-race"
-            name="character-race"
-            type="text"
-            className="text-[2rem]"
-            required
-          />
+        <div className="flex flex-row gap-[25%]">
+          <div>
+            <label
+              htmlFor="character-race"
+              className="text-black text-[2.5rem] font-[500] mr-10"
+            >
+              Race
+            </label>
+            <Input
+              id="character-race"
+              name="character-race"
+              type="text"
+              className="text-[2rem]"
+              required
+            />
+          </div>
+          {classContent}
         </div>
-        {classContent}
       </div>
 
       <Button type="submit">Submit</Button>

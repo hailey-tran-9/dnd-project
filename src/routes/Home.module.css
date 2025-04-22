@@ -1,9 +1,9 @@
-#homepage h1 {
+.homepage h1 {
   font-size: 3rem;
   font-weight: 650;
 }
 
-#homepage p {
+.homepage p {
   font-size: 0.75rem;
   font-weight: 400;
 }

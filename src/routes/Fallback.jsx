@@ -1,7 +1,7 @@
 import styles from "./Home.module.css";
 import { useEffect } from "react";
 
-export default function HomePage() {
+export default function Fallback() {
   useEffect(() => {
     document.body.style.backgroundColor = "black";
     document.body.style.color = "white";
@@ -22,10 +22,4 @@ export default function HomePage() {
       <p>Hopefully it works lol</p>
     </div>
   );
-}
-
-export async function clientLoader() {
-  return {
-    title: "Home Page",
-  };
 }
