@@ -73,7 +73,7 @@ export default function Games() {
   } else {
     content = (
       <>
-        <div className="flex flex-row justify-between mb-10">
+        <div className="flex flex-row justify-between">
           <h1>{selectedGame.name}</h1>
           <div>
             <Button className="mr-5">Enter Game</Button>
@@ -110,7 +110,7 @@ export default function Games() {
   }
 
   return (
-    <section id="user-games" className="flex flex-row">
+    <section id="user-games" className="flex flex-row grow">
       <Selection>
         <Button onClick={handleStartCreatingGame}>+ Create Game</Button>
         <ul className="flex flex-col mt-10">
@@ -121,7 +121,6 @@ export default function Games() {
           ))}
         </ul>
       </Selection>
-
       <Info>{content}</Info>
     </section>
   );

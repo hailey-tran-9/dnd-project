@@ -9,7 +9,7 @@ export default function Button({
   ...props
 }) {
   let classes = [
-    "h-fit justify-center align-middle",
+    "h-fit justify-center align-middle overflow-clip hover:overflow-x-auto",
     bgColor,
     hoverColor,
     textColor,
