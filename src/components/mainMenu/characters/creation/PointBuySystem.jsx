@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-import { abilityScoreIndexes } from "../contexts/AbilityScoreContext.jsx";
+import { calculateAbilityModifier } from "../../../../util/util.js";
+import { abilityScoreIndexes } from "../../../contexts/AbilityScoreContext.jsx";
+
 import PointBuyBox from "./PointBuyBox.jsx";
-import { calculateAbilityModifier } from "../../util/util.js";
-
-// TODO: notif the user when an attempted dec/inc in score isn't valid
 
 const pointMapping = {
   8: 0,
@@ -17,17 +16,11 @@ const pointMapping = {
   15: 9,
 };
 
-export default function PointBuySystem({ proficiencies, updateAbilityScores }) {
+export default function PointBuySystem({ abilityScores, updateAbilityScores }) {
   const [points, setPoints] = useState(27);
   const [pointSystem, setPointSystem] = useState(
     abilityScoreIndexes.reduce((o, key) => ({ ...o, [key]: 8 }), {})
   );
-
-  // useEffect(() => {
-  //   updateAbilityScores(prevAbilityScores => ({
-
-  //   }))
-  // }, [pointSystem]);
 
   function incScore(ability) {
     let currScore = pointSystem[ability];
@@ -65,16 +58,16 @@ export default function PointBuySystem({ proficiencies, updateAbilityScores }) {
   }
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col">
       <h2>Point-Buy System</h2>
-      <p>Points Left to Spend: {points}</p>
-      <div className="flex flex-row justify-evenly flex-wrap">
+      <h3>Points left to use: {points}</h3>
+      <div className="flex flex-row justify-start xl:justify-center gap-[1vw] mt-3">
         {abilityScoreIndexes.map((ability) => (
           <PointBuyBox
             key={ability + "PointBuyBox"}
             ability={ability}
             score={pointSystem[ability]}
-            proficient={proficiencies.includes(ability)}
+            proficient={abilityScores[ability].proficient}
             incScore={() => incScore(ability)}
             decScore={() => decScore(ability)}
           />

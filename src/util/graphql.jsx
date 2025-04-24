@@ -58,3 +58,80 @@ export const GET_CLASS = gql`
     }
   }
 `;
+
+export const GET_RACE = gql`
+  query Race($index: String) {
+    race(index: $index) {
+      index
+      name
+      alignment
+      speed
+      size
+      ability_bonuses {
+        ability_score {
+          index
+        }
+      }
+      ability_bonus_options {
+        choose
+        type
+        from {
+          option_set_type
+          options {
+            option_type
+            bonus
+            ability_score {
+              index
+            }
+          }
+        }
+      }
+      languages {
+        index
+        name
+      }
+      language_options {
+        choose
+        type
+        from {
+          option_set_type
+          options {
+            option_type
+            item {
+              index
+              name
+            }
+          }
+        }
+      }
+      starting_proficiencies {
+        index
+        name
+        type
+      }
+      starting_proficiency_options {
+        desc
+        choose
+        type
+        from {
+          option_set_type
+          options {
+            ... on ProficiencyReferenceOption {
+              option_type
+              item {
+                index
+                name
+                type
+              }
+            }
+          }
+        }
+      }
+      traits {
+        index
+        name
+        desc
+      }
+    }
+  }
+`;

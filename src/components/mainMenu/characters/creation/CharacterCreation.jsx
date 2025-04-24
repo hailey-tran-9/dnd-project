@@ -1,26 +1,37 @@
 import { useState } from "react";
-import { useQuery } from "@apollo/client";
 import { Form } from "react-router";
 
-import { GET_CLASS } from "../../../../util/graphql";
-import { capitalize } from "../../../../util/util";
+import { raceIndexes } from "../../../contexts/RaceContext";
+import { classIndexes } from "../../../contexts/ClassContext";
+import { abilityScoreIndexes } from "../../../contexts/AbilityScoreContext";
 
-import LoadingIndicator from "../../../LoadingIndicator";
-import ErrorIndicator from "../../../ErrorIndicator";
 import Button from "../../../Button";
 import Input from "../../../Input";
-
-import { classIndexes } from "../../../contexts/ClassContext";
+import RaceSelection from "./RaceSelection";
+import ClassSelection from "./ClassSelection";
+import PointBuySystem from "./PointBuySystem";
 
 export default function CharacterCreation({ cancelFn, submitFn }) {
+  const [enteredRace, setEnteredRace] = useState(raceIndexes[0]);
   const [enteredClass, setEnteredClass] = useState(classIndexes[0]);
 
-  let content;
-  let classContent;
+  const [abilityScores, setAbilityScores] = useState(
+    Object.fromEntries(
+      abilityScoreIndexes.map((ability) => [
+        ability,
+        { score: 8, modifier: -2, proficient: false },
+      ])
+    )
+  );
+  const [proficiencies, setProficiencies] = useState([]);
 
-  const { loading, error, data } = useQuery(GET_CLASS, {
-    variables: { index: enteredClass },
-  });
+  function handleRaceChange(event) {
+    // console.log(event.target.value);
+    let currRace = event.target.value;
+    if (currRace !== enteredRace) {
+      setEnteredRace(currRace);
+    }
+  }
 
   function handleClassChange(event) {
     // console.log(event.target.value);
@@ -30,52 +41,15 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
     }
   }
 
-  let dataToPrint;
-  if (loading) {
-    dataToPrint = "still loading";
-    classContent = <LoadingIndicator />;
-  }
-  if (error) {
-    dataToPrint = "an error occurred";
-    classContent = <ErrorIndicator />;
-  }
-  if (data) {
-    dataToPrint = data.class;
-    classContent = (
-      <div>
-        <label
-          htmlFor="character-class"
-          className="text-black text-[2.5rem] font-[500] mr-10"
-        >
-          Class
-        </label>
-        <select
-          name={"character-class"}
-          id={"character-class"}
-          onChange={handleClassChange}
-          className="bg-white rounded-md text-[2rem]"
-          required
-        >
-          {classIndexes.map((className) => (
-            <option key={className + "Option"} value={className}>
-              {capitalize(className)}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
-  }
-  console.log(dataToPrint);
-
   return (
     <Form onSubmit={submitFn}>
-      <div className="flex flex-row justify-between mb-10">
-        <h1>Character Creation</h1>
-        <Button type="button" onClick={cancelFn}>
-          Cancel
-        </Button>
-      </div>
       <div className="flex flex-col gap-10">
+        <div className="flex flex-row justify-between">
+          <h1>Character Creation</h1>
+          <Button type="button" onClick={cancelFn}>
+            Cancel
+          </Button>
+        </div>
         <div>
           <label
             htmlFor="character-name"
@@ -92,26 +66,35 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
           />
         </div>
         <div className="flex flex-row gap-[25%]">
-          <div>
-            <label
-              htmlFor="character-race"
-              className="text-black text-[2.5rem] font-[500] mr-10"
-            >
-              Race
-            </label>
-            <Input
-              id="character-race"
-              name="character-race"
-              type="text"
-              className="text-[2rem]"
-              required
-            />
-          </div>
-          {classContent}
+          <RaceSelection
+            enteredRace={enteredRace}
+            handleRaceChange={handleRaceChange}
+          />
+          <ClassSelection
+            enteredClass={enteredClass}
+            handleClassChange={handleClassChange}
+            abilityScores={abilityScores}
+            updateAbilityScores={setAbilityScores}
+            updateProficiencies={setProficiencies}
+          />
         </div>
+        <PointBuySystem
+          abilityScores={abilityScores}
+          updateAbilityScores={setAbilityScores}
+        />
+        <div>
+          <h2>Proficiency Options</h2>
+          <div id="class-proficiency-choices" className="flex flex-col gap-10"></div>
+          <div id="race-proficiency-choices" className="flex flex-col gap-10"></div>
+        </div>
+        <div>
+          <h2>Equipment Options</h2>
+        </div>
+        <div>
+          <h2>Notes</h2>
+        </div>
+        <Button type="submit">Submit</Button>
       </div>
-
-      <Button type="submit">Submit</Button>
     </Form>
   );
 }
