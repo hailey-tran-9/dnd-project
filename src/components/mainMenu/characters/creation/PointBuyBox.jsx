@@ -4,6 +4,7 @@ export default function PointBuyBox({
   ability,
   score,
   proficient,
+  bonus,
   incScore,
   decScore,
   ...props
@@ -14,7 +15,8 @@ export default function PointBuyBox({
   }
   classNames += " text-center px-[3vw] py-[3vh] md:px-[2vw] md:py-[2.5vh] rounded-md";
 
-  let modifier = calculateAbilityModifier(score);
+  let totalScore = score + bonus;
+  let modifier = calculateAbilityModifier(totalScore);
 
   let shouldDisableAdd = false;
   if (score >= 15) {
@@ -30,7 +32,7 @@ export default function PointBuyBox({
     <div className={classNames} {...props}>
       <p>{ability.toUpperCase()}</p>
       <p>
-        <b>{score}</b>
+        <b>{totalScore}</b>
       </p>
       <p>({modifier > 0 ? "+" + modifier : modifier})</p>
       <div className="flex flex-row gap-2 mt-3">

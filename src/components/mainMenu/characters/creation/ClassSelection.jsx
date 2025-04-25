@@ -9,10 +9,10 @@ import Checkboxes from "../../../Checkboxes";
 
 import { capitalize } from "../../../../util/util";
 import { classIndexes } from "../../../contexts/ClassContext";
+import { abilityScoreIndexes } from "../../../contexts/AbilityScoreContext";
 
 export default function ClassSelection({
   enteredClass,
-  handleClassChange,
   abilityScores,
   updateAbilityScores,
   updateProficiencies,
@@ -24,21 +24,27 @@ export default function ClassSelection({
   useEffect(() => {
     if (data && data.class) {
       if (data.class.proficiencies) {
+        let updatedAbilityScores = {...abilityScores};
+        let classProficiencies = [];
+
+        // Find the selected class's inherent ability proficiencies
         data.class.proficiencies.map((profificiency) => {
           if (profificiency.type === "SAVING_THROWS") {
             let ability = profificiency.index.split("-")[2];
-            if (!abilityScores[ability].proficient) {
-              updateAbilityScores((prevAbilityScores) => ({
-                ...prevAbilityScores,
-                [ability]: {
-                  score: prevAbilityScores[ability].score,
-                  modifier: prevAbilityScores[ability].modifier,
-                  proficient: true,
-                },
-              }));
-            }
+            classProficiencies.push(ability);
           }
         });
+
+        // Update the abilityScores state to reflect this
+        abilityScoreIndexes.map((ability) => {
+          if (classProficiencies.includes(ability)) {
+            updatedAbilityScores[ability].proficient = true;
+          } else {
+            updatedAbilityScores[ability].proficient = false;
+          }
+        })
+
+        updateAbilityScores(updatedAbilityScores);
       }
     }
   }, [data]);
@@ -57,7 +63,10 @@ export default function ClassSelection({
         // console.log("PROF CHOICE");
         return (
           <div key={identifier}>
-            <label htmlFor={"proficiencyChoice" + index} className="text-[#4a4a4a] text-[1.75rem] font-[500]">
+            <label
+              htmlFor={"proficiencyChoice" + index}
+              className="text-[#4a4a4a] text-[1.75rem] font-[500]"
+            >
               {proficiencyChoice.desc}:
             </label>
             <select
@@ -87,7 +96,6 @@ export default function ClassSelection({
               inputProps={["item", "index"]}
               listOfInputs={proficiencyChoice.from.options}
               maxNumInputs={proficiencyChoice.choose}
-              updateProficiencies={updateProficiencies}
             />
           </div>
         );
@@ -100,37 +108,15 @@ export default function ClassSelection({
   let dataToPrint;
   if (loading) {
     dataToPrint = "still loading class data";
-    classContent = <LoadingIndicator />;
+    portalContent = <LoadingIndicator />;
   }
   if (error) {
     dataToPrint = "an error occurred when trying to fetch class data";
-    classContent = <ErrorIndicator />;
+    portalContent = <ErrorIndicator />;
   }
   if (data) {
     dataToPrint = data.class;
-    classContent = (
-      <div>
-        <label
-          htmlFor="character-class"
-          className="text-black text-[2.5rem] font-[500] mr-10"
-        >
-          Class
-        </label>
-        <select
-          name={"character-class"}
-          id={"character-class"}
-          onChange={handleClassChange}
-          className="bg-white rounded-md text-[2rem] pl-3 pr-15"
-          required
-        >
-          {classIndexes.map((className) => (
-            <option key={className + "Option"} value={className}>
-              {capitalize(className)}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
+    console.log(dataToPrint);
 
     if (data.class["proficiency_choices"]) {
       portalContent = (
@@ -142,11 +128,9 @@ export default function ClassSelection({
       );
     }
   }
-  // console.log(dataToPrint);
 
   return (
     <>
-      {classContent}{" "}
       {document.getElementById("class-proficiency-choices") &&
         createPortal(
           portalContent,

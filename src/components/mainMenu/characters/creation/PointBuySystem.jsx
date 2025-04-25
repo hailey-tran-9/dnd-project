@@ -48,11 +48,20 @@ export default function PointBuySystem({ abilityScores, updateAbilityScores }) {
   function decScore(ability) {
     let currScore = pointSystem[ability];
     if (currScore > 8) {
+      let newScore = currScore - 1;
       let cost = pointMapping[currScore] - pointMapping[currScore - 1];
       setPoints((prevPoints) => prevPoints + cost);
       setPointSystem((prevPointSystem) => ({
         ...prevPointSystem,
-        [ability]: currScore - 1,
+        [ability]: newScore,
+      }));
+      updateAbilityScores((prevAbilityScores) => ({
+        ...prevAbilityScores,
+        [ability]: {
+          ...prevAbilityScores[ability],
+          score: newScore,
+          modifier: calculateAbilityModifier(newScore),
+        },
       }));
     }
   }
@@ -68,6 +77,7 @@ export default function PointBuySystem({ abilityScores, updateAbilityScores }) {
             ability={ability}
             score={pointSystem[ability]}
             proficient={abilityScores[ability].proficient}
+            bonus={abilityScores[ability].bonus}
             incScore={() => incScore(ability)}
             decScore={() => decScore(ability)}
           />

@@ -68,6 +68,7 @@ export const GET_RACE = gql`
       speed
       size
       ability_bonuses {
+        bonus
         ability_score {
           index
         }

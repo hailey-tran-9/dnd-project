@@ -5,7 +5,6 @@ export default function Checkboxes({
   inputProps,
   listOfInputs,
   maxNumInputs,
-  updateProficiencies,
 }) {
   const [checkedState, setCheckedState] = useState(Array(listOfInputs.length).fill(false));
 
@@ -20,7 +19,6 @@ export default function Checkboxes({
     );
     setCheckedState(updatedCheckedState);
     // console.log(getOptionIndex(event.target.value));
-    updateProficiencies(getOptionIndex(event.target.value));
   }
 
   return (
