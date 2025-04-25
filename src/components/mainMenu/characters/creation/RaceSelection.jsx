@@ -6,7 +6,7 @@ import { GET_RACE } from "../../../../util/graphql";
 import LoadingIndicator from "../../../LoadingIndicator";
 import ErrorIndicator from "../../../ErrorIndicator";
 
-import { capitalize } from "../../../../util/util";
+import { calculateAbilityModifier, capitalize } from "../../../../util/util";
 import { raceIndexes } from "../../../contexts/RaceContext";
 import { abilityScoreIndexes } from "../../../contexts/AbilityScoreContext";
 import { skillIndexes } from "../../../contexts/SkillContext";
@@ -15,8 +15,7 @@ export default function RaceSelection({
   enteredRace,
   abilityScores,
   updateAbilityScores,
-  skills,
-  updateSkills,
+  updateProficiencies,
 }) {
   let raceContent;
   let portalContent;
@@ -38,38 +37,28 @@ export default function RaceSelection({
 
         // Update the abilityScores state to reflect this
         abilityScoreIndexes.map((ability) => {
-          if (Object.keys(raceBonuses).includes(ability)) {
-            updatedAbilityScores[ability].bonus = raceBonuses[ability];
-          } else {
-            updatedAbilityScores[ability].bonus = 0;
-          }
+          let newBonus = raceBonuses[ability] || 0;
+          updatedAbilityScores[ability].bonus = newBonus;
+          updatedAbilityScores[ability].score = 8 + newBonus;
+          updatedAbilityScores[ability].modifier = calculateAbilityModifier(
+            8 + newBonus
+          );
         });
-
         updateAbilityScores(updatedAbilityScores);
       }
-      
-      if (data.race["starting_proficiencies"]) {
-        let updatedSkills = { ...skills };
-        let raceProficiencies = [];
 
-        // Find the selected class's inherent skill proficiencies
-        data.race["starting_proficiencies"].map((profificiency) => {
-          if (profificiency.type === "SKILLS") {
-            let skill = profificiency.index.split("skill-")[1];
-            raceProficiencies.push(skill);
+      if (data.race["starting_proficiencies"]) {
+        let updatedProficiencies = [];
+        // Find the selected race's inherent skill proficiencies
+        data.race["starting_proficiencies"].map((proficiency) => {
+          if (proficiency.type === "SKILLS") {
+            let skill = proficiency.index.split("skill-")[1];
+            if (!updatedProficiencies.includes(skill)) {
+              updatedProficiencies.push(skill);
+            }
           }
         });
-
-        // Update the skills state to reflect this
-        skillIndexes.map((skill) => {
-          if (raceProficiencies.includes(skill)) {
-            updatedSkills[skill].proficient = true;
-          } else {
-            updatedSkills[skill].proficient = false;
-          }
-        })
-
-        updateSkills(updatedSkills);
+        updateProficiencies(updatedProficiencies);
       }
     }
   }, [data]);
@@ -86,28 +75,7 @@ export default function RaceSelection({
   if (data) {
     dataToPrint = data.race;
     console.log(dataToPrint);
-
-    if (data.race["starting_proficiencies"]) {
-      portalContent = (
-        <>
-          {data.race["starting_proficiencies"].map((startProf, index) => {
-            if (startProf.type === "SKILLS") {
-              let skillIndex = startProf.index.split("skill-")[1];
-              return <p key={"character" + { skillIndex }}>{skillIndex}</p>;
-            }
-          })}
-        </>
-      );
-    }
   }
 
-  return (
-    <>
-      {/* {document.getElementById("character-skills") &&
-        createPortal(
-          portalContent,
-          document.getElementById("character-skills")
-        )} */}
-    </>
-  );
+  return;
 }

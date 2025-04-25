@@ -13,6 +13,8 @@ import RaceSelection from "./RaceSelection";
 import ClassSelection from "./ClassSelection";
 import PointBuySystem from "./PointBuySystem";
 
+let initialLoad = true;
+
 export default function CharacterCreation({ cancelFn, submitFn }) {
   const { isFetching: isFetchingSkills, skillData } = useContext(SkillContext);
 
@@ -23,7 +25,7 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
     Object.fromEntries(
       abilityScoreIndexes.map((ability) => [
         ability,
-        { score: 8, modifier: -2, proficient: false, bonus: 0 },
+        { score: 8, modifier: -1, proficient: false, bonus: 0 },
       ])
     )
   );
@@ -32,31 +34,67 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
       skillIndexes.map((skill) => [
         skill,
         {
+          name: "",
           ability: "",
+          modifier: 0,
           proficient: false,
         },
       ])
     )
   );
 
-  const [proficiencies, setProficiencies] = useState([]);
+  const [abilityProficiencies, setAbilityProficiencies] = useState([]);
+  const [skillProficiencies, setSkillProficiencies] = useState([]);
 
   useEffect(() => {
-    if (!isFetchingSkills) {
-      let updatedSkills = Object.fromEntries(
+    if (initialLoad) {
+      if (!isFetchingSkills) {
+        let updatedSkills = { ...skills };
         skillIndexes.map((skill) => {
           let ability = skillData[skill]["ability_score"]["index"];
-          return [
-            skill,
-            {
-              ability: ability,
-              proficient: skills[skill].proficient || abilityScores[ability].proficient,
-            },
-          ];
-        })
-      );
-      setSkills(updatedSkills);
+          updatedSkills[skill].name = skillData[skill]["name"];
+          updatedSkills[skill].ability = ability;
+        });
+        setSkills(updatedSkills);
+      }
+      initialLoad = false;
     }
+  }, []);
+
+  useEffect(() => {
+    let updatedAbilityScores = { ...abilityScores };
+    abilityScoreIndexes.map((ability) => {
+      if (abilityProficiencies.includes(ability)) {
+        updatedAbilityScores[ability].proficient = true;
+      } else {
+        updatedAbilityScores[ability].proficient = false;
+      }
+    });
+    setAbilityScores(updatedAbilityScores);
+
+    let updatedSkills = { ...skills };
+    skillIndexes.map((skill) => {
+      if (
+        abilityScores[skillData[skill]["ability_score"]["index"]].proficient ||
+        skillProficiencies.includes(skill)
+      ) {
+        updatedSkills[skill].proficient = true;
+      } else {
+        updatedSkills[skill].proficient = false;
+      }
+      updatedSkills[skill].modifier =
+        abilityScores[skillData[skill]["ability_score"]["index"]].modifier;
+    });
+    setSkills(updatedSkills);
+  }, [abilityProficiencies, skillProficiencies]);
+
+  useEffect(() => {
+    let updatedSkills = { ...skills };
+    skillIndexes.map((skill) => {
+      updatedSkills[skill].modifier =
+        abilityScores[skillData[skill]["ability_score"]["index"]].modifier;
+    });
+    setSkills(updatedSkills);
   }, [abilityScores]);
 
   function handleRaceChange(event) {
@@ -149,40 +187,21 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
             enteredRace={enteredRace}
             abilityScores={abilityScores}
             updateAbilityScores={setAbilityScores}
-            skills={skills}
-            updateSkills={setSkills}
+            updateProficiencies={setSkillProficiencies}
           />
           <ClassSelection
             enteredClass={enteredClass}
             abilityScores={abilityScores}
             updateAbilityScores={setAbilityScores}
+            updateProficiencies={setAbilityProficiencies}
           />
         </div>
         <PointBuySystem
           abilityScores={abilityScores}
           updateAbilityScores={setAbilityScores}
+          skills={skills}
         />
-        <div className="flex flex-col">
-          <h3>Skills</h3>
-          <div
-            id="character-skills"
-            className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-10"
-          >
-            {skillIndexes.map((skill) => (
-              <div key={skill} className="flex flex-row gap-3 items-center">
-                <div
-                  className={
-                    skills[skill].proficient
-                      ? "w-3 h-3 bg-black rounded-2xl"
-                      : "w-3 h-3 bg-white rounded-2xl"
-                  }
-                />
-                <p>{skillData[skill].name}</p>
-                {/* <p>({modifier > 0 ? "+" + modifier : modifier})</p> */}
-              </div>
-            ))}
-          </div>
-        </div>
+        
         <div>
           <h2>Proficiency Options</h2>
           <div

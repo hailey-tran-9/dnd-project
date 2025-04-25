@@ -24,27 +24,17 @@ export default function ClassSelection({
   useEffect(() => {
     if (data && data.class) {
       if (data.class.proficiencies) {
-        let updatedAbilityScores = {...abilityScores};
-        let classProficiencies = [];
-
+        let updatedProficiencies = [];
         // Find the selected class's inherent ability proficiencies
-        data.class.proficiencies.map((profificiency) => {
-          if (profificiency.type === "SAVING_THROWS") {
-            let ability = profificiency.index.split("-")[2];
-            classProficiencies.push(ability);
+        data.class.proficiencies.map((proficiency) => {
+          if (proficiency.type === "SAVING_THROWS") {
+            let ability = proficiency.index.split("saving-throw-")[1];
+            if (!updatedProficiencies.includes(ability)) {
+              updatedProficiencies.push(ability);
+            }
           }
         });
-
-        // Update the abilityScores state to reflect this
-        abilityScoreIndexes.map((ability) => {
-          if (classProficiencies.includes(ability)) {
-            updatedAbilityScores[ability].proficient = true;
-          } else {
-            updatedAbilityScores[ability].proficient = false;
-          }
-        })
-
-        updateAbilityScores(updatedAbilityScores);
+        updateProficiencies(updatedProficiencies);
       }
     }
   }, [data]);
