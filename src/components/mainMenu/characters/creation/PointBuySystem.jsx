@@ -1,96 +1,49 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useQuery } from "@apollo/client";
 
-import { calculateAbilityModifier } from "../../../../util/util.js";
+import { GET_SKILLS } from "../../../../util/graphql.jsx";
 import { abilityScoreIndexes } from "../../../contexts/AbilityScoreContext.jsx";
 import { skillIndexes } from "../../../contexts/SkillContext.jsx";
 
 import PointBuyBox from "./PointBuyBox.jsx";
+import LoadingIndicator from "../../../LoadingIndicator.jsx";
+import ErrorIndicator from "../../../ErrorIndicator.jsx";
+import { characterCreationActions } from "../../../../store/character-creation-slice.js";
 
-const pointMapping = {
-  8: 0,
-  9: 1,
-  10: 2,
-  11: 3,
-  12: 4,
-  13: 5,
-  14: 7,
-  15: 9,
-};
+export default function PointBuySystem() {
+  const dispatch = useDispatch();
+  const { loading, error, data } = useQuery(GET_SKILLS);
+  const characterCreation = useSelector((state) => state.characterCreation);
 
-export default function PointBuySystem({ abilityScores, updateAbilityScores, skills }) {
-  const [points, setPoints] = useState(27);
-  const [pointSystem, setPointSystem] = useState(
-    abilityScoreIndexes.reduce(
-      (o, key) => ({
-        ...o,
-        [key]: abilityScores[key].score,
-      }),
-      {}
-    )
-  );
-
-  function incScore(ability) {
-    let currScore = pointSystem[ability];
-    if (currScore < 15) {
-      let cost = pointMapping[currScore + 1] - pointMapping[currScore];
-      if (points >= cost) {
-        let newScore = currScore + 1;
-        setPoints((prevPoints) => prevPoints - cost);
-        setPointSystem((prevPointSystem) => ({
-          ...prevPointSystem,
-          [ability]: newScore,
-        }));
-        updateAbilityScores((prevAbilityScores) => ({
-          ...prevAbilityScores,
-          [ability]: {
-            ...prevAbilityScores[ability],
-            score: newScore + prevAbilityScores[ability].bonus,
-            modifier: calculateAbilityModifier(
-              newScore + prevAbilityScores[ability].bonus
-            ),
-          },
-        }));
-      }
+  useEffect(() => {
+    let skillsContent;
+    if (loading) {
+      skillsContent = <LoadingIndicator />;
     }
-  }
-
-  function decScore(ability) {
-    let currScore = pointSystem[ability];
-    if (currScore > 8) {
-      let newScore = currScore - 1;
-      let cost = pointMapping[currScore] - pointMapping[currScore - 1];
-      setPoints((prevPoints) => prevPoints + cost);
-      setPointSystem((prevPointSystem) => ({
-        ...prevPointSystem,
-        [ability]: newScore,
-      }));
-      updateAbilityScores((prevAbilityScores) => ({
-        ...prevAbilityScores,
-        [ability]: {
-          ...prevAbilityScores[ability],
-          score: newScore,
-          modifier: calculateAbilityModifier(newScore),
-        },
-      }));
+    if (error) {
+      skillsContent = <ErrorIndicator />;
     }
-  }
+    if (data) {
+      data.skills.map((skill) => {
+        dispatch(
+          characterCreationActions.updateSkillName({
+            skill: skill.index,
+            name: skill.name,
+          })
+        );
+      });
+    }
+  }, [data]);
 
   return (
     <>
       <div className="flex flex-col">
         <h2>Point-Buy System</h2>
-        <h3>Points left to use: {points}</h3>
+        <h3>Points left to use: {characterCreation.points}</h3>
         <div className="flex flex-row justify-start xl:justify-center gap-[1vw] mt-3">
           {abilityScoreIndexes.map((ability) => (
-            <PointBuyBox
-              key={ability + "PointBuyBox"}
-              ability={ability}
-              score={pointSystem[ability]}
-              proficient={abilityScores[ability].proficient}
-              bonus={abilityScores[ability].bonus}
-              incScore={() => incScore(ability)}
-              decScore={() => decScore(ability)}
-            />
+            <PointBuyBox key={ability + "PointBuyBox"} ability={ability} />
           ))}
         </div>
       </div>
@@ -101,17 +54,17 @@ export default function PointBuySystem({ abilityScores, updateAbilityScores, ski
           className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-10"
         >
           {skillIndexes.map((skill) => {
-            let modifier = skills[skill].modifier;
+            let modifier = characterCreation.skills[skill].modifier;
             return (
               <div key={skill} className="flex flex-row gap-3 items-center">
                 <div
                   className={
-                    skills[skill].proficient
+                    characterCreation.skills[skill].proficient
                       ? "w-3 h-3 bg-black rounded-2xl"
                       : "w-3 h-3 bg-white rounded-2xl"
                   }
                 />
-                <p>{skills[skill].name}</p>
+                <p>{characterCreation.skills[skill].name}</p>
                 <p>{`(${modifier > 0 ? "+" + modifier : modifier})`}</p>
               </div>
             );

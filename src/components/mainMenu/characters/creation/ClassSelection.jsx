@@ -2,40 +2,32 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useQuery } from "@apollo/client";
 import { GET_CLASS } from "../../../../util/graphql";
+import { useDispatch } from "react-redux";
 
 import LoadingIndicator from "../../../LoadingIndicator";
 import ErrorIndicator from "../../../ErrorIndicator";
 import Checkboxes from "../../../Checkboxes";
 
-import { capitalize } from "../../../../util/util";
-import { classIndexes } from "../../../contexts/ClassContext";
-import { abilityScoreIndexes } from "../../../contexts/AbilityScoreContext";
+import { characterCreationActions } from "../../../../store/character-creation-slice";
 
 export default function ClassSelection({
   enteredClass,
-  abilityScores,
-  updateAbilityScores,
-  updateProficiencies,
 }) {
+  const dispatch = useDispatch();
+
   const { loading, error, data } = useQuery(GET_CLASS, {
     variables: { index: enteredClass },
   });
 
   useEffect(() => {
     if (data && data.class) {
-      if (data.class.proficiencies) {
-        let updatedProficiencies = [];
-        // Find the selected class's inherent ability proficiencies
-        data.class.proficiencies.map((proficiency) => {
-          if (proficiency.type === "SAVING_THROWS") {
-            let ability = proficiency.index.split("saving-throw-")[1];
-            if (!updatedProficiencies.includes(ability)) {
-              updatedProficiencies.push(ability);
-            }
-          }
-        });
-        updateProficiencies(updatedProficiencies);
-      }
+      dispatch(
+        characterCreationActions.setClassAndLvl({
+          class: data.class.index,
+          lvl: 1,
+          classData: data.class,
+        })
+      );
     }
   }, [data]);
 

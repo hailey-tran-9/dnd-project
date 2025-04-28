@@ -1,11 +1,11 @@
-import { useContext, useState, useEffect } from "react";
+import { useState } from "react";
 import { Form } from "react-router";
+import { useDispatch } from "react-redux";
 
+import { characterCreationActions } from "../../../../store/character-creation-slice";
 import { capitalize } from "../../../../util/util";
 import { raceIndexes } from "../../../contexts/RaceContext";
 import { classIndexes } from "../../../contexts/ClassContext";
-import { abilityScoreIndexes } from "../../../contexts/AbilityScoreContext";
-import { SkillContext, skillIndexes } from "../../../contexts/SkillContext";
 
 import Button from "../../../Button";
 import Input from "../../../Input";
@@ -13,89 +13,11 @@ import RaceSelection from "./RaceSelection";
 import ClassSelection from "./ClassSelection";
 import PointBuySystem from "./PointBuySystem";
 
-let initialLoad = true;
-
 export default function CharacterCreation({ cancelFn, submitFn }) {
-  const { isFetching: isFetchingSkills, skillData } = useContext(SkillContext);
+  const dispatch = useDispatch();
 
   const [enteredRace, setEnteredRace] = useState(raceIndexes[0]);
   const [enteredClass, setEnteredClass] = useState(classIndexes[0]);
-
-  const [abilityScores, setAbilityScores] = useState(
-    Object.fromEntries(
-      abilityScoreIndexes.map((ability) => [
-        ability,
-        { score: 8, modifier: -1, proficient: false, bonus: 0 },
-      ])
-    )
-  );
-  const [skills, setSkills] = useState(
-    Object.fromEntries(
-      skillIndexes.map((skill) => [
-        skill,
-        {
-          name: "",
-          ability: "",
-          modifier: 0,
-          proficient: false,
-        },
-      ])
-    )
-  );
-
-  const [abilityProficiencies, setAbilityProficiencies] = useState([]);
-  const [skillProficiencies, setSkillProficiencies] = useState([]);
-
-  useEffect(() => {
-    if (initialLoad) {
-      if (!isFetchingSkills) {
-        let updatedSkills = { ...skills };
-        skillIndexes.map((skill) => {
-          let ability = skillData[skill]["ability_score"]["index"];
-          updatedSkills[skill].name = skillData[skill]["name"];
-          updatedSkills[skill].ability = ability;
-        });
-        setSkills(updatedSkills);
-      }
-      initialLoad = false;
-    }
-  }, []);
-
-  useEffect(() => {
-    let updatedAbilityScores = { ...abilityScores };
-    abilityScoreIndexes.map((ability) => {
-      if (abilityProficiencies.includes(ability)) {
-        updatedAbilityScores[ability].proficient = true;
-      } else {
-        updatedAbilityScores[ability].proficient = false;
-      }
-    });
-    setAbilityScores(updatedAbilityScores);
-
-    let updatedSkills = { ...skills };
-    skillIndexes.map((skill) => {
-      if (
-        abilityScores[skillData[skill]["ability_score"]["index"]].proficient ||
-        skillProficiencies.includes(skill)
-      ) {
-        updatedSkills[skill].proficient = true;
-      } else {
-        updatedSkills[skill].proficient = false;
-      }
-      updatedSkills[skill].modifier =
-        abilityScores[skillData[skill]["ability_score"]["index"]].modifier;
-    });
-    setSkills(updatedSkills);
-  }, [abilityProficiencies, skillProficiencies]);
-
-  useEffect(() => {
-    let updatedSkills = { ...skills };
-    skillIndexes.map((skill) => {
-      updatedSkills[skill].modifier =
-        abilityScores[skillData[skill]["ability_score"]["index"]].modifier;
-    });
-    setSkills(updatedSkills);
-  }, [abilityScores]);
 
   function handleRaceChange(event) {
     // console.log(event.target.value);
@@ -183,25 +105,10 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
             </select>
           </div>
 
-          <RaceSelection
-            enteredRace={enteredRace}
-            abilityScores={abilityScores}
-            updateAbilityScores={setAbilityScores}
-            updateProficiencies={setSkillProficiencies}
-          />
-          <ClassSelection
-            enteredClass={enteredClass}
-            abilityScores={abilityScores}
-            updateAbilityScores={setAbilityScores}
-            updateProficiencies={setAbilityProficiencies}
-          />
+          <RaceSelection enteredRace={enteredRace} />
+          <ClassSelection enteredClass={enteredClass} />
         </div>
-        <PointBuySystem
-          abilityScores={abilityScores}
-          updateAbilityScores={setAbilityScores}
-          skills={skills}
-        />
-        
+        <PointBuySystem />
         <div>
           <h2>Proficiency Options</h2>
           <div

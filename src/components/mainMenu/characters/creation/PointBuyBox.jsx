@@ -1,22 +1,23 @@
-import { calculateAbilityModifier } from "../../../../util/util.js";
+import { useSelector, useDispatch } from "react-redux";
 
-export default function PointBuyBox({
-  ability,
-  score,
-  proficient,
-  bonus,
-  incScore,
-  decScore,
-  ...props
-}) {
+import { characterCreationActions } from "../../../../store/character-creation-slice";
+
+export default function PointBuyBox({ ability, ...props }) {
+  const dispatch = useDispatch();
+  const characterCreation = useSelector((state) => state.characterCreation);
+
   let classNames = "bg-white";
-  if (proficient) {
+  if (characterCreation.abilityScores[ability].proficient) {
     classNames = "bg-[#FFF8ED]";
   }
-  classNames += " text-center px-[3vw] py-[3vh] md:px-[2vw] md:py-[2.5vh] rounded-md";
+  classNames +=
+    " text-center px-[3vw] py-[3vh] md:px-[2vw] md:py-[2.5vh] rounded-md";
 
-  let totalScore = score + bonus;
-  let modifier = calculateAbilityModifier(totalScore);
+  let score =
+    characterCreation.abilityScores[ability].score -
+    characterCreation.abilityScores[ability].bonus;
+  let totalScore = characterCreation.abilityScores[ability].score;
+  let modifier = characterCreation.abilityScores[ability].modifier;
 
   let shouldDisableAdd = false;
   if (score >= 15) {
@@ -26,6 +27,14 @@ export default function PointBuyBox({
   let shouldDisableSubstract = false;
   if (score <= 8) {
     shouldDisableSubstract = true;
+  }
+
+  function handleIncrScore() {
+    dispatch(characterCreationActions.incrPoint(ability));
+  }
+
+  function handleDecrScore() {
+    dispatch(characterCreationActions.decrPoint(ability));
   }
 
   return (
@@ -39,7 +48,7 @@ export default function PointBuyBox({
         <button
           type="button"
           className="bg-[#F5F5F5] hover:bg-[#e7e7e7] disabled:bg-[#8d8d8dc0] p-1 px-2 rounded-lg"
-          onClick={decScore}
+          onClick={handleDecrScore}
           disabled={shouldDisableSubstract}
         >
           -
@@ -47,7 +56,7 @@ export default function PointBuyBox({
         <button
           type="button"
           className="bg-[#F5F5F5] hover:bg-[#e7e7e7] disabled:bg-[#8d8d8dc0] p-1 px-2 rounded-lg"
-          onClick={incScore}
+          onClick={handleIncrScore}
           disabled={shouldDisableAdd}
         >
           +

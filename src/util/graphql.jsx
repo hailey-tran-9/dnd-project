@@ -136,3 +136,15 @@ export const GET_RACE = gql`
     }
   }
 `;
+
+export const GET_SKILLS = gql`
+  query Skills {
+    skills {
+      index
+      name
+      ability_score {
+        index
+      }
+    }
+  }
+`;
