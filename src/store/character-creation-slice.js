@@ -38,6 +38,7 @@ const characterCreationSlice = createSlice({
           ability: skillToAbility[skill],
           modifier: 0,
           proficient: false,
+          staticProficiency: false,
         },
       ])
     ),
@@ -76,6 +77,7 @@ const characterCreationSlice = createSlice({
           state.abilityScores[state.skills[skill].ability].modifier;
         state.skills[skill].proficient =
           state.abilityScores[state.skills[skill].ability].proficient;
+        state.skills[skill].staticProficiency = false;
       });
 
       // Find the selected race's inherent proficiencies
@@ -85,6 +87,7 @@ const characterCreationSlice = createSlice({
           let skill = proficiency.index.split("skill-")[1];
           updatedProficiencies.push(skill);
           state.skills[skill].proficient = true;
+          state.skills[skill].staticProficiency = true;
         } else {
           updatedProficiencies.push(proficiency.index);
         }
@@ -123,7 +126,8 @@ const characterCreationSlice = createSlice({
       // Update skills
       skillIndexes.map((skill) => {
         state.skills[skill].proficient =
-          state.abilityScores[state.skills[skill].ability].proficient;
+          state.abilityScores[state.skills[skill].ability].proficient ||
+          state.raceProficiencies.includes(skill);
       });
     },
     incrPoint(state, action) {
@@ -170,6 +174,12 @@ const characterCreationSlice = createSlice({
     updateSkillName(state, action) {
       // payload = {skill, name}
       state.skills[action.payload.skill].name = action.payload.name;
+    },
+    updateSkillProficiency(state, action) {
+      // payload = {skill, checked}
+      if (!state.skills[action.payload.skill].staticProficiency) {
+        state.skills[action.payload.skill].proficient = action.payload.checked;
+      }
     },
   },
 });

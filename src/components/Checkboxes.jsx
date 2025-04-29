@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+
+import { characterCreationActions } from "../store/character-creation-slice";
 
 export default function Checkboxes({
   nameForInputs,
@@ -6,7 +9,10 @@ export default function Checkboxes({
   listOfInputs,
   maxNumInputs,
 }) {
-  const [checkedState, setCheckedState] = useState(Array(listOfInputs.length).fill(false));
+  const dispatch = useDispatch();
+  const [checkedState, setCheckedState] = useState(
+    Array(listOfInputs.length).fill(false)
+  );
 
   function handleOnChange(index, event) {
     if (
@@ -14,9 +20,19 @@ export default function Checkboxes({
       event.target.checked
     )
       return;
-    const updatedCheckedState = checkedState.map((check, index2) =>
-      index === index2 ? !check : check
-    );
+    const updatedCheckedState = checkedState.map((check, index2) => {
+      if (index === index2) {
+        let skill = event.target.value.split("skill-")[1];
+        dispatch(
+          characterCreationActions.updateSkillProficiency({
+            skill,
+            checked: !check,
+          })
+        );
+        return !check;
+      }
+      return check;
+    });
     setCheckedState(updatedCheckedState);
     // console.log(getOptionIndex(event.target.value));
   }

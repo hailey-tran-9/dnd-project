@@ -54,7 +54,6 @@ export default function ClassSelection({
             <select
               name={"proficiencyChoice" + index}
               id={"proficiencyChoice" + index}
-              className="bg-amber-300 rounded-md ml-1"
             >
               {proficiencyChoice.from.options.map((option, index2) => {
                 return (
