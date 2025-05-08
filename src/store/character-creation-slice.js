@@ -44,7 +44,10 @@ const characterCreationSlice = createSlice({
     ),
     points: 27,
     raceProficiencies: [],
+    raceProficiencyChoices: [],
     classProficiencies: [],
+    classProficiencyChoices: [],
+    inventory: {},
     changed: false,
   },
   reducers: {
@@ -75,8 +78,7 @@ const characterCreationSlice = createSlice({
       skillIndexes.map((skill) => {
         state.skills[skill].modifier =
           state.abilityScores[state.skills[skill].ability].modifier;
-        state.skills[skill].proficient =
-          state.abilityScores[state.skills[skill].ability].proficient;
+        state.skills[skill].proficient = false;
         state.skills[skill].staticProficiency = false;
       });
 
@@ -93,6 +95,11 @@ const characterCreationSlice = createSlice({
         }
       });
       state.raceProficiencies = updatedProficiencies;
+
+      // Update race proficiency choices
+      state.raceProficiencyChoices = structuredClone(
+        action.payload.raceData["starting_proficiency_options"]
+      );
     },
     setClassAndLvl(state, action) {
       // payload = {class, lvl, classData}
@@ -126,9 +133,13 @@ const characterCreationSlice = createSlice({
       // Update skills
       skillIndexes.map((skill) => {
         state.skills[skill].proficient =
-          state.abilityScores[state.skills[skill].ability].proficient ||
           state.raceProficiencies.includes(skill);
       });
+
+      // Update class proficiency choices
+      state.classProficiencyChoices = structuredClone(
+        action.payload.classData["proficiency_choices"]
+      );
     },
     incrPoint(state, action) {
       let bonus = state.abilityScores[action.payload].bonus;

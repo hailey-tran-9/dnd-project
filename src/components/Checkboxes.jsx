@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
@@ -5,24 +7,27 @@ import { characterCreationActions } from "../store/character-creation-slice";
 
 export default function Checkboxes({
   nameForInputs,
-  inputProps,
   listOfInputs,
   maxNumInputs,
+  ...props
 }) {
   const dispatch = useDispatch();
-  const [checkedState, setCheckedState] = useState(
-    Array(listOfInputs.length).fill(false)
-  );
+  const [checkedState, setCheckedState] = useState([]);
 
-  function handleOnChange(index, event) {
+  useEffect(() => {
+    setCheckedState(Array(listOfInputs.length).fill(false));
+  }, [listOfInputs]);
+
+  function handleOnChange(index1, event) {
     if (
       checkedState.filter((i) => i).length >= maxNumInputs &&
       event.target.checked
     )
       return;
     const updatedCheckedState = checkedState.map((check, index2) => {
-      if (index === index2) {
-        let skill = event.target.value.split("skill-")[1];
+      // console.log(event.target.value);
+      if (index1 === index2) {
+        let skill = event.target.value;
         dispatch(
           characterCreationActions.updateSkillProficiency({
             skill,
@@ -38,33 +43,26 @@ export default function Checkboxes({
   }
 
   return (
-    <fieldset className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-10">
+    <fieldset
+      className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-10"
+      {...props}
+    >
       {listOfInputs.map((element, index) => {
-        let identifier = element;
-        for (let i = 0; i < inputProps.length; i++) {
-          identifier = identifier[inputProps[i]];
-        }
-
-        // console.log("identifier: " + identifier);
+        let inputName = getOptionIndex(element.item.name);
+        let inputValue = getOptionIndex(element.item.index);
 
         return (
-          <div key={getOptionIndex(element.item.name)}>
+          <div key={inputName}>
             <input
               type="checkbox"
-              id={identifier + "-" + nameForInputs}
+              id={inputName + "-" + nameForInputs}
               name={nameForInputs}
-              value={identifier}
-              checked={checkedState[index]}
+              value={inputValue}
+              checked={checkedState[index] || false}
               className="w-[1rem] h-[1rem] mr-2"
               onChange={() => handleOnChange(index, event)}
-              onLoad={() => {
-                checkedState.push(false);
-                setCheckedState([...checkedState]);
-              }}
             />
-            <label htmlFor={identifier + "-" + nameForInputs}>
-              {getOptionIndex(element.item.name)}
-            </label>
+            <label htmlFor={inputName + "-" + nameForInputs}>{inputName}</label>
           </div>
         );
       })}

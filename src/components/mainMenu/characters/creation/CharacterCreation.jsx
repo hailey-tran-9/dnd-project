@@ -12,6 +12,7 @@ import Input from "../../../Input";
 import RaceSelection from "./RaceSelection";
 import ClassSelection from "./ClassSelection";
 import PointBuySystem from "./PointBuySystem";
+import ProficiencyOptions from "./ProficiencyOptions";
 
 export default function CharacterCreation({ cancelFn, submitFn }) {
   const dispatch = useDispatch();
@@ -109,17 +110,7 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
           <ClassSelection enteredClass={enteredClass} />
         </div>
         <PointBuySystem />
-        <div>
-          <h2>Proficiency Options</h2>
-          <div
-            id="class-proficiency-choices"
-            className="flex flex-col gap-10"
-          ></div>
-          <div
-            id="race-proficiency-choices"
-            className="flex flex-col gap-10"
-          ></div>
-        </div>
+        <ProficiencyOptions enteredClass={enteredClass} />
         <div>
           <h2>Equipment Options</h2>
         </div>

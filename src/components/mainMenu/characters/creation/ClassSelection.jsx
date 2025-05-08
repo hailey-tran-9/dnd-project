@@ -99,26 +99,26 @@ export default function ClassSelection({
     dataToPrint = data.class;
     console.log(dataToPrint);
 
-    if (data.class["proficiency_choices"]) {
-      portalContent = (
-        <>
-          {data.class["proficiency_choices"].map((profChoice, index) =>
-            getProficiencySelection(profChoice, "class", index)
-          )}
-        </>
-      );
-    }
+    // if (data.class["proficiency_choices"]) {
+    //   portalContent = (
+    //     <>
+    //       {data.class["proficiency_choices"].map((profChoice, index) =>
+    //         getProficiencySelection(profChoice, "class", index)
+    //       )}
+    //     </>
+    //   );
+    // }
   }
 
-  return (
-    <>
-      {document.getElementById("class-proficiency-choices") &&
-        createPortal(
-          portalContent,
-          document.getElementById("class-proficiency-choices")
-        )}
-    </>
-  );
+  // return (
+  //   <>
+  //     {document.getElementById("class-proficiency-choices") &&
+  //       createPortal(
+  //         portalContent,
+  //         document.getElementById("class-proficiency-choices")
+  //       )}
+  //   </>
+  // );
 }
 
 function getOptionLabel(item) {

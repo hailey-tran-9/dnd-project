@@ -44,12 +44,12 @@ export const GET_CLASS = gql`
         choose
         type
         from {
-          option_set_type
           options {
             ... on ProficiencyReferenceOption {
               item {
                 index
                 name
+                type
               }
             }
           }
@@ -143,6 +143,17 @@ export const GET_SKILLS = gql`
       index
       name
       ability_score {
+        index
+      }
+    }
+  }
+`;
+
+export const GET_EQUIPMENT_INFO = gql`
+  query EquipmentInfo($index: String) {
+    equipment(index: $index) {
+      name
+      equipment_category {
         index
       }
     }
