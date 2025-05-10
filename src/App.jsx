@@ -13,13 +13,16 @@ function convert(page) {
 const router = createBrowserRouter([
   {
     path: "/",
-    lazy: () => import("./pages/Root.jsx").then(convert),
+    lazy: () => import("./routes/Root.jsx").then(convert),
     children: [
-      { index: true, lazy: () => import("./pages/Home.jsx").then(convert), },
+      { index: true, lazy: () => import("./routes/Home.jsx").then(convert) },
       {
         path: "games",
         children: [
-          { index: true, lazy: () => import("./pages/Games.jsx").then(convert), },
+          {
+            index: true,
+            lazy: () => import("./routes/Games.jsx").then(convert),
+          },
           // { path: ":gameID", Component: Game },
           // {
           //   path: "invite/:gameID",
@@ -27,6 +30,10 @@ const router = createBrowserRouter([
           //   loader: inviteLoader,
           // },
         ],
+      },
+      {
+        path: "characters",
+        lazy: () => import("./routes/Characters.jsx").then(convert),
       },
     ],
   },

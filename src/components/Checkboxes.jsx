@@ -9,6 +9,7 @@ export default function Checkboxes({
   nameForInputs,
   listOfInputs,
   maxNumInputs,
+  proficiencySource,
   ...props
 }) {
   const dispatch = useDispatch();
@@ -18,7 +19,7 @@ export default function Checkboxes({
     setCheckedState(Array(listOfInputs.length).fill(false));
   }, [listOfInputs]);
 
-  function handleOnChange(index1, event) {
+  function handleOnChange(index1, type, event) {
     if (
       checkedState.filter((i) => i).length >= maxNumInputs &&
       event.target.checked
@@ -27,19 +28,36 @@ export default function Checkboxes({
     const updatedCheckedState = checkedState.map((check, index2) => {
       // console.log(event.target.value);
       if (index1 === index2) {
-        let skill = event.target.value;
-        dispatch(
-          characterCreationActions.updateSkillProficiency({
-            skill,
-            checked: !check,
-          })
-        );
+        if (type === "SKILLS") {
+          let skill = event.target.value;
+          dispatch(
+            characterCreationActions.updateSkillProficiency({
+              skill,
+              checked: !check,
+            })
+          );
+        } else {
+          if (proficiencySource === "class") {
+            dispatch(
+              characterCreationActions.updateClassProficiency({
+                index: event.target.value,
+                operation: !check,
+              })
+            );
+          } else {
+            dispatch(
+              characterCreationActions.updateRaceProficiency({
+                index: event.target.value,
+                operation: !check,
+              })
+            );
+          }
+        }
         return !check;
       }
       return check;
     });
     setCheckedState(updatedCheckedState);
-    // console.log(getOptionIndex(event.target.value));
   }
 
   return (
@@ -48,8 +66,14 @@ export default function Checkboxes({
       {...props}
     >
       {listOfInputs.map((element, index) => {
-        let inputName = getOptionIndex(element.item.name);
-        let inputValue = getOptionIndex(element.item.index);
+        let inputName = element.item.name;
+        let inputValue = element.item.index;
+        // console.log(element.item);
+
+        if (element.item.type === "SKILLS") {
+          inputName = getOptionIndex(element.item.name);
+          inputValue = getOptionIndex(element.item.index);
+        }
 
         return (
           <div key={inputName}>
@@ -60,7 +84,7 @@ export default function Checkboxes({
               value={inputValue}
               checked={checkedState[index] || false}
               className="w-[1rem] h-[1rem] mr-2"
-              onChange={() => handleOnChange(index, event)}
+              onChange={() => handleOnChange(index, element.item.type, event)}
             />
             <label htmlFor={inputName + "-" + nameForInputs}>{inputName}</label>
           </div>

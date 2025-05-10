@@ -51,6 +51,26 @@ export const GET_CLASS = gql`
                 name
                 type
               }
+              option_type
+            }
+            ... on ProficiencyChoiceOption {
+              choice {
+                choose
+                desc
+                type
+                from {
+                  options {
+                    ... on ProficiencyReferenceOption {
+                      item {
+                        index
+                        name
+                        type
+                      }
+                    }
+                  }
+                }
+              }
+              option_type
             }
           }
         }

@@ -110,7 +110,10 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
           <ClassSelection enteredClass={enteredClass} />
         </div>
         <PointBuySystem />
-        <ProficiencyOptions enteredClass={enteredClass} />
+        <ProficiencyOptions
+          enteredClass={enteredClass}
+          enteredRace={enteredRace}
+        />
         <div>
           <h2>Equipment Options</h2>
         </div>

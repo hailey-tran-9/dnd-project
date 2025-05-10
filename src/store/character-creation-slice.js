@@ -47,7 +47,12 @@ const characterCreationSlice = createSlice({
     raceProficiencyChoices: [],
     classProficiencies: [],
     classProficiencyChoices: [],
-    inventory: {},
+    inventory: {
+      weapons: [],
+      equipment: [],
+      tools: [],
+      misc: [],
+    },
     changed: false,
   },
   reducers: {
@@ -97,9 +102,13 @@ const characterCreationSlice = createSlice({
       state.raceProficiencies = updatedProficiencies;
 
       // Update race proficiency choices
-      state.raceProficiencyChoices = structuredClone(
-        action.payload.raceData["starting_proficiency_options"]
-      );
+      if (action.payload.raceData["starting_proficiency_options"]) {
+        state.raceProficiencyChoices.push(
+          structuredClone(
+            action.payload.raceData["starting_proficiency_options"]
+          )
+        );
+      }
     },
     setClassAndLvl(state, action) {
       // payload = {class, lvl, classData}
@@ -190,6 +199,36 @@ const characterCreationSlice = createSlice({
       // payload = {skill, checked}
       if (!state.skills[action.payload.skill].staticProficiency) {
         state.skills[action.payload.skill].proficient = action.payload.checked;
+      }
+    },
+    updateClassProficiency(state, action) {
+      // payload = {index, operation: true for "add" or false for "remove"}
+      if (state.classProficiencies.includes(action.payload.index)) {
+        if (action.payload.operation === false) {
+          let filtered = state.classProficiencies.filter(
+            (index) => index !== action.payload.index
+          );
+          state.classProficiencies = filtered;
+        }
+      } else {
+        if (action.payload.operation === true) {
+          state.classProficiencies.push(action.payload.index);
+        }
+      }
+    },
+    updateRaceProficiency(state, action) {
+      // payload = {index, operation: true for "add" or false for "remove"}
+      if (state.raceProficiencies.includes(action.payload.index)) {
+        if (action.payload.operation === false) {
+          let filtered = state.raceProficiencies.filter(
+            (index) => index !== action.payload.index
+          );
+          state.raceProficiencies = filtered;
+        }
+      } else {
+        if (action.payload.operation === true) {
+          state.raceProficiencies.push(action.payload.index);
+        }
       }
     },
   },
