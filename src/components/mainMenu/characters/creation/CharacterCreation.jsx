@@ -13,6 +13,7 @@ import RaceSelection from "./RaceSelection";
 import ClassSelection from "./ClassSelection";
 import PointBuySystem from "./PointBuySystem";
 import ProficiencyOptions from "./ProficiencyOptions";
+import EquipmentOptions from "./EquipmentOptions";
 
 export default function CharacterCreation({ cancelFn, submitFn }) {
   const dispatch = useDispatch();
@@ -114,11 +115,20 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
           enteredClass={enteredClass}
           enteredRace={enteredRace}
         />
+        <EquipmentOptions
+          enteredClass={enteredClass}
+          enteredRace={enteredRace}
+        />
         <div>
-          <h2>Equipment Options</h2>
+          <h2>Spells</h2>
         </div>
         <div>
           <h2>Notes</h2>
+          <textarea
+            id="character-notes"
+            name="character-notes"
+            className="bg-white rounded-md text-[1.5rem] w-full h-50 p-1"
+          />
         </div>
         <Button type="submit">Submit</Button>
       </div>

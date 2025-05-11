@@ -195,10 +195,8 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
   return (
     <div>
       <h2>Proficiency Options</h2>
-      <div id="class-proficiency-choices" className="flex flex-col gap-10">
+      <div id="character-proficiency-choices" className="flex flex-col gap-10">
         {classProficiencyChoices}
-      </div>
-      <div id="race-proficiency-choices" className="flex flex-col gap-10 mt-10">
         {raceProficiencyChoices}
       </div>
     </div>

@@ -47,6 +47,8 @@ const characterCreationSlice = createSlice({
     raceProficiencyChoices: [],
     classProficiencies: [],
     classProficiencyChoices: [],
+    classStartingEquipment: [],
+    classStartingEquipmentChoices: [],
     inventory: {
       weapons: [],
       equipment: [],
@@ -102,13 +104,15 @@ const characterCreationSlice = createSlice({
       state.raceProficiencies = updatedProficiencies;
 
       // Update race proficiency choices
+      let updatedChoices = [];
       if (action.payload.raceData["starting_proficiency_options"]) {
-        state.raceProficiencyChoices.push(
+        updatedChoices.push(
           structuredClone(
             action.payload.raceData["starting_proficiency_options"]
           )
         );
       }
+      state.raceProficiencyChoices = updatedChoices;
     },
     setClassAndLvl(state, action) {
       // payload = {class, lvl, classData}
@@ -148,6 +152,14 @@ const characterCreationSlice = createSlice({
       // Update class proficiency choices
       state.classProficiencyChoices = structuredClone(
         action.payload.classData["proficiency_choices"]
+      );
+
+      // Update class starting equipment related variables
+      state.classStartingEquipment = structuredClone(
+        action.payload.classData["starting_equipment"]
+      );
+      state.classStartingEquipmentChoices = structuredClone(
+        action.payload.classData["starting_equipment_options"]
       );
     },
     incrPoint(state, action) {

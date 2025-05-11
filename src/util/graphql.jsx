@@ -75,6 +75,75 @@ export const GET_CLASS = gql`
           }
         }
       }
+      starting_equipment {
+        quantity
+        equipment {
+          desc
+          index
+          name
+          equipment_category {
+            index
+            name
+          }
+        }
+      }
+      starting_equipment_options {
+        choose
+        desc
+        type
+        from {
+          ... on EquipmentOptionSet {
+            option_set_type
+            options {
+              ... on CountedReferenceOption {
+                option_type
+                count
+                prerequisites {
+                  proficiency {
+                    index
+                    name
+                  }
+                }
+                of {
+                  index
+                  name
+                }
+              }
+              ... on EquipmentCategoryChoiceOption {
+                option_type
+                choice {
+                  choose
+                  type
+                  from {
+                    equipment_category {
+                      index
+                      name
+                    }
+                  }
+                }
+              }
+              ... on EquipmentMultipleOption {
+                option_type
+                items {
+                  ... on EquipmentCategoryChoiceOption {
+                    option_type
+                    choice {
+                      choose
+                      type
+                      from {
+                        equipment_category {
+                          index
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 `;
