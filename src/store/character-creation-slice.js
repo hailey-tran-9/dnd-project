@@ -55,6 +55,8 @@ const characterCreationSlice = createSlice({
       tools: [],
       misc: [],
     },
+    languages: [],
+    languageChoices: [],
     changed: false,
   },
   reducers: {
@@ -113,6 +115,10 @@ const characterCreationSlice = createSlice({
         );
       }
       state.raceProficiencyChoices = updatedChoices;
+
+      // Update race's known language and language choices
+      state.languages = action.payload.raceData["languages"];
+      state.languageChoices = action.payload.raceData["language_options"];
     },
     setClassAndLvl(state, action) {
       // payload = {class, lvl, classData}

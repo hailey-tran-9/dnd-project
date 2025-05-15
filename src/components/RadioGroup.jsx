@@ -7,9 +7,17 @@ export default function RadioGroup({
   return (
     <fieldset className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-10">
       {listOfInputs.map((element, index) => {
-        let inputName = element.name;
-        let inputValue = element.index;
+        let inputName;
+        let inputValue;
+
         // console.log(element.item);
+        if (element.item) {
+          inputName = element.item.name;
+          inputValue = element.item.index;
+        } else {
+          inputName = element.name;
+          inputValue = element.index;
+        }
 
         return (
           <div className="flex flex-row gap-3 flex-wrap" key={keyAdder + index}>

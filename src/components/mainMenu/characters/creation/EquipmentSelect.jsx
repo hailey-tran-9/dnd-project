@@ -52,7 +52,7 @@ export default function EquipmentSelect({
   }
 
   return (
-    <div className="flex flex-col" {...props}>
+    <div className="flex flex-col gap-3" {...props}>
       <div className="flex flex-row gap-x-5 flex-wrap">
         <h4>{caption}</h4>
         <select

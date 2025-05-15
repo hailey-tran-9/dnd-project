@@ -85,7 +85,7 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
                   nameForInputs={identifier2}
                   listOfInputs={proficiencyChoiceArrays[index1].from.options}
                   maxNumInputs={proficiencyChoiceArrays[index1].choose}
-                  proficiencySource="class"
+                  purpose="classProficiency"
                   key={identifier2 + "Fieldset"}
                 />
               )}
@@ -104,7 +104,7 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
             nameForInputs={identifier}
             listOfInputs={choice.from.options}
             maxNumInputs={choice.choose}
-            proficiencySource="class"
+            purpose="classProficiency"
             key={identifier + "Fieldset"}
           />
         </div>
@@ -165,7 +165,7 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
                     raceProficiencyChoiceArrays[index1].from.options
                   }
                   maxNumInputs={raceProficiencyChoiceArrays[index1].choose}
-                  proficiencySource="race"
+                  purpose="raceProficiency"
                   key={identifier2 + "Fieldset"}
                 />
               )}
@@ -184,7 +184,7 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
             nameForInputs={identifier}
             listOfInputs={choice.from.options}
             maxNumInputs={choice.choose}
-            proficiencySource="race"
+            purpose="raceProficiency"
             key={identifier + "Fieldset"}
           />
         </div>

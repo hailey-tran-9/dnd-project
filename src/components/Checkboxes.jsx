@@ -9,7 +9,7 @@ export default function Checkboxes({
   nameForInputs,
   listOfInputs,
   maxNumInputs,
-  proficiencySource,
+  purpose,
   ...props
 }) {
   const dispatch = useDispatch();
@@ -37,14 +37,14 @@ export default function Checkboxes({
             })
           );
         } else {
-          if (proficiencySource === "class") {
+          if (purpose === "classProficiency") {
             dispatch(
               characterCreationActions.updateClassProficiency({
                 index: event.target.value,
                 operation: !check,
               })
             );
-          } else {
+          } else if (purpose === "raceProficiency") {
             dispatch(
               characterCreationActions.updateRaceProficiency({
                 index: event.target.value,
