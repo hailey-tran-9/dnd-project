@@ -241,9 +241,30 @@ export const GET_SKILLS = gql`
 export const GET_EQUIPMENT_INFO = gql`
   query EquipmentInfo($index: String) {
     equipment(index: $index) {
+      desc
+      index
       name
       equipment_category {
         index
+        name
+      }
+    }
+  }
+`;
+
+export const GET_EQUIPMENT_CATEGORY_INFO = gql`
+  query EquipmentCategoryInfo($index: String) {
+    equipmentCategory(index: $index) {
+      index
+      name
+      equipment {
+        desc
+        index
+        name
+        equipment_category {
+          index
+          name
+        }
       }
     }
   }

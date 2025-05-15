@@ -1,12 +1,20 @@
 import { useSelector } from "react-redux";
 
+import EquipmentSelect from "./EquipmentSelect";
+
 export default function EquipmentOptions({ enteredClass, enteredRace }) {
   const characterCreation = useSelector((state) => state.characterCreation);
 
   let classEquipmentChoices;
   classEquipmentChoices = characterCreation.classStartingEquipmentChoices.map(
     (choice, index1) => (
-      <p key={enteredClass + "EquipmentChoice" + index1}>{choice.desc}</p>
+      <EquipmentSelect
+        identifier={enteredClass + "EquipmentChoiceSelect" + index1}
+        keyAdder={enteredClass + "EquipmentChoice" + index1}
+        caption={choice.desc}
+        options={choice.from.options}
+        key={enteredClass + "EquipmentChoiceSelectKey" + index1}
+      />
     )
   );
 
