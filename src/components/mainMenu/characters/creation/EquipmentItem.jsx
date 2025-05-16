@@ -10,7 +10,7 @@ export default function EquipmentItem({ index, optionType }) {
   let loading;
   let error;
   let data;
-  if (optionType === "counted_reference") {
+  if (optionType === "counted_reference" || optionType === "multiple") {
     ({ loading, error, data } = useQuery(GET_EQUIPMENT_INFO, {
       variables: { index: index },
     }));
@@ -34,7 +34,7 @@ export default function EquipmentItem({ index, optionType }) {
           <p>{itemInfo.desc}</p>
         </>
       );
-    } else {
+    } else if (optionType === "choice") {
       let equipmentCategory = data.equipmentCategory;
       console.log("choice data:", equipmentCategory);
       content = (
@@ -45,6 +45,14 @@ export default function EquipmentItem({ index, optionType }) {
           keyAdder={index + "RadioGroup"}
         />
       );
+    } else if (optionType === "multiple") {
+      let itemInfo = data.equipment;
+      console.log("item data:", itemInfo);
+      // content = (
+      //   <>
+      //     <p>{itemInfo.desc}</p>
+      //   </>
+      // );
     }
   }
 

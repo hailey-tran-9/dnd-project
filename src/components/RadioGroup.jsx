@@ -3,9 +3,13 @@ export default function RadioGroup({
   listOfInputs,
   purpose,
   keyAdder,
+  ...props
 }) {
   return (
-    <fieldset className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-10">
+    <fieldset
+      className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-10"
+      {...props}
+    >
       {listOfInputs.map((element, index) => {
         let inputName;
         let inputValue;

@@ -21,9 +21,20 @@ export default function EquipmentSelect({
     if (option["option_type"] === "counted_reference") {
       label = option.of.name;
       value = option.of.index;
-    } else {
+    } else if (option["option_type"] === "choice") {
       label = option.choice.from["equipment_category"].name;
       value = option.choice.from["equipment_category"].index;
+    } else if (option["option_type"] === "multiple") {
+      console.log(option.items);
+      if (option.items[0]["option_type"] === "counted_reference") {
+        label = option.items[0].of.name;
+        value = option.items[0].of.index;
+      } else if (option.items[0]["option_type"] === "choice") {
+        let equipmentCategoryInfo = option.items[0].choice.from["equipment_category"];
+        label = equipmentCategoryInfo.name;
+        value = equipmentCategoryInfo.index;
+      }
+      
     }
 
     if (selected === "" && !initSelected) {

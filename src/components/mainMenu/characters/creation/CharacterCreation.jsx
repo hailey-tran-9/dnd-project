@@ -15,6 +15,7 @@ import PointBuySystem from "./PointBuySystem";
 import ProficiencyOptions from "./ProficiencyOptions";
 import EquipmentOptions from "./EquipmentOptions";
 import LanguageOptions from "./LanguageOptions";
+import SpellOptions from "./SpellOptions";
 
 export default function CharacterCreation({ cancelFn, submitFn }) {
   const dispatch = useDispatch();
@@ -120,9 +121,7 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
           enteredClass={enteredClass}
           enteredRace={enteredRace}
         />
-        <div>
-          <h2>Spells</h2>
-        </div>
+        <SpellOptions enteredClass={enteredClass} />
         <LanguageOptions enteredRace={enteredRace} />
         <div>
           <h2>Notes</h2>

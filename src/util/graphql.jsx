@@ -138,7 +138,32 @@ export const GET_CLASS = gql`
                       }
                     }
                   }
+                  ... on CountedReferenceOption {
+                    count
+                    option_type
+                    of {
+                      desc
+                      index
+                      name
+                      equipment_category {
+                        index
+                        name
+                      }
+                    }
+                  }
                 }
+              }
+            }
+          }
+          ... on EquipmentCategoryOptionSet {
+            option_set_type
+            equipment_category {
+              index
+              name
+              equipment {
+                desc
+                index
+                name
               }
             }
           }
@@ -265,6 +290,52 @@ export const GET_EQUIPMENT_CATEGORY_INFO = gql`
           index
           name
         }
+      }
+    }
+  }
+`;
+
+export const GET_SPELLCASTING_ABILITY = gql`
+  query SpellcastingAbility($level: IntFilter, $class: StringFilter) {
+    spells(level: $level, class: $class) {
+      area_of_effect {
+        size
+        type
+      }
+      attack_type
+      casting_time
+      concentration
+      damage {
+        damage_at_character_level {
+          damage
+          level
+        }
+      }
+      dc {
+        desc
+        success
+        type {
+          index
+          name
+          full_name
+        }
+      }
+      desc
+      duration
+      heal_at_slot_level {
+        healing
+        level
+      }
+      higher_level
+      index
+      level
+      name
+      range
+      ritual
+      school {
+        desc
+        index
+        name
       }
     }
   }
