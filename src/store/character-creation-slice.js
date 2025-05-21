@@ -57,6 +57,8 @@ const characterCreationSlice = createSlice({
     },
     languages: [],
     languageChoices: [],
+    spellcasting: [],
+    spellsLearned: [],
     changed: false,
   },
   reducers: {
@@ -167,6 +169,9 @@ const characterCreationSlice = createSlice({
       state.classStartingEquipmentChoices = structuredClone(
         action.payload.classData["starting_equipment_options"]
       );
+
+      // Update class spell slot info
+      state.spellcasting = action.payload.classData["class_levels"];
     },
     incrPoint(state, action) {
       let bonus = state.abilityScores[action.payload].bonus;

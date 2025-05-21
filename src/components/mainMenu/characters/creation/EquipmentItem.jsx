@@ -22,7 +22,7 @@ export default function EquipmentItem({ index, optionType }) {
 
   let content;
   if (loading) {
-    console.log("Loading...");
+    // console.log("Loading...");
   } else if (error) {
     content = <p>Error</p>;
   } else {
