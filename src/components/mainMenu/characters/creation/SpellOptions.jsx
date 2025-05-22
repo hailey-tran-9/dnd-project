@@ -31,6 +31,7 @@ export default function SpellOptions({ enteredClass }) {
       spellSlotInfo = characterCreation.spellcasting.filter(
         (lvlInfo) => lvlInfo.level === 1
       )[0].spellcasting;
+      console.log("spellSlotInfo:", spellSlotInfo);
     }
     console.log("can cast spells:", canCastSpells);
   }
@@ -50,7 +51,9 @@ export default function SpellOptions({ enteredClass }) {
           </div>
           <div className="flex flex-row gap-2 justify-around">
             <p>Learned: 0</p>
-            <p>{`Limit: ${spellSlotInfo["cantrips_known"]}`}</p>
+            {spellSlotInfo && (
+              <p>{`Limit: ${spellSlotInfo["cantrips_known"]}`}</p>
+            )}
           </div>
           <div className="h-[25vh] bg-gray-50 flex flex-col gap-1 overflow-y-scroll rounded-md">
             {content}
