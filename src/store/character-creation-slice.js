@@ -72,7 +72,8 @@ const characterCreationSlice = createSlice({
     languageChoices: [],
     spellcasting: [],
     spellList: structuredClone(defaultSpellList),
-    spellsLearned: [],
+    numSpellsLearned: 0,
+    spellsLearned: structuredClone(defaultSpellList),
     changed: false,
   },
   reducers: {
@@ -187,6 +188,8 @@ const characterCreationSlice = createSlice({
       // Update class spell info
       state.spellcasting = [];
       state.spellList = structuredClone(defaultSpellList);
+      state.numSpellsLearned = 0;
+      state.spellsLearned = structuredClone(defaultSpellList);
 
       state.spellcasting = action.payload.classData["class_levels"];
       action.payload.classData["spells"].map((spell) => {
@@ -272,6 +275,19 @@ const characterCreationSlice = createSlice({
         if (action.payload.operation === true) {
           state.raceProficiencies.push(action.payload.index);
         }
+      }
+    },
+    learnSpell(state, action) {
+      // payload = {spell, operation: true for "add" or false for "remove"}
+      if (action.payload.operation === false) {
+        let filtered = state.spellsLearned[action.payload.spell.level].filter(
+          (spell) => spell.index !== action.payload.spell.index
+        );
+        state.spellsLearned[action.payload.spell.level] = filtered;
+        state.numSpellsLearned -= 1;
+      } else {
+        state.spellsLearned[action.payload.spell.level].push(action.payload.spell);
+        state.numSpellsLearned += 1;
       }
     },
   },

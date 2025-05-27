@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import Button from "../../../Button";
 import SpellTab from "./SpellTab";
@@ -19,11 +19,16 @@ export default function SpellOptions({ enteredClass }) {
     )[0].spellcasting;
     // console.log("spell slot info:", spellSlotInfo);
   }
-
+  
   if (characterCreation.spellList[spellLvl]) {
     content = characterCreation.spellList[spellLvl].map((spell, index) => (
       <SpellTab
         spellData={spell}
+        limit={
+          spellLvl === "0"
+            ? spellSlotInfo["cantrips_known"]
+            : spellSlotInfo["spell_slots_level_" + spellLvl]
+        }
         key={enteredClass + "lvl" + spell.level + "Spell" + index}
       />
     ));
@@ -38,7 +43,7 @@ export default function SpellOptions({ enteredClass }) {
     canCastSpells && (
       <div>
         <h2>Spells</h2>
-        <p>{`Spells Learned: ${characterCreation.spellsLearned.length}`}</p>
+        <p>{`Spells Learned: ${characterCreation.numSpellsLearned}`}</p>
         {spellSlotInfo && (
           <p>{`Max Spells: ${spellSlotInfo["spells_known"]}`}</p>
         )}
@@ -85,7 +90,7 @@ export default function SpellOptions({ enteredClass }) {
             })}
           </div>
           <div className="flex flex-row gap-2 justify-around">
-            <p>Learned: 0</p>
+            <p>Learned: {characterCreation.spellsLearned[spellLvl].length}</p>
             {spellSlotInfo && (
               <p>{`Limit: ${
                 spellLvl === "0"

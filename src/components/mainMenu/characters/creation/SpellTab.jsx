@@ -1,8 +1,19 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "../../../Button";
+import { characterCreationActions } from "../../../../store/character-creation-slice";
 
-export default function SpellTab({ spellData, ...props }) {
+export default function SpellTab({ spellData, limit, ...props }) {
+  const dispatch = useDispatch();
+  const spellsLearned = useSelector(
+    (state) => state.characterCreation.spellsLearned
+  );
   const [showInfo, setShowInfo] = useState(false);
+  const [learned, setLearned] = useState(
+    spellsLearned[spellData.level].some(
+      (spell) => spell.index === spellData.index
+    )
+  );
 
   let tabClassname;
   let infoClassname;
@@ -16,8 +27,28 @@ export default function SpellTab({ spellData, ...props }) {
     infoClassname = "bg-gray-50 text-[1rem] px-5 py-5 rounded-b-md hidden";
   }
 
-  function handleTabClick() {
+  function handleTabClick(event) {
+    if (event.target.localName === "button") return;
     setShowInfo((prevState) => !prevState);
+  }
+
+  function handleLearnSpellClick() {
+    if (!learned) {
+      if (spellsLearned[spellData.level].length >= limit) {
+        console.log(
+          "cannot learn this spell. you already know the max amount!"
+        );
+        return;
+      }
+    }
+
+    dispatch(
+      characterCreationActions.learnSpell({
+        spell: spellData,
+        operation: !learned,
+      })
+    );
+    setLearned((prevState) => !prevState);
   }
 
   let name = spellData.name;
@@ -31,9 +62,16 @@ export default function SpellTab({ spellData, ...props }) {
 
   return (
     <div {...props}>
-      <div className={tabClassname} onClick={handleTabClick}>
+      <div className={tabClassname} onClick={(event) => handleTabClick(event)}>
         <p>{name}</p>
-        <Button type="button">Add</Button>
+        <Button
+          type="button"
+          onClick={handleLearnSpellClick}
+          disabled={spellsLearned[spellData.level].length === limit && !learned}
+          className={"disabled:bg-[#8d8d8dc0]"}
+        >
+          {!learned ? "Add" : "Remove"}
+        </Button>
       </div>
       <div className={infoClassname}>
         <p>{`Casting Time: ${spellData["casting_time"]}`}</p>
