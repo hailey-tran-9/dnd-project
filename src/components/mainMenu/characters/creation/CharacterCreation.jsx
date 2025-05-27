@@ -41,72 +41,75 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
 
   return (
     <Form onSubmit={submitFn}>
-      <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-20">
         <div className="flex flex-row justify-between">
           <h1>Character Creation</h1>
           <Button type="button" onClick={cancelFn}>
             Cancel
           </Button>
         </div>
-        <div>
-          <label
-            htmlFor="character-name"
-            className="text-black text-[2.5rem] font-[500] mr-10"
-          >
-            Character name
-          </label>
-          <Input
-            id="character-name"
-            name="character-name"
-            type="text"
-            className="text-[2rem]"
-            required
-          />
-        </div>
-        <div className="flex flex-row gap-[25%]">
+
+        <div className="flex flex-col gap-5">
           <div>
             <label
-              htmlFor="character-race"
+              htmlFor="character-name"
               className="text-black text-[2.5rem] font-[500] mr-10"
             >
-              Race
+              Character name
             </label>
-            <select
-              name={"character-race"}
-              id={"character-race"}
-              onChange={handleRaceChange}
-              className="bg-white rounded-md text-[2rem] pl-3 pr-15"
-              defaultValue={enteredRace}
+            <Input
+              id="character-name"
+              name="character-name"
+              type="text"
+              className="text-[2rem]"
               required
-            >
-              {raceIndexes.map((raceName) => (
-                <option key={raceName + "Option"} value={raceName}>
-                  {capitalize(raceName)}
-                </option>
-              ))}
-            </select>
+            />
           </div>
-          <div>
-            <label
-              htmlFor="character-class"
-              className="text-black text-[2.5rem] font-[500] mr-10"
-            >
-              Class
-            </label>
-            <select
-              name={"character-class"}
-              id={"character-class"}
-              onChange={handleClassChange}
-              className="bg-white rounded-md text-[2rem] pl-3 pr-15"
-              defaultValue={enteredClass}
-              required
-            >
-              {classIndexes.map((className) => (
-                <option key={className + "Option"} value={className}>
-                  {capitalize(className)}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-row gap-[25%]">
+            <div>
+              <label
+                htmlFor="character-race"
+                className="text-black text-[2.5rem] font-[500] mr-10"
+              >
+                Race
+              </label>
+              <select
+                name={"character-race"}
+                id={"character-race"}
+                onChange={handleRaceChange}
+                className="bg-white rounded-md text-[2rem] pl-3 pr-15"
+                defaultValue={enteredRace}
+                required
+              >
+                {raceIndexes.map((raceName) => (
+                  <option key={raceName + "Option"} value={raceName}>
+                    {capitalize(raceName)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label
+                htmlFor="character-class"
+                className="text-black text-[2.5rem] font-[500] mr-10"
+              >
+                Class
+              </label>
+              <select
+                name={"character-class"}
+                id={"character-class"}
+                onChange={handleClassChange}
+                className="bg-white rounded-md text-[2rem] pl-3 pr-15"
+                defaultValue={enteredClass}
+                required
+              >
+                {classIndexes.map((className) => (
+                  <option key={className + "Option"} value={className}>
+                    {capitalize(className)}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <RaceSelection enteredRace={enteredRace} />

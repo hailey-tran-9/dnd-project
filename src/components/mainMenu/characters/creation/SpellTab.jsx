@@ -33,7 +33,7 @@ export default function SpellTab({ spellData, ...props }) {
     <div {...props}>
       <div className={tabClassname} onClick={handleTabClick}>
         <p>{name}</p>
-        <Button>Add</Button>
+        <Button type="button">Add</Button>
       </div>
       <div className={infoClassname}>
         <p>{`Casting Time: ${spellData["casting_time"]}`}</p>
@@ -58,11 +58,12 @@ export default function SpellTab({ spellData, ...props }) {
         {spellData["damage"] && (
           <>
             <p>{`Damage at Levels`}</p>
-            {spellData["damage"]["damage_at_character_level"].map((lvlDmg) => (
-              <p
-                key={spellData.name + "Lvl" + lvlDmg.level + "Dmg"}
-              >{`${lvlDmg.level}: ${lvlDmg.damage}`}</p>
-            ))}
+            {spellData["damage"]["damage_at_character_level"] &&
+              spellData["damage"]["damage_at_character_level"].map((lvlDmg) => (
+                <p
+                  key={spellData.name + "Lvl" + lvlDmg.level + "Dmg"}
+                >{`${lvlDmg.level}: ${lvlDmg.damage}`}</p>
+              ))}
           </>
         )}
         {addAnotherLineBreak && <br></br>}

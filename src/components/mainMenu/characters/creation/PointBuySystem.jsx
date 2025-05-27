@@ -37,17 +37,16 @@ export default function PointBuySystem() {
   }, [data]);
 
   return (
-    <>
-      <div className="flex flex-col">
-        <h2>Point-Buy System</h2>
-        <h3>Points left to use: {characterCreation.points}</h3>
-        <div className="flex flex-row justify-start xl:justify-center gap-[1vw] mt-3">
-          {abilityScoreIndexes.map((ability) => (
-            <PointBuyBox key={ability + "PointBuyBox"} ability={ability} />
-          ))}
-        </div>
+    <div className="flex flex-col">
+      <h2>Point-Buy System</h2>
+      <h3>Points left to use: {characterCreation.points}</h3>
+      <div className="flex flex-row justify-start xl:justify-center gap-[1vw] mt-3">
+        {abilityScoreIndexes.map((ability) => (
+          <PointBuyBox key={ability + "PointBuyBox"} ability={ability} />
+        ))}
       </div>
-      <div className="flex flex-col">
+
+      <div className="mt-5">
         <h3>Skills</h3>
         <div
           id="character-skills"
@@ -71,6 +70,6 @@ export default function PointBuySystem() {
           })}
         </div>
       </div>
-    </>
+    </div>
   );
 }

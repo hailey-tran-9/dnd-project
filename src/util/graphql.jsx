@@ -185,6 +185,47 @@ export const GET_CLASS = gql`
           spells_known
         }
       }
+      spells {
+        area_of_effect {
+          size
+          type
+        }
+        attack_type
+        casting_time
+        concentration
+        damage {
+          damage_at_character_level {
+            damage
+            level
+          }
+        }
+        dc {
+          desc
+          success
+          type {
+            index
+            name
+            full_name
+          }
+        }
+        desc
+        duration
+        heal_at_slot_level {
+          healing
+          level
+        }
+        higher_level
+        index
+        level
+        name
+        range
+        ritual
+        school {
+          desc
+          index
+          name
+        }
+      }
     }
   }
 `;
@@ -270,11 +311,13 @@ export const GET_RACE = gql`
 export const GET_SKILLS = gql`
   query Skills {
     skills {
-      index
-      name
       ability_score {
         index
+        name
       }
+      desc
+      index
+      name
     }
   }
 `;
@@ -311,7 +354,53 @@ export const GET_EQUIPMENT_CATEGORY_INFO = gql`
   }
 `;
 
-export const GET_SPELLCASTING_ABILITY = gql`
+export const GET_SPELLS_BY_CLASS = gql`
+  query SpellsByClass($class: StringFilter) {
+    spells(class: $class) {
+      area_of_effect {
+        size
+        type
+      }
+      attack_type
+      casting_time
+      concentration
+      damage {
+        damage_at_character_level {
+          damage
+          level
+        }
+      }
+      dc {
+        desc
+        success
+        type {
+          index
+          name
+          full_name
+        }
+      }
+      desc
+      duration
+      heal_at_slot_level {
+        healing
+        level
+      }
+      higher_level
+      index
+      level
+      name
+      range
+      ritual
+      school {
+        desc
+        index
+        name
+      }
+    }
+  }
+`;
+
+export const GET_SPELLCASTING_ABILITY_LVL = gql`
   query SpellcastingAbility($level: IntFilter, $class: StringFilter) {
     spells(level: $level, class: $class) {
       area_of_effect {

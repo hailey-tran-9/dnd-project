@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { Outlet } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 
-import ClassContextProvider from "../components/contexts/ClassContext";
-import RaceContextProvider from "../components/contexts/RaceContext";
-import SkillContextProvider from "../components/contexts/SkillContext";
-import AbilityScoreContextProvider from "../components/contexts/AbilityScoreContext.jsx";
+// import ClassContextProvider from "../components/contexts/ClassContext";
+// import RaceContextProvider from "../components/contexts/RaceContext";
+// import SkillContextProvider from "../components/contexts/SkillContext";
+// import AbilityScoreContextProvider from "../components/contexts/AbilityScoreContext.jsx";
 import Navbar from "../components/Navbar.jsx";
 
 import {
@@ -46,16 +46,8 @@ export default function RootLayout() {
 
   return (
     <>
-      <AbilityScoreContextProvider>
-        <ClassContextProvider>
-          <RaceContextProvider>
-            <SkillContextProvider>
-              <Navbar />
-              <Outlet />
-            </SkillContextProvider>
-          </RaceContextProvider>
-        </ClassContextProvider>
-      </AbilityScoreContextProvider>
+      <Navbar />
+      <Outlet />
     </>
   );
 }

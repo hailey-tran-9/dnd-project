@@ -6,17 +6,32 @@ export default function Button({
   padding = "px-6 pt-1 pb-2",
   rounded = "rounded-xl",
   children,
+  selected = false,
+  selectedColor,
   ...props
 }) {
-  let classes = [
-    "h-fit justify-center align-middle overflow-clip hover:overflow-x-auto",
-    bgColor,
-    hoverColor,
-    textColor,
-    padding,
-    rounded,
-    className,
-  ];
+  let classes;
+  if (!selected) {
+    classes = [
+      "h-fit justify-center align-middle overflow-clip hover:overflow-x-auto",
+      bgColor,
+      hoverColor,
+      textColor,
+      padding,
+      rounded,
+      className,
+    ];
+  } else {
+    classes = [
+      "h-fit justify-center align-middle overflow-clip hover:overflow-x-auto",
+      bgColor,
+      ("hover:bg-" + selectedColor),
+      textColor,
+      padding,
+      rounded,
+      className,
+    ];
+  }
 
   return (
     <button className={classes.join(" ")} {...props}>

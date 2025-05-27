@@ -18,6 +18,19 @@ const pointMapping = {
   15: 9,
 };
 
+const defaultSpellList = {
+  0: [],
+  1: [],
+  2: [],
+  3: [],
+  4: [],
+  5: [],
+  6: [],
+  7: [],
+  8: [],
+  9: [],
+};
+
 const characterCreationSlice = createSlice({
   name: "characterCreation",
   initialState: {
@@ -58,6 +71,7 @@ const characterCreationSlice = createSlice({
     languages: [],
     languageChoices: [],
     spellcasting: [],
+    spellList: structuredClone(defaultSpellList),
     spellsLearned: [],
     changed: false,
   },
@@ -170,8 +184,14 @@ const characterCreationSlice = createSlice({
         action.payload.classData["starting_equipment_options"]
       );
 
-      // Update class spell slot info
+      // Update class spell info
+      state.spellcasting = [];
+      state.spellList = structuredClone(defaultSpellList);
+
       state.spellcasting = action.payload.classData["class_levels"];
+      action.payload.classData["spells"].map((spell) => {
+        state.spellList[spell.level].push(spell);
+      });
     },
     incrPoint(state, action) {
       let bonus = state.abilityScores[action.payload].bonus;
