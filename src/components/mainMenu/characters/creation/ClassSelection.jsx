@@ -7,6 +7,7 @@ import { characterCreationActions } from "../../../../store/character-creation-s
 
 export default function ClassSelection({
   enteredClass,
+  enteredLvl,
 }) {
   const dispatch = useDispatch();
 
@@ -19,7 +20,7 @@ export default function ClassSelection({
       dispatch(
         characterCreationActions.setClassAndLvl({
           class: data.class.index,
-          lvl: 1,
+          lvl: enteredLvl,
           classData: data.class,
         })
       );

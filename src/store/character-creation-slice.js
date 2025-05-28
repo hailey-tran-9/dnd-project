@@ -31,6 +31,8 @@ const defaultSpellList = {
   9: [],
 };
 
+const defaultSpellcasting = { spellcastingAbility: null, spellSlots: null };
+
 const characterCreationSlice = createSlice({
   name: "characterCreation",
   initialState: {
@@ -70,10 +72,11 @@ const characterCreationSlice = createSlice({
     },
     languages: [],
     languageChoices: [],
-    spellcasting: [],
+    spellcasting: structuredClone(defaultSpellcasting),
     spellList: structuredClone(defaultSpellList),
     numSpellsLearned: 0,
     spellsLearned: structuredClone(defaultSpellList),
+    features: [],
     changed: false,
   },
   reducers: {
@@ -185,15 +188,37 @@ const characterCreationSlice = createSlice({
         action.payload.classData["starting_equipment_options"]
       );
 
-      // Update class spell info
-      state.spellcasting = [];
-      state.spellList = structuredClone(defaultSpellList);
+      // Update class level info
+      let canCastSpells = action.payload.classData.spellcasting;
+      state.spellcasting = structuredClone(defaultSpellcasting);
       state.numSpellsLearned = 0;
-      state.spellsLearned = structuredClone(defaultSpellList);
 
-      state.spellcasting = action.payload.classData["class_levels"];
-      action.payload.classData["spells"].map((spell) => {
-        state.spellList[spell.level].push(spell);
+      state.features = [];
+
+      if (canCastSpells) {
+        state.spellcasting["spellcastingAbility"] =
+          action.payload.classData.spellcasting["spellcasting_ability"];
+        state.spellcasting["spellSlots"] = [];
+        state.spellList = structuredClone(defaultSpellList);
+        state.spellsLearned = structuredClone(defaultSpellList);
+
+        action.payload.classData["spells"].map((spell) => {
+          state.spellList[spell.level].push(spell);
+        });
+      } else {
+        state.spellList = null;
+        state.spellsLearned = null;
+      }
+
+      action.payload.classData["class_levels"].forEach(function (lvlInfo) {
+        // console.log("lvlInfo:", lvlInfo);
+        if (canCastSpells && lvlInfo.spellcasting !== null) {
+          state.spellcasting["spellSlots"].push({
+            level: lvlInfo.level,
+            spellcasting: lvlInfo.spellcasting,
+          });
+        }
+        state.features.push(lvlInfo.features);
       });
     },
     incrPoint(state, action) {
@@ -286,7 +311,9 @@ const characterCreationSlice = createSlice({
         state.spellsLearned[action.payload.spell.level] = filtered;
         state.numSpellsLearned -= 1;
       } else {
-        state.spellsLearned[action.payload.spell.level].push(action.payload.spell);
+        state.spellsLearned[action.payload.spell.level].push(
+          action.payload.spell
+        );
         state.numSpellsLearned += 1;
       }
     },

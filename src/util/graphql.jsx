@@ -169,22 +169,6 @@ export const GET_CLASS = gql`
           }
         }
       }
-      class_levels {
-        level
-        spellcasting {
-          cantrips_known
-          spell_slots_level_1
-          spell_slots_level_2
-          spell_slots_level_3
-          spell_slots_level_4
-          spell_slots_level_5
-          spell_slots_level_6
-          spell_slots_level_7
-          spell_slots_level_8
-          spell_slots_level_9
-          spells_known
-        }
-      }
       spells {
         area_of_effect {
           size
@@ -225,6 +209,37 @@ export const GET_CLASS = gql`
           index
           name
         }
+      }
+      spellcasting {
+        spellcasting_ability {
+          desc
+          full_name
+          index
+          name
+        }
+      }
+      class_levels {
+        ability_score_bonuses
+        features {
+          index
+          name
+          level
+          desc
+        }
+        spellcasting {
+          cantrips_known
+          spell_slots_level_1
+          spell_slots_level_2
+          spell_slots_level_3
+          spell_slots_level_4
+          spell_slots_level_5
+          spell_slots_level_6
+          spell_slots_level_7
+          spell_slots_level_8
+          spell_slots_level_9
+          spells_known
+        }
+        level
       }
     }
   }
@@ -349,98 +364,6 @@ export const GET_EQUIPMENT_CATEGORY_INFO = gql`
           index
           name
         }
-      }
-    }
-  }
-`;
-
-export const GET_SPELLS_BY_CLASS = gql`
-  query SpellsByClass($class: StringFilter) {
-    spells(class: $class) {
-      area_of_effect {
-        size
-        type
-      }
-      attack_type
-      casting_time
-      concentration
-      damage {
-        damage_at_character_level {
-          damage
-          level
-        }
-      }
-      dc {
-        desc
-        success
-        type {
-          index
-          name
-          full_name
-        }
-      }
-      desc
-      duration
-      heal_at_slot_level {
-        healing
-        level
-      }
-      higher_level
-      index
-      level
-      name
-      range
-      ritual
-      school {
-        desc
-        index
-        name
-      }
-    }
-  }
-`;
-
-export const GET_SPELLCASTING_ABILITY_LVL = gql`
-  query SpellcastingAbility($level: IntFilter, $class: StringFilter) {
-    spells(level: $level, class: $class) {
-      area_of_effect {
-        size
-        type
-      }
-      attack_type
-      casting_time
-      concentration
-      damage {
-        damage_at_character_level {
-          damage
-          level
-        }
-      }
-      dc {
-        desc
-        success
-        type {
-          index
-          name
-          full_name
-        }
-      }
-      desc
-      duration
-      heal_at_slot_level {
-        healing
-        level
-      }
-      higher_level
-      index
-      level
-      name
-      range
-      ritual
-      school {
-        desc
-        index
-        name
       }
     }
   }

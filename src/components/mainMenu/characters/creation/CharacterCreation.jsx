@@ -22,6 +22,7 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
 
   const [enteredRace, setEnteredRace] = useState(raceIndexes[0]);
   const [enteredClass, setEnteredClass] = useState(classIndexes[0]);
+  const [enteredLvl, setEnteredLvl] = useState(1);
 
   function handleRaceChange(event) {
     // console.log(event.target.value);
@@ -36,6 +37,13 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
     let currClass = event.target.value;
     if (currClass !== enteredClass) {
       setEnteredClass(currClass);
+    }
+  }
+
+  function handleLvlChange(event) {
+    let currLvl = event.target.value;
+    if (currLvl !== enteredLvl) {
+      setEnteredLvl(currLvl);
     }
   }
 
@@ -65,7 +73,7 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
               required
             />
           </div>
-          <div className="flex flex-row gap-[25%]">
+          <div className="flex flex-row flex-wrap justify-between gap-y-3">
             <div>
               <label
                 htmlFor="character-race"
@@ -110,10 +118,34 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
                 ))}
               </select>
             </div>
+            <div>
+              <label
+                htmlFor="character-lvl"
+                className="text-black text-[2.5rem] font-[500] mr-10"
+              >
+                Level
+              </label>
+              <select
+                name={"character-lvl"}
+                id={"character-lvl"}
+                onChange={handleLvlChange}
+                className="bg-white rounded-md text-[2rem] pl-3 pr-15"
+                defaultValue={enteredLvl}
+                required
+              >
+                {[...Array(20).keys()]
+                  .map((n) => n + 1)
+                  .map((lvl) => (
+                    <option key={lvl + "Option"} value={lvl}>
+                      {lvl}
+                    </option>
+                  ))}
+              </select>
+            </div>
           </div>
 
           <RaceSelection enteredRace={enteredRace} />
-          <ClassSelection enteredClass={enteredClass} />
+          <ClassSelection enteredClass={enteredClass} enteredLvl={enteredLvl} />
         </div>
         <PointBuySystem />
         <ProficiencyOptions
@@ -124,7 +156,7 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
           enteredClass={enteredClass}
           enteredRace={enteredRace}
         />
-        <SpellOptions enteredClass={enteredClass} />
+        <SpellOptions enteredClass={enteredClass} enteredLvl={enteredLvl} />
         <LanguageOptions enteredRace={enteredRace} />
         <div>
           <h2>Notes</h2>

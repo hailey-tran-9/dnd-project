@@ -4,31 +4,31 @@ import { useState } from "react";
 import Button from "../../../Button";
 import SpellTab from "./SpellTab";
 
-export default function SpellOptions({ enteredClass }) {
+export default function SpellOptions({ enteredClass, enteredLvl }) {
   const characterCreation = useSelector((state) => state.characterCreation);
   const [spellLvl, setSpellLvl] = useState("0");
 
   let content = <></>;
-  let canCastSpells;
+  let canCastSpells =
+    characterCreation.spellcasting["spellcastingAbility"] !== null;
   let spellSlotInfo;
-  if (characterCreation.spellcasting.length > 0) {
-    canCastSpells = characterCreation.spellcasting[0].spellcasting !== null;
+  let lvlLimit;
+  if (canCastSpells) {
     // TODO: dynamically change char lvl
-    spellSlotInfo = characterCreation.spellcasting.filter(
-      (info) => info.level === 1
+    spellSlotInfo = characterCreation.spellcasting["spellSlots"].filter(
+      (info) => info.level === parseInt(enteredLvl)
     )[0].spellcasting;
-    // console.log("spell slot info:", spellSlotInfo);
-  }
-  
-  if (characterCreation.spellList[spellLvl]) {
+    // console.log("spellSlotInfo:", spellSlotInfo);
+
+    lvlLimit =
+      spellLvl === "0"
+        ? spellSlotInfo["cantrips_known"]
+        : spellSlotInfo["spell_slots_level_" + spellLvl];
+
     content = characterCreation.spellList[spellLvl].map((spell, index) => (
       <SpellTab
         spellData={spell}
-        limit={
-          spellLvl === "0"
-            ? spellSlotInfo["cantrips_known"]
-            : spellSlotInfo["spell_slots_level_" + spellLvl]
-        }
+        limit={lvlLimit}
         key={enteredClass + "lvl" + spell.level + "Spell" + index}
       />
     ));
@@ -91,13 +91,7 @@ export default function SpellOptions({ enteredClass }) {
           </div>
           <div className="flex flex-row gap-2 justify-around">
             <p>Learned: {characterCreation.spellsLearned[spellLvl].length}</p>
-            {spellSlotInfo && (
-              <p>{`Limit: ${
-                spellLvl === "0"
-                  ? spellSlotInfo["cantrips_known"]
-                  : spellSlotInfo["spell_slots_level_" + spellLvl]
-              }`}</p>
-            )}
+            {spellSlotInfo && <p>{`Limit: ${lvlLimit}`}</p>}
           </div>
           <div className="h-[25vh] bg-gray-50 flex flex-col gap-1 overflow-y-scroll rounded-md">
             {content}
