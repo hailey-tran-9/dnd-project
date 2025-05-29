@@ -25,7 +25,7 @@ export default function ClassSelection({
         })
       );
     }
-  }, [data]);
+  }, [data, enteredClass, enteredLvl]);
 
   let dataToPrint;
   if (loading) {

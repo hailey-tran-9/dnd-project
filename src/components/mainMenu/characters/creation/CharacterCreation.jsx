@@ -16,6 +16,7 @@ import ProficiencyOptions from "./ProficiencyOptions";
 import EquipmentOptions from "./EquipmentOptions";
 import LanguageOptions from "./LanguageOptions";
 import SpellOptions from "./SpellOptions";
+import Features from "./Features";
 
 export default function CharacterCreation({ cancelFn, submitFn }) {
   const dispatch = useDispatch();
@@ -43,7 +44,7 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
   function handleLvlChange(event) {
     let currLvl = event.target.value;
     if (currLvl !== enteredLvl) {
-      setEnteredLvl(currLvl);
+      setEnteredLvl(parseInt(currLvl));
     }
   }
 
@@ -147,16 +148,17 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
           <RaceSelection enteredRace={enteredRace} />
           <ClassSelection enteredClass={enteredClass} enteredLvl={enteredLvl} />
         </div>
+        <Features />
         <PointBuySystem />
         <ProficiencyOptions
           enteredClass={enteredClass}
           enteredRace={enteredRace}
         />
+        <SpellOptions enteredClass={enteredClass} enteredLvl={enteredLvl} />
         <EquipmentOptions
           enteredClass={enteredClass}
           enteredRace={enteredRace}
         />
-        <SpellOptions enteredClass={enteredClass} enteredLvl={enteredLvl} />
         <LanguageOptions enteredRace={enteredRace} />
         <div>
           <h2>Notes</h2>

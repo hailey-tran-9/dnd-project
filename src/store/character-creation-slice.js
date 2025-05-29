@@ -142,6 +142,7 @@ const characterCreationSlice = createSlice({
     },
     setClassAndLvl(state, action) {
       // payload = {class, lvl, classData}
+      state.classAndLvl = {};
       state.classAndLvl[action.payload.class] = action.payload.lvl;
 
       // Reset the abilityScores proficienct state to false
@@ -153,6 +154,7 @@ const characterCreationSlice = createSlice({
           8 + bonus
         );
       });
+      state.points = 27;
 
       // Find the selected class's inherent ability proficiencies
       let updatedProficiencies = [];
@@ -218,12 +220,19 @@ const characterCreationSlice = createSlice({
             spellcasting: lvlInfo.spellcasting,
           });
         }
-        state.features.push(lvlInfo.features);
+
+        if (
+          lvlInfo.features[0] &&
+          lvlInfo.features[0].level <= action.payload.lvl
+        ) {
+          state.features.push(lvlInfo.features[0]);
+        }
       });
     },
     incrPoint(state, action) {
-      let bonus = state.abilityScores[action.payload].bonus;
-      let currScore = state.abilityScores[action.payload].score - bonus;
+      let bonus = parseInt(state.abilityScores[action.payload].bonus);
+      let currScore =
+        parseInt(state.abilityScores[action.payload].score) - bonus;
       if (currScore < 15) {
         let cost = pointMapping[currScore + 1] - pointMapping[currScore];
         if (state.points >= cost) {
@@ -243,15 +252,15 @@ const characterCreationSlice = createSlice({
       }
     },
     decrPoint(state, action) {
-      let currScore = state.abilityScores[action.payload].score;
+      let bonus = parseInt(state.abilityScores[action.payload].bonus);
+      let currScore =
+        parseInt(state.abilityScores[action.payload].score) - bonus;
       if (currScore > 8) {
         let cost = pointMapping[currScore] - pointMapping[currScore - 1];
         let newScore = currScore - 1;
         state.points += cost;
-        state.abilityScores[action.payload].score = newScore;
-        let newModifier = calculateAbilityModifier(
-          newScore + state.abilityScores[action.payload].bonus
-        );
+        state.abilityScores[action.payload].score = newScore + bonus;
+        let newModifier = calculateAbilityModifier(newScore + bonus);
         state.abilityScores[action.payload].modifier = newModifier;
 
         // Update the modifiers in skills

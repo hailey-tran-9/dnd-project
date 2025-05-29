@@ -13,12 +13,18 @@ export default function SpellOptions({ enteredClass, enteredLvl }) {
     characterCreation.spellcasting["spellcastingAbility"] !== null;
   let spellSlotInfo;
   let lvlLimit;
+  let maxSpells = 0;
   if (canCastSpells) {
-    // TODO: dynamically change char lvl
     spellSlotInfo = characterCreation.spellcasting["spellSlots"].filter(
       (info) => info.level === parseInt(enteredLvl)
     )[0].spellcasting;
     // console.log("spellSlotInfo:", spellSlotInfo);
+
+    for (const [key, value] of Object.entries(spellSlotInfo)) {
+      if (key !== "spells_known" && key !== "__typename") {
+        maxSpells += parseInt(value);
+      }
+    }
 
     lvlLimit =
       spellLvl === "0"
@@ -45,7 +51,7 @@ export default function SpellOptions({ enteredClass, enteredLvl }) {
         <h2>Spells</h2>
         <p>{`Spells Learned: ${characterCreation.numSpellsLearned}`}</p>
         {spellSlotInfo && (
-          <p>{`Max Spells: ${spellSlotInfo["spells_known"]}`}</p>
+          <p>{`Max Spells: ${maxSpells}`}</p>
         )}
 
         <div className="flex flex-col gap-3 mt-3">
