@@ -28,7 +28,7 @@ export default function Checkboxes({
     const updatedCheckedState = checkedState.map((check, index2) => {
       // console.log(event.target.value);
       if (index1 === index2) {
-        if (type === "SKILLS") {
+        if (type === "Skills") {
           let skill = event.target.value;
           dispatch(
             characterCreationActions.updateSkillProficiency({

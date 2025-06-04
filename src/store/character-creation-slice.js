@@ -159,7 +159,7 @@ const characterCreationSlice = createSlice({
       // Find the selected class's inherent ability proficiencies
       let updatedProficiencies = [];
       action.payload.classData.proficiencies.map((proficiency) => {
-        if (proficiency.type === "SAVING_THROWS") {
+        if (proficiency.type === "Saving Throws") {
           let ability = proficiency.index.split("saving-throw-")[1];
           if (!updatedProficiencies.includes(proficiency.index)) {
             updatedProficiencies.push(proficiency.index);

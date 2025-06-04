@@ -28,7 +28,7 @@ export default function EquipmentItem({ index, optionType }) {
   } else {
     if (optionType === "counted_reference") {
       let itemInfo = data.equipment;
-      console.log("item data:", itemInfo);
+      // console.log("item data:", itemInfo);
       content = (
         <>
           <p>{itemInfo.desc}</p>
@@ -36,7 +36,7 @@ export default function EquipmentItem({ index, optionType }) {
       );
     } else if (optionType === "choice") {
       let equipmentCategory = data.equipmentCategory;
-      console.log("choice data:", equipmentCategory);
+      // console.log("choice data:", equipmentCategory);
       content = (
         <RadioGroup
           nameForInputs={index + "RadioGroup"}
