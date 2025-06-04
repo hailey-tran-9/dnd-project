@@ -1,3 +1,6 @@
+import { useQuery } from "@apollo/client";
+import { GET_EQUIPMENT_CATEGORY_INFO } from "../util/graphql";
+
 export default function RadioGroup({
   nameForInputs,
   listOfInputs,

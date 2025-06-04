@@ -1,35 +1,7 @@
 import { gql } from "@apollo/client";
 
-export const GET_CLASSES = gql`
-  query Classes {
-    classes {
-      index
-      name
-      hit_die
-      proficiencies {
-        index
-        name
-        type
-      }
-      spellcasting {
-        spellcasting_ability {
-          index
-          name
-        }
-      }
-      starting_equipment {
-        quantity
-        equipment {
-          index
-          name
-        }
-      }
-    }
-  }
-`;
-
 export const GET_CLASS = gql`
-  query Class($index: String) {
+  query Class($index: String!) {
     class(index: $index) {
       index
       name
@@ -45,32 +17,33 @@ export const GET_CLASS = gql`
         type
         from {
           options {
-            ... on ProficiencyReferenceOption {
-              item {
+            option_type
+            item {
+              ... on Proficiency {
                 index
                 name
                 type
-              }
-              option_type
-            }
-            ... on ProficiencyChoiceOption {
-              choice {
-                choose
-                desc
-                type
-                from {
-                  options {
-                    ... on ProficiencyReferenceOption {
-                      item {
-                        index
-                        name
-                        type
-                      }
+                reference {
+                  ... on Equipment {
+                    index
+                    name
+                    desc
+                    equipment_category {
+                      index
+                      name
+                    }
+                    gear_category {
+                      index
+                      name
+                    }
+                    properties {
+                      desc
+                      index
+                      name
                     }
                   }
                 }
               }
-              option_type
             }
           }
         }
@@ -78,12 +51,31 @@ export const GET_CLASS = gql`
       starting_equipment {
         quantity
         equipment {
-          desc
-          index
-          name
-          equipment_category {
+          ... on Armor {
             index
             name
+            desc
+            equipment_category {
+              index
+              name
+            }
+            gear_category {
+              index
+              name
+            }
+            properties {
+              desc
+              index
+              name
+            }
+            armor_category
+            armor_class {
+              base
+              dex_bonus
+              max_bonus
+            }
+            str_minimum
+            stealth_disadvantage
           }
         }
       }
@@ -92,27 +84,254 @@ export const GET_CLASS = gql`
         desc
         type
         from {
-          ... on EquipmentOptionSet {
-            option_set_type
-            options {
-              ... on CountedReferenceOption {
-                option_type
-                count
-                prerequisites {
-                  proficiency {
+          ... on EquipmentCategorySet {
+            equipment_category {
+              index
+              name
+              equipment {
+                ... on Armor {
+                  index
+                  name
+                  equipment_category {
+                    index
+                    name
+                  }
+                  gear_category {
+                    index
+                    name
+                  }
+                  properties {
+                    desc
+                    index
+                    name
+                  }
+                  armor_category
+                  armor_class {
+                    base
+                    dex_bonus
+                    max_bonus
+                  }
+                  str_minimum
+                  stealth_disadvantage
+                }
+                ... on Weapon {
+                  index
+                  name
+                  equipment_category {
+                    index
+                    name
+                  }
+                  gear_category {
+                    index
+                    name
+                  }
+                  properties {
+                    desc
+                    index
+                    name
+                  }
+                  weapon_category
+                  weapon_range
+                  category_range
+                  damage {
+                    damage_type {
+                      desc
+                      index
+                      name
+                    }
+                    damage_dice
+                  }
+                  two_handed_damage {
+                    damage_type {
+                      desc
+                      index
+                      name
+                    }
+                    damage_dice
+                  }
+                  range {
+                    normal
+                  }
+                  throw_range {
+                    normal
+                  }
+                }
+                ... on Tool {
+                  index
+                  name
+                  equipment_category {
+                    index
+                    name
+                  }
+                  gear_category {
+                    index
+                    name
+                  }
+                  properties {
+                    desc
+                    index
+                    name
+                  }
+                  tool_category
+                }
+                ... on Gear {
+                  index
+                  name
+                  equipment_category {
+                    index
+                    name
+                  }
+                  gear_category {
+                    index
+                    name
+                  }
+                  properties {
+                    desc
                     index
                     name
                   }
                 }
+                ... on Pack {
+                  index
+                  name
+                  equipment_category {
+                    index
+                    name
+                  }
+                  gear_category {
+                    index
+                    name
+                  }
+                  properties {
+                    desc
+                    index
+                    name
+                  }
+                  contents {
+                    quantity
+                    item {
+                      ... on Armor {
+                        index
+                        name
+                      }
+                      ... on Weapon {
+                        index
+                        name
+                      }
+                      ... on Tool {
+                        index
+                        name
+                      }
+                      ... on Gear {
+                        index
+                        name
+                      }
+                      ... on Pack {
+                        index
+                        name
+                      }
+                      ... on Ammunition {
+                        index
+                        name
+                      }
+                      ... on Vehicle {
+                        index
+                        name
+                      }
+                    }
+                  }
+                }
+                ... on Ammunition {
+                  index
+                  name
+                  equipment_category {
+                    index
+                    name
+                  }
+                  gear_category {
+                    index
+                    name
+                  }
+                  properties {
+                    desc
+                    index
+                    name
+                  }
+                  quantity
+                }
+                ... on Vehicle {
+                  index
+                  name
+                  equipment_category {
+                    index
+                    name
+                  }
+                  gear_category {
+                    index
+                    name
+                  }
+                  properties {
+                    desc
+                    index
+                    name
+                  }
+                  vehicle_category
+                  speed {
+                    quantity
+                    unit
+                  }
+                  capacity
+                }
+                ... on MagicItem {
+                  desc
+                  equipment_category {
+                    index
+                    name
+                  }
+                  image
+                  index
+                  name
+                  rarity {
+                    name
+                  }
+                  variants {
+                    index
+                    name
+                  }
+                  variant
+                }
+              }
+            }
+          }
+          ... on EquipmentOptionSet {
+            options {
+              ... on CountedReferenceOption {
+                option_type
+                count
                 of {
                   index
                   name
+                  desc
+                  equipment_category {
+                    index
+                    name
+                  }
+                  gear_category {
+                    index
+                    name
+                  }
+                  properties {
+                    desc
+                    index
+                    name
+                  }
                 }
               }
               ... on EquipmentCategoryChoiceOption {
                 option_type
                 choice {
                   choose
+                  desc
                   type
                   from {
                     equipment_category {
@@ -122,48 +341,32 @@ export const GET_CLASS = gql`
                   }
                 }
               }
-              ... on EquipmentMultipleOption {
+              ... on MultipleItemsOption {
                 option_type
                 items {
-                  ... on EquipmentCategoryChoiceOption {
-                    option_type
-                    choice {
-                      choose
-                      type
-                      from {
-                        equipment_category {
-                          index
-                          name
-                        }
-                      }
-                    }
-                  }
                   ... on CountedReferenceOption {
-                    count
                     option_type
+                    count
                     of {
-                      desc
                       index
                       name
+                      desc
                       equipment_category {
+                        index
+                        name
+                      }
+                      gear_category {
+                        index
+                        name
+                      }
+                      properties {
+                        desc
                         index
                         name
                       }
                     }
                   }
                 }
-              }
-            }
-          }
-          ... on EquipmentCategoryOptionSet {
-            option_set_type
-            equipment_category {
-              index
-              name
-              equipment {
-                desc
-                index
-                name
               }
             }
           }
@@ -178,25 +381,29 @@ export const GET_CLASS = gql`
         casting_time
         concentration
         damage {
+          damage_type {
+            index
+            name
+            desc
+          }
           damage_at_character_level {
-            damage
             level
+            value
           }
         }
         dc {
-          desc
-          success
-          type {
+          dc_type {
             index
             name
-            full_name
           }
+          dc_success
+          desc
         }
         desc
         duration
         heal_at_slot_level {
-          healing
           level
+          value
         }
         higher_level
         index
@@ -211,9 +418,12 @@ export const GET_CLASS = gql`
         }
       }
       spellcasting {
-        spellcasting_ability {
+        info {
           desc
-          full_name
+          name
+        }
+        level
+        spellcasting_ability {
           index
           name
         }
@@ -246,7 +456,7 @@ export const GET_CLASS = gql`
 `;
 
 export const GET_RACE = gql`
-  query Race($index: String) {
+  query Race($index: String!) {
     race(index: $index) {
       index
       name
@@ -281,12 +491,14 @@ export const GET_RACE = gql`
         choose
         type
         from {
-          option_set_type
           options {
             option_type
             item {
+              desc
               index
               name
+              type
+              typical_speakers
             }
           }
         }
@@ -297,22 +509,38 @@ export const GET_RACE = gql`
         type
       }
       starting_proficiency_options {
-        desc
         choose
         type
         from {
-          option_set_type
           options {
-            ... on ProficiencyReferenceOption {
-              option_type
-              item {
+            option_type
+            item {
+              ... on Proficiency {
                 index
                 name
                 type
               }
+              ... on ProficiencyChoice {
+                choose
+                type
+                from {
+                  options {
+                    option_type
+                    item {
+                      ... on Proficiency {
+                        index
+                        name
+                        type
+                      }
+                    }
+                  }
+                }
+                desc
+              }
             }
           }
         }
+        desc
       }
       traits {
         index
@@ -327,8 +555,14 @@ export const GET_SKILLS = gql`
   query Skills {
     skills {
       ability_score {
+        desc
+        full_name
         index
         name
+        skills {
+          index
+          name
+        }
       }
       desc
       index
@@ -338,31 +572,415 @@ export const GET_SKILLS = gql`
 `;
 
 export const GET_EQUIPMENT_INFO = gql`
-  query EquipmentInfo($index: String) {
+  query EquipmentInfo($index: String!) {
     equipment(index: $index) {
-      desc
-      index
-      name
-      equipment_category {
+      ... on Armor {
         index
         name
+        equipment_category {
+          index
+          name
+        }
+        gear_category {
+          index
+          name
+        }
+        properties {
+          desc
+          index
+          name
+        }
+        armor_category
+        armor_class {
+          base
+          dex_bonus
+          max_bonus
+        }
+        str_minimum
+        stealth_disadvantage
+      }
+      ... on Weapon {
+        index
+        name
+        equipment_category {
+          index
+          name
+        }
+        gear_category {
+          index
+          name
+        }
+        properties {
+          index
+          name
+        }
+        weapon_category
+        weapon_range
+        category_range
+        damage {
+          damage_type {
+            index
+            name
+          }
+          damage_dice
+        }
+        two_handed_damage {
+          damage_type {
+            index
+            name
+          }
+          damage_dice
+        }
+        range {
+          normal
+        }
+        throw_range {
+          normal
+        }
+      }
+      ... on Tool {
+        index
+        name
+        equipment_category {
+          index
+          name
+        }
+        gear_category {
+          index
+          name
+        }
+        properties {
+          desc
+          index
+          name
+        }
+        tool_category
+      }
+      ... on Gear {
+        index
+        name
+        equipment_category {
+          index
+          name
+        }
+        gear_category {
+          index
+          name
+        }
+        properties {
+          desc
+          index
+          name
+        }
+      }
+      ... on Pack {
+        index
+        name
+        equipment_category {
+          index
+          name
+        }
+        gear_category {
+          index
+          name
+        }
+        properties {
+          desc
+          index
+          name
+        }
+        contents {
+          quantity
+          item {
+            ... on Armor {
+              index
+              name
+            }
+            ... on Weapon {
+              index
+              name
+            }
+            ... on Tool {
+              index
+              name
+            }
+            ... on Gear {
+              index
+              name
+            }
+            ... on Pack {
+              index
+              name
+            }
+            ... on Ammunition {
+              index
+              name
+            }
+            ... on Vehicle {
+              index
+              name
+            }
+          }
+        }
+      }
+      ... on Ammunition {
+        index
+        name
+        equipment_category {
+          index
+          name
+        }
+        gear_category {
+          index
+          name
+        }
+        properties {
+          desc
+          index
+          name
+        }
+        quantity
+      }
+      ... on Vehicle {
+        index
+        name
+        equipment_category {
+          index
+          name
+        }
+        gear_category {
+          index
+          name
+        }
+        properties {
+          desc
+          index
+          name
+        }
+        vehicle_category
+        speed {
+          quantity
+          unit
+        }
+        capacity
       }
     }
   }
 `;
 
 export const GET_EQUIPMENT_CATEGORY_INFO = gql`
-  query EquipmentCategoryInfo($index: String) {
+  query EquipmentCategoryInfo($index: String!) {
     equipmentCategory(index: $index) {
       index
       name
       equipment {
-        desc
-        index
-        name
-        equipment_category {
+        ... on Armor {
           index
           name
+          equipment_category {
+            index
+            name
+          }
+          gear_category {
+            index
+            name
+          }
+          properties {
+            desc
+            index
+            name
+          }
+          armor_category
+          armor_class {
+            base
+            dex_bonus
+            max_bonus
+          }
+          str_minimum
+          stealth_disadvantage
+        }
+        ... on Weapon {
+          index
+          name
+          equipment_category {
+            index
+            name
+          }
+          gear_category {
+            index
+            name
+          }
+          properties {
+            index
+            name
+          }
+          weapon_category
+          weapon_range
+          category_range
+          damage {
+            damage_type {
+              index
+              name
+            }
+            damage_dice
+          }
+          two_handed_damage {
+            damage_type {
+              index
+              name
+            }
+            damage_dice
+          }
+          range {
+            normal
+          }
+          throw_range {
+            normal
+          }
+        }
+        ... on Tool {
+          index
+          name
+          equipment_category {
+            index
+            name
+          }
+          gear_category {
+            index
+            name
+          }
+          properties {
+            desc
+            index
+            name
+          }
+          tool_category
+        }
+        ... on Gear {
+          index
+          name
+          equipment_category {
+            index
+            name
+          }
+          gear_category {
+            index
+            name
+          }
+          properties {
+            desc
+            index
+            name
+          }
+        }
+        ... on Pack {
+          index
+          name
+          equipment_category {
+            index
+            name
+          }
+          gear_category {
+            index
+            name
+          }
+          properties {
+            desc
+            index
+            name
+          }
+          contents {
+            quantity
+            item {
+              ... on Armor {
+                index
+                name
+              }
+              ... on Weapon {
+                index
+                name
+              }
+              ... on Tool {
+                index
+                name
+              }
+              ... on Gear {
+                index
+                name
+              }
+              ... on Pack {
+                index
+                name
+              }
+              ... on Ammunition {
+                index
+                name
+              }
+              ... on Vehicle {
+                index
+                name
+              }
+            }
+          }
+        }
+        ... on Ammunition {
+          index
+          name
+          equipment_category {
+            index
+            name
+          }
+          gear_category {
+            index
+            name
+          }
+          properties {
+            desc
+            index
+            name
+          }
+          quantity
+        }
+        ... on Vehicle {
+          index
+          name
+          equipment_category {
+            index
+            name
+          }
+          gear_category {
+            index
+            name
+          }
+          properties {
+            desc
+            index
+            name
+          }
+          vehicle_category
+          speed {
+            quantity
+            unit
+          }
+          capacity
+        }
+        ... on MagicItem {
+          desc
+          equipment_category {
+            index
+            name
+          }
+          image
+          index
+          name
+          rarity {
+            name
+          }
+          variants {
+            index
+            name
+          }
+          variant
         }
       }
     }

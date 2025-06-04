@@ -5,14 +5,12 @@ import { useDispatch } from "react-redux";
 import { GET_CLASS } from "../../../../util/graphql";
 import { characterCreationActions } from "../../../../store/character-creation-slice";
 
-export default function ClassSelection({
-  enteredClass,
-  enteredLvl,
-}) {
+export default function ClassSelection({ enteredClass, enteredLvl }) {
   const dispatch = useDispatch();
 
   const { loading, error, data } = useQuery(GET_CLASS, {
     variables: { index: enteredClass },
+    errorPolicy: "ignore",
   });
 
   useEffect(() => {
@@ -20,7 +18,7 @@ export default function ClassSelection({
       dispatch(
         characterCreationActions.setClassAndLvl({
           class: data.class.index,
-          lvl: enteredLvl,
+          lvl: parseInt(enteredLvl),
           classData: data.class,
         })
       );

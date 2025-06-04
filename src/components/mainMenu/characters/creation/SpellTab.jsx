@@ -86,7 +86,7 @@ export default function SpellTab({ spellData, limit, ...props }) {
         {spellData["attack_type"] && (
           <p>{`Attack type: ${spellData["attack_type"]}`}</p>
         )}
-        {spellData["dc"] && <p>{`DC: ${spellData["dc"].type.name}`}</p>}
+        {spellData["dc"] && <p>{`DC: ${spellData["dc"]["dc_type"].name}`}</p>}
         {spellData["heal_at_slot_level"] && (
           <p>{`Heal at slot level: ${spellData["heal_at_slot_level"]}`}</p>
         )}

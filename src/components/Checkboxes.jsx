@@ -70,7 +70,7 @@ export default function Checkboxes({
         let inputValue = element.item.index;
         // console.log(element.item);
 
-        if (element.item.type === "SKILLS") {
+        if (element.item.type === "Skills") {
           inputName = getOptionIndex(element.item.name);
           inputValue = getOptionIndex(element.item.index);
         }
