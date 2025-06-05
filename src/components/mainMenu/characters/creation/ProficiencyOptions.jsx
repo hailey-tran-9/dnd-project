@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 
 import Checkboxes from "../../../Checkboxes";
+import { numToWord, emboldenNum } from "../../../../util/util";
 
 export default function ProficiencyOptions({ enteredClass, enteredRace }) {
   const characterCreation = useSelector((state) => state.characterCreation);
@@ -16,7 +17,7 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
     if (classOrRace === "class") {
       let choice =
         characterCreation.classProficiencyChoices[index1].from.options[index2]
-          .choice;
+          .item;
       setProficiencyChoiceArrays({
         ...proficiencyChoiceArrays,
         [index1]: choice,
@@ -24,7 +25,7 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
     } else {
       let choice =
         characterCreation.raceProficiencyChoices[index1].from.options[index2]
-          .choice;
+          .item;
       setRaceProficiencyChoiceArrays({
         ...raceProficiencyChoiceArrays,
         [index1]: choice,
@@ -46,9 +47,7 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
           let stateInitialized = false;
           nestedSelect = (
             <div key={identifier}>
-              <label htmlFor={sharedId} className="mr-5">
-                {choice.desc}
-              </label>
+              <h4>{emboldenNum(choice.desc, identifier)}</h4>
               <select
                 name={identifier + "Select"}
                 id={sharedId}
@@ -59,23 +58,24 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
                 }
               >
                 {choice.from.options.map((choiceArray, index2) => {
+                  console.log("choice array:", choiceArray);
                   if (
                     !(index1 in proficiencyChoiceArrays) &&
                     !stateInitialized
                   ) {
                     setProficiencyChoiceArrays({
                       ...proficiencyChoiceArrays,
-                      [index1]: choiceArray.choice,
+                      [index1]: choiceArray.item,
                     });
                     stateInitialized = true;
                   }
 
                   return (
                     <option
-                      key={identifier + "-" + choiceArray.choice.desc}
+                      key={identifier + "-" + choiceArray.item.desc}
                       value={index2}
                     >
-                      {choiceArray.choice.desc}
+                      {choiceArray.item.desc}
                     </option>
                   );
                 })}
@@ -99,7 +99,13 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
       identifier = enteredClass + "ProficiencyChoice" + index1;
       return (
         <div key={identifier}>
-          <h4>{choice.desc}</h4>
+          <h4>
+            {emboldenNum(choice.desc, identifier) || (
+              <p>
+                Choose <b>{numToWord(choice.choose)}</b> from below
+              </p>
+            )}
+          </h4>
           <Checkboxes
             nameForInputs={identifier}
             listOfInputs={choice.from.options}
@@ -126,9 +132,7 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
           let stateInitialized = false;
           nestedSelect = (
             <div key={identifier}>
-              <label htmlFor={sharedId} className="mr-5">
-                {choice.desc}
-              </label>
+              <h4>{emboldenNum(choice.desc, identifier)}</h4>
               <select
                 name={identifier + "Select"}
                 id={sharedId}
@@ -143,7 +147,7 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
                   ) {
                     setRaceProficiencyChoiceArrays({
                       ...raceProficiencyChoiceArrays,
-                      [index1]: choiceArray.choice,
+                      [index1]: choiceArray.item,
                     });
                     stateInitialized = true;
                   }
@@ -179,7 +183,13 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
       identifier = enteredRace + "ProficiencyChoice" + index1;
       return (
         <div key={identifier}>
-          <h4>{choice.desc}</h4>
+          <h4>
+            {choice.desc || (
+              <p>
+                Choose <b>{numToWord(choice.choose)}</b> from below
+              </p>
+            )}
+          </h4>
           <Checkboxes
             nameForInputs={identifier}
             listOfInputs={choice.from.options}

@@ -155,10 +155,7 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
           enteredRace={enteredRace}
         />
         <SpellOptions enteredClass={enteredClass} enteredLvl={enteredLvl} />
-        <EquipmentOptions
-          enteredClass={enteredClass}
-          enteredRace={enteredRace}
-        />
+        <EquipmentOptions enteredClass={enteredClass} />
         <LanguageOptions enteredRace={enteredRace} />
         <div>
           <h2>Notes</h2>

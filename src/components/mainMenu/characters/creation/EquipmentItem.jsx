@@ -47,7 +47,7 @@ export default function EquipmentItem({ index, optionType }) {
       );
     } else if (optionType === "multiple") {
       let itemInfo = data.equipment;
-      console.log("item data:", itemInfo);
+      // console.log("item data:", itemInfo);
       // content = (
       //   <>
       //     <p>{itemInfo.desc}</p>

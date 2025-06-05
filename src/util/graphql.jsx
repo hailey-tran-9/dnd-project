@@ -44,6 +44,22 @@ export const GET_CLASS = gql`
                   }
                 }
               }
+              ... on ProficiencyChoice {
+                choose
+                type
+                from {
+                  options {
+                    option_type
+                    item {
+                      ... on Proficiency {
+                        index
+                        name
+                      }
+                    }
+                  }
+                }
+                desc
+              }
             }
           }
         }
@@ -981,6 +997,163 @@ export const GET_EQUIPMENT_CATEGORY_INFO = gql`
             name
           }
           variant
+        }
+      }
+    }
+  }
+`;
+
+// TODO: Once 5e API updates backgrounds to include all of them, make it selectable
+export const GET_BACKGROUNDS = gql`
+  query Backgrounds {
+    backgrounds {
+      index
+      name
+      starting_proficiencies {
+        index
+        name
+        type
+        reference {
+          ... on Equipment {
+            index
+            name
+          }
+          ... on EquipmentCategory {
+            index
+            name
+          }
+          ... on AbilityScore {
+            desc
+            index
+            name
+          }
+          ... on Skill {
+            desc
+            index
+            name
+          }
+        }
+      }
+      starting_equipment {
+        equipment {
+          index
+          name
+          desc
+          equipment_category {
+            index
+            name
+          }
+          gear_category {
+            index
+            name
+          }
+          properties {
+            desc
+            index
+            name
+          }
+        }
+        quantity
+      }
+      feature {
+        desc
+        name
+      }
+      flaws {
+        choose
+        type
+        from {
+          options {
+            string
+            option_type
+          }
+        }
+      }
+      bonds {
+        choose
+        type
+        from {
+          options {
+            string
+            option_type
+          }
+        }
+      }
+      personality_traits {
+        choose
+        type
+        from {
+          options {
+            string
+            option_type
+          }
+        }
+      }
+      ideals {
+        choose
+        type
+        from {
+          options {
+            option_type
+            desc
+            alignments {
+              desc
+              index
+              name
+            }
+          }
+        }
+      }
+      language_options {
+        choose
+        type
+        from {
+          options {
+            option_type
+            item {
+              desc
+              index
+              name
+            }
+          }
+        }
+      }
+      starting_equipment_options {
+        choose
+        desc
+        type
+        from {
+          ... on EquipmentCategorySet {
+            equipment_category {
+              index
+              name
+            }
+          }
+          ... on EquipmentOptionSet {
+            options {
+              ... on CountedReferenceOption {
+                option_type
+                count
+                of {
+                  index
+                  name
+                  desc
+                  equipment_category {
+                    index
+                    name
+                  }
+                  gear_category {
+                    index
+                    name
+                  }
+                  properties {
+                    index
+                    name
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

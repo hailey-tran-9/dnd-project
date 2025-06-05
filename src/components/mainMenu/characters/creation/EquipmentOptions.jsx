@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import EquipmentSelect from "./EquipmentSelect";
 import RadioGroup from "../../../RadioGroup";
 
-export default function EquipmentOptions({ enteredClass, enteredRace }) {
+export default function EquipmentOptions({ enteredClass }) {
   const characterCreation = useSelector((state) => state.characterCreation);
 
   let classEquipmentChoices;
