@@ -61,14 +61,14 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
         <div className="flex flex-col gap-5">
           <div>
             <label
-              htmlFor="character-name"
+              htmlFor="name-character"
               className="text-black text-[2.5rem] font-[500] mr-10"
             >
               Character name
             </label>
             <Input
-              id="character-name"
-              name="character-name"
+              id="name-character"
+              name="name-character"
               type="text"
               className="text-[2rem]"
               required
@@ -77,14 +77,14 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
           <div className="flex flex-row flex-wrap justify-between gap-y-3">
             <div>
               <label
-                htmlFor="character-race"
+                htmlFor="race-character"
                 className="text-black text-[2.5rem] font-[500] mr-10"
               >
                 Race
               </label>
               <select
-                name={"character-race"}
-                id={"character-race"}
+                name={"race-character"}
+                id={"race-character"}
                 onChange={handleRaceChange}
                 className="bg-white rounded-md text-[2rem] pl-3 pr-15"
                 defaultValue={enteredRace}
@@ -99,14 +99,14 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
             </div>
             <div>
               <label
-                htmlFor="character-class"
+                htmlFor="class-character"
                 className="text-black text-[2.5rem] font-[500] mr-10"
               >
                 Class
               </label>
               <select
-                name={"character-class"}
-                id={"character-class"}
+                name={"class-character"}
+                id={"class-character"}
                 onChange={handleClassChange}
                 className="bg-white rounded-md text-[2rem] pl-3 pr-15"
                 defaultValue={enteredClass}
@@ -121,14 +121,14 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
             </div>
             <div>
               <label
-                htmlFor="character-lvl"
+                htmlFor="lvl-character"
                 className="text-black text-[2.5rem] font-[500] mr-10"
               >
                 Level
               </label>
               <select
-                name={"character-lvl"}
-                id={"character-lvl"}
+                name={"lvl-character"}
+                id={"lvl-character"}
                 onChange={handleLvlChange}
                 className="bg-white rounded-md text-[2rem] pl-3 pr-15"
                 defaultValue={enteredLvl}
@@ -160,8 +160,8 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
         <div>
           <h2>Notes</h2>
           <textarea
-            id="character-notes"
-            name="character-notes"
+            id="notes-character"
+            name="notes-character"
             className="bg-white rounded-md text-[1.5rem] w-full h-50 p-1"
           />
         </div>

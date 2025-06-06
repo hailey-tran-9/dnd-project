@@ -67,7 +67,7 @@ export default function EquipmentSelect({
             return (
               <option
                 key={keyAdder + caption + index}
-                value={option["option_type"] + ":" + value}
+                value={value}
               >
                 {label}
               </option>

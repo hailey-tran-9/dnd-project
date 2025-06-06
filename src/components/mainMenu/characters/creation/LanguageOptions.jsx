@@ -19,14 +19,14 @@ export default function LanguageOptions({ enteredRace }) {
         <h2>Language Options</h2>
         {numToChoose === 1 ? (
           <RadioGroup
-            nameForInputs={enteredRace + "LanguagesRadioGroup"}
+            nameForInputs={enteredRace + "-radio-language"}
             listOfInputs={languageChoices.from.options}
             purpose="languages"
             keyAdder={enteredRace + "LanguagesRadioGroupKey"}
           />
         ) : (
           <Checkboxes
-            nameForInputs={enteredRace + "LanguagesCheckboxGroup"}
+            nameForInputs={enteredRace + "-checkbox-language"}
             listOfInputs={languageChoices.from.options}
             maxNumInputs={numToChoose}
             purpose="languages"

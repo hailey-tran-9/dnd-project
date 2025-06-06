@@ -12,7 +12,7 @@ export default function EquipmentOptions({ enteredClass }) {
       if (choice.from.options) {
         return (
           <EquipmentSelect
-            identifier={enteredClass + "EquipmentChoiceSelect" + index1}
+            identifier={`${enteredClass}-select-${index1}-equipment`}
             keyAdder={enteredClass + "EquipmentChoice" + index1}
             caption={choice.desc}
             options={choice.from.options}
@@ -24,10 +24,10 @@ export default function EquipmentOptions({ enteredClass }) {
           <div key={enteredClass + "EquipmentChoiceRadioKey" + index1}>
             <h4>{choice.from["equipment_category"].name}</h4>
             <RadioGroup
-              nameForInputs={choice.from.index + "RadioGroup"}
+              nameForInputs={`${enteredClass}-radio-${index1}-equipment`}
               listOfInputs={choice.from["equipment_category"].equipment}
               purpose="equipment"
-              keyAdder={choice.from.index + "RadioGroup"}
+              keyAdder={choice.from["equipment_category"].index + "RadioGroup"}
             />
           </div>
         );

@@ -46,6 +46,7 @@ export default function Characters() {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
+    console.log("submitted data:", data);
 
     // const characterData = {
     //   name: data["character-name"],

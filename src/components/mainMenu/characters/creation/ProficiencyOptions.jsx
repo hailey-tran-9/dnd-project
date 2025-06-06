@@ -43,7 +43,8 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
         let optionType = choice.from.options[0]["option_type"];
         if (optionType === "choice") {
           let sharedId = identifier + index1;
-          let identifier2 = enteredClass + "ProficiencyChoice" + index1;
+          let identifier2 =
+            enteredClass + "-checkbox-" + index1 + "-proficiency";
           let stateInitialized = false;
           nestedSelect = (
             <div key={identifier}>
@@ -96,7 +97,7 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
         }
       }
 
-      identifier = enteredClass + "ProficiencyChoice" + index1;
+      identifier = enteredClass + "-checkbox-" + index1 + "-proficiency";
       return (
         <div key={identifier}>
           <h4>
@@ -128,7 +129,7 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
         let optionType = choice.from.options[0]["option_type"];
         if (optionType === "choice") {
           let sharedId = identifier + index1;
-          let identifier2 = enteredRace + "ProficiencyChoice" + index1;
+          let identifier2 = enteredRace + "-checkbox-" + index1 + "-proficiency";
           let stateInitialized = false;
           nestedSelect = (
             <div key={identifier}>
@@ -180,7 +181,7 @@ export default function ProficiencyOptions({ enteredClass, enteredRace }) {
         }
       }
 
-      identifier = enteredRace + "ProficiencyChoice" + index1;
+      identifier = enteredRace + "-checkbox-" + index1 + "-proficiency";
       return (
         <div key={identifier}>
           <h4>
