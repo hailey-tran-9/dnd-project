@@ -26,14 +26,32 @@ export default function EquipmentItem({ index, optionType }) {
   } else if (error) {
     content = <p>Error</p>;
   } else {
+    // console.log("equipment data:", data);
     if (optionType === "counted_reference") {
       let itemInfo = data.equipment;
-      // console.log("item data:", itemInfo);
-      content = (
-        <>
-          <p>{itemInfo.desc}</p>
-        </>
-      );
+      console.log("item data:", itemInfo);
+      if (
+        itemInfo["gear_category"] &&
+        itemInfo["gear_category"].index === "equipment-packs"
+      ) {
+        content = (
+          <p className="text-[1rem]">
+            {`Includes:${itemInfo.contents.map((packItem, index) => {
+              if (index < itemInfo.contents.length) {
+                return ` ${packItem.item.name} (${packItem.quantity})`;
+              } else {
+                return `${packItem.item.name} (${packItem.quantity})`;
+              }
+            })}`}
+          </p>
+        );
+      } else {
+        content = (
+          <>
+            <p className="text-[1rem]">{itemInfo.desc}</p>
+          </>
+        );
+      }
     } else if (optionType === "choice") {
       let equipmentCategory = data.equipmentCategory;
       // console.log("choice data:", equipmentCategory);

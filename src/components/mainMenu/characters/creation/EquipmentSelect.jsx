@@ -14,6 +14,7 @@ export default function EquipmentSelect({
   let initSelected = false;
 
   function handleOnChange(optionTypeAndIndex) {
+    // console.log("optionTypeAndIndex", optionTypeAndIndex);
     const [optionType, index] = optionTypeAndIndex.split(":");
     // console.log(optionType, index);
     setSelected(index);
@@ -67,7 +68,7 @@ export default function EquipmentSelect({
             return (
               <option
                 key={keyAdder + caption + index}
-                value={value}
+                value={option["option_type"] + ":" + value}
               >
                 {label}
               </option>
