@@ -1,12 +1,17 @@
 import { useQuery } from "@apollo/client";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 import {
   GET_EQUIPMENT_INFO,
   GET_EQUIPMENT_CATEGORY_INFO,
 } from "../../../../util/graphql";
+import { characterCreationActions } from "../../../../store/character-creation-slice";
 
 import RadioGroup from "../../../RadioGroup";
 
 export default function EquipmentItem({ index, optionType }) {
+  const dispatch = useDispatch();
+
   let loading;
   let error;
   let data;
@@ -21,15 +26,35 @@ export default function EquipmentItem({ index, optionType }) {
   }
 
   let content;
+
+  // useEffect(() => {
+  //   console.log("data update:", data);
+  //   if (data) {
+  //     if (optionType === "counted_reference" || optionType === "multiple") {
+  //       dispatch(characterCreationActions.editInventory(data.equipment));
+  //     }
+
+  //     return () => {
+  //       if (optionType === "counted_reference" || optionType === "multiple") {
+  //         // console.log("unmounting:", data.equipment);
+  //         dispatch(
+  //           characterCreationActions.removeFromInventory(data.equipment)
+  //         );
+  //       }
+  //     };
+  //   }
+  // }, [data, dispatch]);
+
   if (loading) {
     // console.log("Loading...");
   } else if (error) {
     content = <p>Error</p>;
   } else {
-    // console.log("equipment data:", data);
+    console.log("data loaded for", index, optionType);
+    console.log("equipment data:", data.equipment);
     if (optionType === "counted_reference") {
       let itemInfo = data.equipment;
-      console.log("item data:", itemInfo);
+      // console.log("item data:", itemInfo);
       if (
         itemInfo["gear_category"] &&
         itemInfo["gear_category"].index === "equipment-packs"
@@ -59,7 +84,7 @@ export default function EquipmentItem({ index, optionType }) {
         <RadioGroup
           nameForInputs={index + "RadioGroup"}
           listOfInputs={equipmentCategory.equipment}
-          purpose="equipment"
+          purpose={equipmentCategory.equipment[0]["equipment_category"].index}
           keyAdder={index + "RadioGroup"}
         />
       );

@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Form } from "react-router";
-import { useDispatch } from "react-redux";
 
-import { characterCreationActions } from "../../../../store/character-creation-slice";
 import { capitalize } from "../../../../util/util";
 import { raceIndexes } from "../../../contexts/RaceContext";
 import { classIndexes } from "../../../contexts/ClassContext";
@@ -19,8 +17,6 @@ import SpellOptions from "./SpellOptions";
 import Features from "./Features";
 
 export default function CharacterCreation({ cancelFn, submitFn }) {
-  const dispatch = useDispatch();
-
   const [enteredRace, setEnteredRace] = useState(raceIndexes[0]);
   const [enteredClass, setEnteredClass] = useState(classIndexes[0]);
   const [enteredLvl, setEnteredLvl] = useState(1);

@@ -64,12 +64,7 @@ const characterCreationSlice = createSlice({
     classProficiencyChoices: [],
     classStartingEquipment: [],
     classStartingEquipmentChoices: [],
-    inventory: {
-      weapons: [],
-      equipment: [],
-      tools: [],
-      misc: [],
-    },
+    inventory: {},
     languages: [],
     languageChoices: [],
     spellcasting: structuredClone(defaultSpellcasting),
@@ -183,6 +178,8 @@ const characterCreationSlice = createSlice({
       );
 
       // Update class starting equipment related variables
+      state.inventory = {};
+
       state.classStartingEquipment = structuredClone(
         action.payload.classData["starting_equipment"]
       );
@@ -326,6 +323,63 @@ const characterCreationSlice = createSlice({
         state.numSpellsLearned += 1;
       }
     },
+    editInventory(state, action) {
+      console.log("action payload:", action.payload);
+      let equipCategory = action.payload.category;
+      const includesItem = (item) => item.index === action.payload.index;
+
+      if (equipCategory in state.inventory) {
+        if (state.inventory[equipCategory].some(includesItem)) {
+          state.inventory[equipCategory] = state.inventory[
+            equipCategory
+          ].filter((item) => item.index !== action.payload.index);
+        } else {
+          state.inventory[equipCategory].push(action.payload);
+        }
+      } else {
+        state.inventory[equipCategory] = [action.payload];
+      }
+    },
+    addToInventory(state, action) {
+      let equipCategory = action.payload.category;
+      if (equipCategory in state.inventory) {
+        state.inventory[equipCategory].push(action.payload);
+      } else {
+        state.inventory[equipCategory] = [action.payload];
+      }
+    },
+    removeFromInventory(state, action) {
+      let equipCategory = action.payload.category;
+      const includesItem = (item) => item.index === action.payload.index;
+
+      if (equipCategory in state.inventory) {
+        if (state.inventory[equipCategory].some(includesItem)) {
+          state.inventory[equipCategory] = state.inventory[
+            equipCategory
+          ].filter((item) => item.index !== action.payload.index);
+        }
+      }
+    },
+    // addToInventory(state, action) {
+    //   let equipCategory = action.payload["equipment_category"].index;
+    //   if (equipCategory in state.inventory) {
+    //     state.inventory[equipCategory].push(action.payload);
+    //   } else {
+    //     state.inventory[equipCategory] = [action.payload];
+    //   }
+    // },
+    // removeFromInventory(state, action) {
+    //   let equipCategory = action.payload["equipment_category"].index;
+    //   const includesItem = (item) => item.index === action.payload.index;
+
+    //   if (equipCategory in state.inventory) {
+    //     if (state.inventory[equipCategory].some(includesItem)) {
+    //       state.inventory[equipCategory] = state.inventory[
+    //         equipCategory
+    //       ].filter((item) => item.index !== action.payload.index);
+    //     }
+    //   }
+    // },
   },
 });
 

@@ -1,10 +1,8 @@
-import { useQuery } from "@apollo/client";
-import { GET_EQUIPMENT_CATEGORY_INFO } from "../util/graphql";
-
 export default function RadioGroup({
   nameForInputs,
   listOfInputs,
   purpose,
+  optionIndex = 0,
   keyAdder,
   ...props
 }) {
@@ -16,14 +14,23 @@ export default function RadioGroup({
       {listOfInputs.map((element, index) => {
         let inputName;
         let inputValue;
+        let equipmentCategory;
+
+        // console.log("radio group element:", element);
 
         // console.log(element.item);
         if (element.item) {
           inputName = element.item.name;
           inputValue = element.item.index;
+          if (element.item["equipment_category"]) {
+            equipmentCategory = element.item["equipment_category"].index;
+          }
         } else {
           inputName = element.name;
           inputValue = element.index;
+          if (element["equipment_category"]) {
+            equipmentCategory = element["equipment_category"].index;
+          }
         }
 
         return (
@@ -32,7 +39,14 @@ export default function RadioGroup({
               type="radio"
               id={inputName + "-" + nameForInputs}
               name={nameForInputs}
-              value={inputValue}
+              value={[
+                purpose,
+                "counted_reference",
+                optionIndex,
+                equipmentCategory,
+                inputValue,
+                inputName,
+              ].join(":")}
               required
             />
             <label htmlFor={inputName + "-" + nameForInputs}>{inputName}</label>

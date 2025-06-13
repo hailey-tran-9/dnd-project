@@ -318,6 +318,7 @@ export const GET_CLASS = gql`
                 }
               }
             }
+            option_set_type
           }
           ... on EquipmentOptionSet {
             options {
@@ -385,6 +386,7 @@ export const GET_CLASS = gql`
                 }
               }
             }
+            option_set_type
           }
         }
       }

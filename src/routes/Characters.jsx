@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useQuery } from "@apollo/client";
 
 import { gamesActions } from "../store/games-slice";
+import { charactersActions } from "../store/characters-slice";
+import { characterCreationActions } from "../store/character-creation-slice";
+import { GET_EQUIPMENT_INFO } from "../util/graphql";
 
 import Button from "../components/Button";
 import Info from "../components/Info";
@@ -19,6 +23,7 @@ export default function Characters() {
 
   const dispatch = useDispatch();
   const characters = useSelector((state) => state.characters.characters);
+  const characterCreation = useSelector((state) => state.characterCreation);
   //   console.log(characters);
 
   function handleStartCreatingCharacter() {
@@ -65,6 +70,55 @@ export default function Characters() {
     // console.log(characterData);
 
     // TODO: dispatch create character
+    for (const [key, value] of Object.entries(data)) {
+      const splitValues = value.split(":");
+      if (splitValues[0] === "dispatch") {
+        if (splitValues[1] === "addToInventory") {
+          if (splitValues[2] === "counted_reference") {
+            dispatch(
+              characterCreationActions.editInventory({
+                index: splitValues[5],
+                name: splitValues[6],
+                category: splitValues[4],
+              })
+            );
+          }
+        }
+      }
+    }
+
+    //     name,
+    //     race,
+    //     characterClass,
+    //     lvl,
+    //     abilitiesAndSkills,
+    //     armorClass,
+    //     proficiencies,
+    //     proficiencyBonus,
+    //     moveSpeed,
+    //     features,
+    //     inventory,
+    //     notes,
+
+    dispatch(
+      charactersActions.createCharacter({
+        name: characterCreation.name,
+        characterClass: Object.keys(characterCreation.classAndLvl)[0],
+        lvl: Object.values(characterCreation.classAndLvl)[0],
+        race: characterCreation.race,
+        abilitiesAndSkills: characterCreation.abilityScores,
+        armorClass: 10 + characterCreation.abilityScores.dex.modifier,
+        proficiencies: characterCreation.classProficiencies.concat(
+          characterCreation.raceProficiencies
+        ),
+        proficiencyBonus:
+          Math.ceil(Object.values(characterCreation.classAndLvl)[0] / 4) + 1,
+        moveSpeed: 30, // TODO: get move speed of the character
+        features: characterCreation.features,
+        inventory: characterCreation.inventory,
+        notes: characterCreation.notes,
+      })
+    );
 
     handleStopCreatingCharacter();
   }
