@@ -36,15 +36,30 @@ const defaultSpellcasting = { spellcastingAbility: null, spellSlots: null };
 const characterCreationSlice = createSlice({
   name: "characterCreation",
   initialState: {
-    name: "",
-    race: "",
-    classAndLvl: {},
     abilityScores: Object.fromEntries(
       abilityScoreIndexes.map((ability) => [
         ability,
         { score: 8, modifier: -1, proficient: false, bonus: 0 },
       ])
     ),
+    changed: false,
+    classAndLvl: {},
+    classProficiencies: [],
+    classProficiencyChoices: [],
+    classStartingEquipment: [],
+    classStartingEquipmentChoices: [],
+    features: [],
+    inventory: {},
+    languages: [],
+    languageChoices: [],
+    moveSpeed: 0,
+    name: "",
+    numSpellsLearned: 0,
+    points: 27,
+    race: "",
+    raceProficiencies: [],
+    raceProficiencyChoices: [],
+    size: "",
     skills: Object.fromEntries(
       skillIndexes.map((skill) => [
         skill,
@@ -57,22 +72,9 @@ const characterCreationSlice = createSlice({
         },
       ])
     ),
-    points: 27,
-    raceProficiencies: [],
-    raceProficiencyChoices: [],
-    classProficiencies: [],
-    classProficiencyChoices: [],
-    classStartingEquipment: [],
-    classStartingEquipmentChoices: [],
-    inventory: {},
-    languages: [],
-    languageChoices: [],
     spellcasting: structuredClone(defaultSpellcasting),
     spellList: structuredClone(defaultSpellList),
-    numSpellsLearned: 0,
     spellsLearned: structuredClone(defaultSpellList),
-    features: [],
-    changed: false,
   },
   reducers: {
     setName(state, action) {
@@ -81,6 +83,8 @@ const characterCreationSlice = createSlice({
     setRace(state, action) {
       // payload = {race, raceData}
       state.race = action.payload.race;
+      state.moveSpeed = action.payload.raceData.speed;
+      state.size = action.payload.raceData.size;
 
       // Find the selected race's inherent ability bonuses
       let raceBonuses = {};
@@ -97,6 +101,7 @@ const characterCreationSlice = createSlice({
           8 + newBonus
         );
       });
+      state.points = 27;
 
       // Update skills
       skillIndexes.map((skill) => {

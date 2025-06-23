@@ -34,6 +34,6 @@ export default function ClassSelection({ enteredClass, enteredLvl }) {
   }
   if (data) {
     dataToPrint = data.class;
-    console.log(dataToPrint);
+    // console.log(dataToPrint);
   }
 }

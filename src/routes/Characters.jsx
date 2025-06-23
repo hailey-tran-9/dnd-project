@@ -16,6 +16,7 @@ import Inventory from "../components/mainMenu/characters/Inventory";
 import Header from "../components/mainMenu/characters/Header";
 import AbilityScores from "../components/mainMenu/characters/AbilityScores";
 import Features from "../components/mainMenu/characters/Features";
+import Stats from "../components/mainMenu/characters/Stats";
 
 export default function Characters() {
   const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
@@ -44,7 +45,7 @@ export default function Characters() {
 
   function handleDeleteCharacter(characterID) {
     setSelectedCharacter(undefined);
-    // TODO: dispatch delete character
+    dispatch(charactersActions.deleteCharacter(characterID));
   }
 
   function handleSubmit(event) {
@@ -53,24 +54,15 @@ export default function Characters() {
     const data = Object.fromEntries(formData);
     console.log("submitted data:", data);
 
-    // const characterData = {
-    //   name: data["character-name"],
-    //   race: data["character-race"],
-    //   characterClass: data["character-class"],
-    //   lvl: data["character-lvl"],
-    //   ablitiesAndSkills: data["abilities-and-skills"],
-    //   armorClass: data["armor-class"],
-    //   proficiencies: data["proficiencies"],
-    //   proficiencyBonus: data["proficiency-bonus"],
-    //   moveSpeed: data["move-speed"],
-    //   features: data["features"],
-    //   inventory: data["inventory"],
-    //   notes: data["notes"],
-    // };
-    // console.log(characterData);
+    let characterName;
 
-    // TODO: dispatch create character
     for (const [key, value] of Object.entries(data)) {
+      if (key === "name-character") {
+        dispatch(characterCreationActions.setName(value));
+        characterName = value;
+        continue;
+      }
+
       const splitValues = value.split(":");
       if (splitValues[0] === "dispatch") {
         if (splitValues[1] === "addToInventory") {
@@ -87,36 +79,66 @@ export default function Characters() {
       }
     }
 
-    //     name,
-    //     race,
-    //     characterClass,
-    //     lvl,
-    //     abilitiesAndSkills,
-    //     armorClass,
-    //     proficiencies,
-    //     proficiencyBonus,
-    //     moveSpeed,
-    //     features,
-    //     inventory,
-    //     notes,
+    console.log("character inventory:", characterCreation.inventory);
+
+    // abilityScores: Object.fromEntries(
+    //   abilityScoreIndexes.map((ability) => [
+    //     ability,
+    //     { score: 8, modifier: -1, proficient: false, bonus: 0 },
+    //   ])
+    // ),
+    // changed: false,
+    // classAndLvl: {},
+    // classProficiencies: [],
+    // classProficiencyChoices: [],
+    // classStartingEquipment: [],
+    // classStartingEquipmentChoices: [],
+    // features: [],
+    // inventory: {},
+    // languages: [],
+    // languageChoices: [],
+    // moveSpeed: 0,
+    // name: "",
+    // numSpellsLearned: 0,
+    // points: 27,
+    // race: "",
+    // raceProficiencies: [],
+    // raceProficiencyChoices: [],
+    // size: "",
+    // skills: Object.fromEntries(
+    //   skillIndexes.map((skill) => [
+    //     skill,
+    //     {
+    //       name: "",
+    //       ability: skillToAbility[skill],
+    //       modifier: 0,
+    //       proficient: false,
+    //       staticProficiency: false,
+    //     },
+    //   ])
+    // ),
+    // spellcasting: structuredClone(defaultSpellcasting),
+    // spellList: structuredClone(defaultSpellList),
+    // spellsLearned: structuredClone(defaultSpellList),
 
     dispatch(
       charactersActions.createCharacter({
-        name: characterCreation.name,
-        characterClass: Object.keys(characterCreation.classAndLvl)[0],
-        lvl: Object.values(characterCreation.classAndLvl)[0],
-        race: characterCreation.race,
         abilitiesAndSkills: characterCreation.abilityScores,
         armorClass: 10 + characterCreation.abilityScores.dex.modifier,
+        characterClass: Object.keys(characterCreation.classAndLvl)[0],
+        features: characterCreation.features,
+        inventory: characterCreation.inventory,
+        lvl: Object.values(characterCreation.classAndLvl)[0],
+        moveSpeed: characterCreation.moveSpeed,
+        name: characterName,
+        notes: characterCreation.notes,
         proficiencies: characterCreation.classProficiencies.concat(
           characterCreation.raceProficiencies
         ),
         proficiencyBonus:
           Math.ceil(Object.values(characterCreation.classAndLvl)[0] / 4) + 1,
-        moveSpeed: 30, // TODO: get move speed of the character
-        features: characterCreation.features,
-        inventory: characterCreation.inventory,
-        notes: characterCreation.notes,
+        race: characterCreation.race,
+        size: characterCreation.size,
       })
     );
 
@@ -140,7 +162,7 @@ export default function Characters() {
       </div>
     );
   } else {
-    // console.log(selectedCharacter);
+    console.log("selectedCharacter:", selectedCharacter);
     content = (
       <>
         <div className="flex flex-row justify-between items-center">
@@ -156,6 +178,7 @@ export default function Characters() {
             </Button>
           </div>
         </div>
+        <Stats selectedCharacter={selectedCharacter} />
         <AbilityScores selectedCharacter={selectedCharacter} />
         <Features selectedCharacter={selectedCharacter} />
         <Inventory />

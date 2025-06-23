@@ -9,10 +9,7 @@ import ErrorIndicator from "../../../ErrorIndicator";
 
 import { characterCreationActions } from "../../../../store/character-creation-slice";
 
-export default function RaceSelection({
-  enteredRace,
-}) {
-  let raceContent;
+export default function RaceSelection({ enteredRace }) {
   let portalContent;
 
   const dispatch = useDispatch();
@@ -23,10 +20,12 @@ export default function RaceSelection({
 
   useEffect(() => {
     if (data && data.race) {
-      dispatch(characterCreationActions.setRace({
-        race: data.race.index,
-        raceData: data.race,
-      }))
+      dispatch(
+        characterCreationActions.setRace({
+          race: data.race.index,
+          raceData: data.race,
+        })
+      );
     }
   }, [data]);
 
@@ -36,8 +35,11 @@ export default function RaceSelection({
     portalContent = <LoadingIndicator />;
   }
   if (error) {
-    dataToPrint = "an error occurred when trying to fetch race data";
+    dataToPrint =
+      "an error occurred when trying to fetch race data \nerror message: " +
+      error.message;
     portalContent = <ErrorIndicator />;
+    console.log(dataToPrint);
   }
   if (data) {
     dataToPrint = data.race;
