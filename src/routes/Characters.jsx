@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useQuery } from "@apollo/client";
 
 import { gamesActions } from "../store/games-slice";
 import { charactersActions } from "../store/characters-slice";
@@ -48,6 +47,85 @@ export default function Characters() {
     dispatch(charactersActions.deleteCharacter(characterID));
   }
 
+  function createCharacterThunk(characterName, numItemsInInventory) {
+    return (dispatch, getState) => {
+      const state = getState();
+      let reduxInventoryNum = 0;
+      for (const inventoryCategory of Object.values(
+        state.characterCreation.inventory
+      )) {
+        reduxInventoryNum += inventoryCategory.length;
+      }
+
+      if (reduxInventoryNum == numItemsInInventory) {
+        // abilityScores: Object.fromEntries(
+        //   abilityScoreIndexes.map((ability) => [
+        //     ability,
+        //     { score: 8, modifier: -1, proficient: false, bonus: 0 },
+        //   ])
+        // ),
+        // changed: false,
+        // classAndLvl: {},
+        // classProficiencies: [],
+        // classProficiencyChoices: [],
+        // classStartingEquipment: [],
+        // classStartingEquipmentChoices: [],
+        // features: [],
+        // inventory: {},
+        // languages: [],
+        // languageChoices: [],
+        // moveSpeed: 0,
+        // name: "",
+        // numSpellsLearned: 0,
+        // points: 27,
+        // race: "",
+        // raceProficiencies: [],
+        // raceProficiencyChoices: [],
+        // size: "",
+        // skills: Object.fromEntries(
+        //   skillIndexes.map((skill) => [
+        //     skill,
+        //     {
+        //       name: "",
+        //       ability: skillToAbility[skill],
+        //       modifier: 0,
+        //       proficient: false,
+        //       staticProficiency: false,
+        //     },
+        //   ])
+        // ),
+        // spellcasting: structuredClone(defaultSpellcasting),
+        // spellList: structuredClone(defaultSpellList),
+        // spellsLearned: structuredClone(defaultSpellList),
+
+        dispatch(
+          charactersActions.createCharacter({
+            abilitiesAndSkills: characterCreation.abilityScores,
+            armorClass: 10 + characterCreation.abilityScores.dex.modifier,
+            characterClass: Object.keys(characterCreation.classAndLvl)[0],
+            features: characterCreation.features,
+            inventory: structuredClone(state.characterCreation.inventory),
+            languages: structuredClone(state.characterCreation.languages),
+            lvl: Object.values(characterCreation.classAndLvl)[0],
+            moveSpeed: characterCreation.moveSpeed,
+            name: characterName,
+            notes: characterCreation.notes,
+            proficiencies: characterCreation.classProficiencies.concat(
+              characterCreation.raceProficiencies
+            ),
+            proficiencyBonus:
+              Math.ceil(Object.values(characterCreation.classAndLvl)[0] / 4) +
+              1,
+            race: characterCreation.race,
+            size: characterCreation.size,
+            spellcasting: structuredClone(characterCreation.spellcasting),
+            spellsLearned: structuredClone(characterCreation.spellsLearned),
+          })
+        );
+      }
+    };
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -55,6 +133,7 @@ export default function Characters() {
     console.log("submitted data:", data);
 
     let characterName;
+    let numItemsInInventory = 0;
 
     for (const [key, value] of Object.entries(data)) {
       if (key === "name-character") {
@@ -64,84 +143,29 @@ export default function Characters() {
       }
 
       const splitValues = value.split(":");
-      if (splitValues[0] === "dispatch") {
-        if (splitValues[1] === "addToInventory") {
-          if (splitValues[2] === "counted_reference") {
-            dispatch(
-              characterCreationActions.editInventory({
-                index: splitValues[5],
-                name: splitValues[6],
-                category: splitValues[4],
-              })
-            );
-          }
+      if (splitValues[0] === "editInventory") {
+        if (splitValues[1] === "counted_reference") {
+          numItemsInInventory++;
+          dispatch(
+            characterCreationActions.editInventory({
+              index: splitValues[4],
+              name: splitValues[5],
+              category: splitValues[3],
+              quantity: splitValues[6],
+            })
+          );
         }
+      } else if (splitValues[0] === "learnLanguage") {
+        dispatch(
+          characterCreationActions.learnLanguage({
+            index: splitValues[4],
+            name: splitValues[5],
+          })
+        );
       }
     }
 
-    console.log("character inventory:", characterCreation.inventory);
-
-    // abilityScores: Object.fromEntries(
-    //   abilityScoreIndexes.map((ability) => [
-    //     ability,
-    //     { score: 8, modifier: -1, proficient: false, bonus: 0 },
-    //   ])
-    // ),
-    // changed: false,
-    // classAndLvl: {},
-    // classProficiencies: [],
-    // classProficiencyChoices: [],
-    // classStartingEquipment: [],
-    // classStartingEquipmentChoices: [],
-    // features: [],
-    // inventory: {},
-    // languages: [],
-    // languageChoices: [],
-    // moveSpeed: 0,
-    // name: "",
-    // numSpellsLearned: 0,
-    // points: 27,
-    // race: "",
-    // raceProficiencies: [],
-    // raceProficiencyChoices: [],
-    // size: "",
-    // skills: Object.fromEntries(
-    //   skillIndexes.map((skill) => [
-    //     skill,
-    //     {
-    //       name: "",
-    //       ability: skillToAbility[skill],
-    //       modifier: 0,
-    //       proficient: false,
-    //       staticProficiency: false,
-    //     },
-    //   ])
-    // ),
-    // spellcasting: structuredClone(defaultSpellcasting),
-    // spellList: structuredClone(defaultSpellList),
-    // spellsLearned: structuredClone(defaultSpellList),
-
-    dispatch(
-      charactersActions.createCharacter({
-        abilitiesAndSkills: characterCreation.abilityScores,
-        armorClass: 10 + characterCreation.abilityScores.dex.modifier,
-        characterClass: Object.keys(characterCreation.classAndLvl)[0],
-        features: characterCreation.features,
-        inventory: characterCreation.inventory,
-        lvl: Object.values(characterCreation.classAndLvl)[0],
-        moveSpeed: characterCreation.moveSpeed,
-        name: characterName,
-        notes: characterCreation.notes,
-        proficiencies: characterCreation.classProficiencies.concat(
-          characterCreation.raceProficiencies
-        ),
-        proficiencyBonus:
-          Math.ceil(Object.values(characterCreation.classAndLvl)[0] / 4) + 1,
-        race: characterCreation.race,
-        size: characterCreation.size,
-      })
-    );
-
+    dispatch(createCharacterThunk(characterName, numItemsInInventory));
     handleStopCreatingCharacter();
   }
 
@@ -181,7 +205,10 @@ export default function Characters() {
         <Stats selectedCharacter={selectedCharacter} />
         <AbilityScores selectedCharacter={selectedCharacter} />
         <Features selectedCharacter={selectedCharacter} />
-        <Inventory />
+        <Inventory
+          characterID={selectedCharacter.characterID}
+          inventory={selectedCharacter.inventory}
+        />
         <div className="flex flex-col">
           <h2>Notes</h2>
           <div className="h-[15vh] bg-white rounded-xl mt-3"></div>
@@ -214,6 +241,6 @@ export default function Characters() {
 
 export async function clientLoader() {
   return {
-    title: "Games",
+    title: "Characters",
   };
 }

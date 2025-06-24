@@ -329,7 +329,7 @@ const characterCreationSlice = createSlice({
       }
     },
     editInventory(state, action) {
-      console.log("action payload:", action.payload);
+      console.log("edit inventory:", action.payload);
       let equipCategory = action.payload.category;
       const includesItem = (item) => item.index === action.payload.index;
 
@@ -345,46 +345,14 @@ const characterCreationSlice = createSlice({
         state.inventory[equipCategory] = [action.payload];
       }
     },
-    addToInventory(state, action) {
-      let equipCategory = action.payload.category;
-      if (equipCategory in state.inventory) {
-        state.inventory[equipCategory].push(action.payload);
-      } else {
-        state.inventory[equipCategory] = [action.payload];
+    learnLanguage(state, action) {
+      console.log("learn language:", action.payload);
+      const includesLanguage = (language) =>
+        language.index === action.payload.index;
+      if (!state.languages.some(includesLanguage)) {
+        state.languages.push(action.payload);
       }
     },
-    removeFromInventory(state, action) {
-      let equipCategory = action.payload.category;
-      const includesItem = (item) => item.index === action.payload.index;
-
-      if (equipCategory in state.inventory) {
-        if (state.inventory[equipCategory].some(includesItem)) {
-          state.inventory[equipCategory] = state.inventory[
-            equipCategory
-          ].filter((item) => item.index !== action.payload.index);
-        }
-      }
-    },
-    // addToInventory(state, action) {
-    //   let equipCategory = action.payload["equipment_category"].index;
-    //   if (equipCategory in state.inventory) {
-    //     state.inventory[equipCategory].push(action.payload);
-    //   } else {
-    //     state.inventory[equipCategory] = [action.payload];
-    //   }
-    // },
-    // removeFromInventory(state, action) {
-    //   let equipCategory = action.payload["equipment_category"].index;
-    //   const includesItem = (item) => item.index === action.payload.index;
-
-    //   if (equipCategory in state.inventory) {
-    //     if (state.inventory[equipCategory].some(includesItem)) {
-    //       state.inventory[equipCategory] = state.inventory[
-    //         equipCategory
-    //       ].filter((item) => item.index !== action.payload.index);
-    //     }
-    //   }
-    // },
   },
 });
 

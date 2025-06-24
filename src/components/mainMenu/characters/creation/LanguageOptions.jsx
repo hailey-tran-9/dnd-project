@@ -21,7 +21,7 @@ export default function LanguageOptions({ enteredRace }) {
           <RadioGroup
             nameForInputs={enteredRace + "-radio-language"}
             listOfInputs={languageChoices.from.options}
-            purpose="languages"
+            purpose="learnLanguage"
             keyAdder={enteredRace + "LanguagesRadioGroupKey"}
           />
         ) : (
@@ -29,7 +29,7 @@ export default function LanguageOptions({ enteredRace }) {
             nameForInputs={enteredRace + "-checkbox-language"}
             listOfInputs={languageChoices.from.options}
             maxNumInputs={numToChoose}
-            purpose="languages"
+            purpose="learnLanguage"
             keyAdder={enteredRace + "LanguagesCheckboxGroupKey"}
           />
         )}

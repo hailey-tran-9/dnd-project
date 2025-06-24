@@ -14,21 +14,6 @@ const charactersSlice = createSlice({
       state.numberOfCharacters = action.payload.numberOfCharacters;
     },
     createCharacter(state, action) {
-      //   let {
-      //     name,
-      //     race,
-      //     characterClass,
-      //     lvl,
-      //     abilitiesAndSkills,
-      //     armorClass,
-      //     proficiencies,
-      //     proficiencyBonus,
-      //     moveSpeed,
-      //     features,
-      //     inventory,
-      //     notes,
-      //   } = action.payload;
-
       // TODO: get the logged in userID
       state.characters.push({
         userID: "testUserID",

@@ -34,9 +34,11 @@ export default function EquipmentSelect({
             let label;
             let value;
             let equipmentCategory;
+            let quantity = 1;
             if (option["option_type"] === "counted_reference") {
               label = option.of.name;
               value = option.of.index;
+              quantity = option.count;
               equipmentCategory = option.of["equipment_category"].index;
             } else if (option["option_type"] === "choice") {
               label = option.choice.from["equipment_category"].name;
@@ -67,13 +69,13 @@ export default function EquipmentSelect({
               <option
                 key={keyAdder + caption + mapIndex}
                 value={[
-                  "dispatch",
-                  "addToInventory",
+                  "editInventory",
                   option["option_type"],
                   optionIndex,
                   equipmentCategory,
                   value,
                   label,
+                  quantity,
                 ].join(":")}
               >
                 {label}

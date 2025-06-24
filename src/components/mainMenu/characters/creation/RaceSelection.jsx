@@ -1,17 +1,11 @@
 import { useEffect } from "react";
 import { useQuery } from "@apollo/client";
-import { createPortal } from "react-dom";
-import { GET_RACE } from "../../../../util/graphql";
 import { useDispatch } from "react-redux";
 
-import LoadingIndicator from "../../../LoadingIndicator";
-import ErrorIndicator from "../../../ErrorIndicator";
-
+import { GET_RACE } from "../../../../util/graphql";
 import { characterCreationActions } from "../../../../store/character-creation-slice";
 
 export default function RaceSelection({ enteredRace }) {
-  let portalContent;
-
   const dispatch = useDispatch();
 
   const { loading, error, data } = useQuery(GET_RACE, {
@@ -27,24 +21,19 @@ export default function RaceSelection({ enteredRace }) {
         })
       );
     }
-  }, [data]);
+    console.log(dataToPrint);
+  }, [data, enteredRace]);
 
   let dataToPrint;
   if (loading) {
     dataToPrint = "still loading race data";
-    portalContent = <LoadingIndicator />;
   }
   if (error) {
     dataToPrint =
       "an error occurred when trying to fetch race data \nerror message: " +
       error.message;
-    portalContent = <ErrorIndicator />;
-    console.log(dataToPrint);
   }
   if (data) {
     dataToPrint = data.race;
-    console.log(dataToPrint);
   }
-
-  return;
 }

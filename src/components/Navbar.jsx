@@ -11,7 +11,9 @@ export default function Navbar() {
       className="flex flex-row justify-between px-10 py-5 items-center"
     >
       <div className="flex flex-row gap-12 items-center">
-        <h1 className="mr-10">dnd</h1>
+        <NavLink to="/">
+          <h1 className="mr-10">dnd</h1>
+        </NavLink>
         <NavLink to="/games">
           <h3>Games</h3>
         </NavLink>
