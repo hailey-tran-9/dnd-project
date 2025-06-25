@@ -616,6 +616,7 @@ export const GET_EQUIPMENT_INFO = gql`
         }
         str_minimum
         stealth_disadvantage
+        desc
       }
       ... on Weapon {
         index
@@ -655,6 +656,7 @@ export const GET_EQUIPMENT_INFO = gql`
         throw_range {
           normal
         }
+        desc
       }
       ... on Tool {
         index
@@ -673,6 +675,7 @@ export const GET_EQUIPMENT_INFO = gql`
           name
         }
         tool_category
+        desc
       }
       ... on Gear {
         index
@@ -690,6 +693,7 @@ export const GET_EQUIPMENT_INFO = gql`
           index
           name
         }
+        desc
       }
       ... on Pack {
         index
@@ -740,6 +744,7 @@ export const GET_EQUIPMENT_INFO = gql`
             }
           }
         }
+        desc
       }
       ... on Ammunition {
         index
@@ -758,6 +763,7 @@ export const GET_EQUIPMENT_INFO = gql`
           name
         }
         quantity
+        desc
       }
       ... on Vehicle {
         index
@@ -781,6 +787,7 @@ export const GET_EQUIPMENT_INFO = gql`
           unit
         }
         capacity
+        desc
       }
     }
   }

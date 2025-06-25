@@ -16,6 +16,7 @@ import Header from "../components/mainMenu/characters/Header";
 import AbilityScores from "../components/mainMenu/characters/AbilityScores";
 import Features from "../components/mainMenu/characters/Features";
 import Stats from "../components/mainMenu/characters/Stats";
+import Spells from "../components/mainMenu/characters/Spells";
 
 export default function Characters() {
   const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
@@ -37,9 +38,20 @@ export default function Characters() {
   }
 
   function handleSelectCharacter(character) {
+    if (isCreatingCharacter) {
+      handleStopCreatingCharacter();
+    }
     if (selectedCharacter !== character) {
       setSelectedCharacter(character);
     }
+  }
+
+  function handleSelectionClick(event) {
+    if (event.target.localName === "button") return;
+    if (isCreatingCharacter) {
+      handleStopCreatingCharacter();
+    }
+    setSelectedCharacter(undefined);
   }
 
   function handleDeleteCharacter(characterID) {
@@ -192,7 +204,10 @@ export default function Characters() {
         <div className="flex flex-row justify-between items-center">
           <Header selectedCharacter={selectedCharacter} />
           <div>
-            <Button className="mr-5">Edit</Button>
+            {/* TODO: implement Edit functionality */}
+            <Button className={"mr-5 disabled:bg-[#8d8d8dc0]"} disabled>
+              Edit
+            </Button>
             <Button
               onClick={() =>
                 handleDeleteCharacter(selectedCharacter.characterID)
@@ -205,6 +220,12 @@ export default function Characters() {
         <Stats selectedCharacter={selectedCharacter} />
         <AbilityScores selectedCharacter={selectedCharacter} />
         <Features selectedCharacter={selectedCharacter} />
+        {selectedCharacter.spellcasting && (
+          <Spells
+            characterID={selectedCharacter.characterID}
+            spellsLearned={selectedCharacter.spellsLearned}
+          />
+        )}
         <Inventory
           characterID={selectedCharacter.characterID}
           inventory={selectedCharacter.inventory}
@@ -219,7 +240,7 @@ export default function Characters() {
 
   return (
     <section id="user-characters" className="flex flex-row grow">
-      <Selection>
+      <Selection onClick={(event) => handleSelectionClick(event)}>
         <Button onClick={handleStartCreatingCharacter}>
           + Create Character
         </Button>
