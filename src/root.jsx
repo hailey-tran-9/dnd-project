@@ -5,16 +5,27 @@ import {
   InMemoryCache,
   ApolloProvider,
 } from "@apollo/client/index.js";
+import { initializeApp } from "firebase/app";
 
 import "./index.css";
+import store from "./store/index.js";
+import Fallback from "./routes/Fallback.jsx";
 
 const client = new ApolloClient({
   uri: "https://www.dnd5eapi.co/graphql/2014",
   cache: new InMemoryCache(),
 });
 
-import store from "./store/index.js";
-import Fallback from "./routes/Fallback.jsx";
+const firebaseConfig = {
+  apiKey: "AIzaSyBPxRT-yYw6KjS1LWeNoUqNi1SjguTKu3A",
+  authDomain: "dnd-project-c6151.firebaseapp.com",
+  databaseURL: "https://dnd-project-c6151-default-rtdb.firebaseio.com",
+  projectId: "dnd-project-c6151",
+  storageBucket: "dnd-project-c6151.firebasestorage.app",
+  messagingSenderId: "819142704135",
+  appId: "1:819142704135:web:b9c21f15f988db5f7abea2"
+};
+export const firebaseApp = initializeApp(firebaseConfig);
 
 export function Layout({ children }) {
   return (
@@ -46,9 +57,10 @@ export function Layout({ children }) {
   );
 }
 
-export function HydrateFallback() {
-  return <Fallback />;
-}
+// TODO: Create a fallback page that doesn't load at the beginning
+// export function HydrateFallback() {
+//   return <Fallback />;
+// }
 
 export default function Root() {
   return (

@@ -1,0 +1,28 @@
+import { createSlice } from "@reduxjs/toolkit";
+
+const userSlice = createSlice({
+  name: "user",
+  initialState: {
+    loginStatus: false,
+    isSigningIn: false,
+  },
+  reducers: {
+    startSignIn(state) {
+      state.isSigningIn = true;
+    },
+    stopSignIn(state) {
+      state.isSigningIn = false;
+    },
+    signInUser(state) {
+      state.isSigningIn = false;
+      state.loginStatus = true;
+    },
+    logout(state) {
+      state.loginStatus = false;
+    },
+  },
+});
+
+export const userActions = userSlice.actions;
+
+export default userSlice.reducer;
