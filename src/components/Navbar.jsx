@@ -10,6 +10,7 @@ import Button from "./Button";
 export default function Navbar() {
   const dispatch = useDispatch();
   const isSigningIn = useSelector((state) => state.user.isSigningIn);
+  const isCreatingAccount = useSelector((state) => state.user.isCreatingAccount);
 
   // TODO: Implement the logout functionality
   let isSignedIn;
@@ -30,7 +31,7 @@ export default function Navbar() {
   let displayButton;
   if (isSignedIn) {
     displayButton = <Button>Logout</Button>;
-  } else if (!isSigningIn) {
+  } else if (!isSigningIn && !isCreatingAccount) {
     displayButton = <Button onClick={handleSignIn}>Sign In</Button>;
   }
 
