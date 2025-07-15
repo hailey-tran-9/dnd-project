@@ -17,6 +17,10 @@ const router = createBrowserRouter([
     children: [
       { index: true, lazy: () => import("./routes/Home.jsx").then(convert) },
       {
+        path: "signin",
+        lazy: () => import("./routes/SignIn.jsx").then(convert),
+      },
+      {
         path: "games",
         children: [
           {
