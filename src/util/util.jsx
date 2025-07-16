@@ -49,3 +49,37 @@ export function emboldenNum(str, identifier) {
     </p>
   );
 }
+
+export function basicEmailCheck(email) {
+  const emailMatch = email.match(new RegExp("^.+@[a-zA-z]+\\.[a-zA-Z]{2,3}$"));
+  return emailMatch != null;
+}
+
+export function validPassword(password) {
+  // Check the len is between 7-12 characters
+  if (!(7 <= password.length <= 12)) {
+    return false;
+  }
+
+  // Check that there's at least one lowercase letter, uppercase letter, number, and non-alphanumeric character
+  const alphabet = password.match(new RegExp("[a-z]", "g"));
+  const upperAlphabet = password.match(new RegExp("[A-Z]", "g"));
+  const numbers = password.match(new RegExp("\\d", "g"));
+  const nonAlphaNum = password.match(new RegExp("[\\W_]", "g"));
+
+  // console.log(alphabet);
+  // console.log(upperAlphabet);
+  // console.log(numbers);
+  // console.log(nonAlphaNum);
+
+  if (
+    alphabet == null ||
+    upperAlphabet == null ||
+    numbers == null ||
+    nonAlphaNum == null
+  ) {
+    return false;
+  }
+
+  return true;
+}

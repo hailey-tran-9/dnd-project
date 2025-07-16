@@ -4,6 +4,7 @@ export default [
   layout("./routes/Root.jsx", [
     index("./routes/Home.jsx"),
     route("signin", "./routes/SignIn.jsx"),
+    route("account-creation", "./routes/AccountCreation.jsx"),
     route("games", "./routes/Games.jsx"),
     route("characters", "./routes/Characters.jsx"),
   ]),

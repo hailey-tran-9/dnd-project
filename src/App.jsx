@@ -21,6 +21,10 @@ const router = createBrowserRouter([
         lazy: () => import("./routes/SignIn.jsx").then(convert),
       },
       {
+        path: "account-creation",
+        lazy: () => import("./routes/AccountCreation.jsx").then(convert),
+      },
+      {
         path: "games",
         children: [
           {

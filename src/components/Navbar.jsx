@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { NavLink } from "react-router";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useDispatch } from "react-redux";
@@ -18,15 +19,17 @@ export default function Navbar() {
   let isSignedIn;
 
   const auth = getAuth();
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      isSignedIn = true;
-      console.log("user is signed in");
-    } else {
-      isSignedIn = false;
-      console.log("user is NOT signed in");
-    }
-  });
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        isSignedIn = true;
+        console.log("user is signed in");
+      } else {
+        isSignedIn = false;
+        console.log("user is NOT signed in");
+      }
+    });
+  }, [auth]);
 
   function handleSignIn() {
     dispatch(userActions.startSignIn());
