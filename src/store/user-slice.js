@@ -18,7 +18,7 @@ const userSlice = createSlice({
       state.isSigningIn = false;
       state.loginStatus = true;
     },
-    logout(state) {
+    signOutUser(state) {
       state.loginStatus = false;
     },
     startCreatingAccount(state) {

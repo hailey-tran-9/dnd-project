@@ -1,5 +1,6 @@
-import { useSelector, useDispatch } from "react-redux";
-import { Form, NavLink, redirect } from "react-router";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { Form, NavLink, useNavigate } from "react-router";
 import { userActions } from "../store/user-slice";
 import {
   getAuth,
@@ -14,10 +15,15 @@ import Button from "../components/Button";
 
 export default function AccountCreation() {
   const dispatch = useDispatch();
-  const isCreatingAccount = useSelector(
-    (state) => state.user.isCreatingAccount
-  );
   const auth = getAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(userActions.startCreatingAccount());
+    return () => {
+      dispatch(userActions.stopCreatingAccount());
+    };
+  }, [dispatch]);
 
   function handleCreateAccount(event) {
     event.preventDefault();
@@ -83,15 +89,7 @@ export default function AccountCreation() {
         console.log(errorCode, errorMessage);
       });
 
-    dispatch(userActions.stopCreatingAccount());
-    return redirect("/signin");
-  }
-
-  function cancelCreatingAccount() {
-    if (isCreatingAccount) {
-      dispatch(userActions.stopCreatingAccount());
-      dispatch(userActions.startSignIn());
-    }
+    navigate("/signin");
   }
 
   return (
@@ -146,9 +144,7 @@ export default function AccountCreation() {
           </div>
           <div className="flex flex-row self-end gap-5 mt-10">
             <NavLink to="/signin">
-              <Button type="button" onClick={cancelCreatingAccount}>
-                Cancel
-              </Button>
+              <Button type="button">Cancel</Button>
             </NavLink>
             <Button>Create</Button>
           </div>

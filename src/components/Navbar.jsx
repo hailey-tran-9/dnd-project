@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { NavLink } from "react-router";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { userActions } from "../store/user-slice";
 import { useSelector } from "react-redux";
@@ -10,38 +10,48 @@ import Button from "./Button";
 
 export default function Navbar() {
   const dispatch = useDispatch();
+  const loginStatus = useSelector((state) => state.user.loginStatus);
   const isSigningIn = useSelector((state) => state.user.isSigningIn);
   const isCreatingAccount = useSelector(
     (state) => state.user.isCreatingAccount
   );
 
-  // TODO: Implement the logout functionality
-  let isSignedIn;
-
   const auth = getAuth();
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        isSignedIn = true;
-        console.log("user is signed in");
-      } else {
-        isSignedIn = false;
-        console.log("user is NOT signed in");
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log("user is signed in");
+      if (!loginStatus) {
+        dispatch(userActions.signInUser());
       }
-    });
-  }, [auth]);
+    } else {
+      console.log("user is NOT signed in");
+      if (loginStatus) {
+        dispatch(userActions.signOutUser());
+      }
+    }
+  });
 
-  function handleSignIn() {
-    dispatch(userActions.startSignIn());
+  function handleLogout() {
+    signOut(auth)
+      .then(() => {
+        console.log("user has been signed out");
+      })
+      .catch((error) => {
+        console.log("error trying to sign the user out");
+      });
   }
 
   let displayButton;
-  if (isSignedIn) {
-    displayButton = <Button>Logout</Button>;
+  if (loginStatus) {
+    displayButton = (
+      <NavLink to="/" onClick={handleLogout}>
+        <Button>Sign Out</Button>
+      </NavLink>
+    );
   } else if (!isSigningIn && !isCreatingAccount) {
     displayButton = (
       <NavLink to="/signin">
-        <Button onClick={handleSignIn}>Sign In</Button>
+        <Button>Sign In</Button>
       </NavLink>
     );
   }

@@ -1,5 +1,6 @@
-import { useSelector, useDispatch } from "react-redux";
-import { Form, NavLink, redirect } from "react-router";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { Form, NavLink, useNavigate } from "react-router";
 import { userActions } from "../store/user-slice";
 import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { basicEmailCheck, validPassword } from "../util/util";
@@ -9,8 +10,15 @@ import Button from "../components/Button";
 
 export default function SignInPage() {
   const dispatch = useDispatch();
-  const isSigningIn = useSelector((state) => state.user.isSigningIn);
   const auth = getAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(userActions.startSignIn());
+    return () => {
+      dispatch(userActions.stopSignIn());
+    };
+  }, [dispatch]);
 
   function handleSignIn(event) {
     event.preventDefault();
@@ -52,7 +60,7 @@ export default function SignInPage() {
         } else {
           console.log("user successfully signed in");
           dispatch(userActions.signInUser());
-          return redirect("/");
+          navigate("/");
         }
       })
       .catch((error) => {
@@ -62,17 +70,6 @@ export default function SignInPage() {
         console.log("error trying to sign in");
         console.log(errorCode, errorMessage);
       });
-  }
-
-  function cancelSignIn() {
-    if (isSigningIn) {
-      dispatch(userActions.stopSignIn());
-    }
-  }
-
-  function handleCreateAccount() {
-    dispatch(userActions.stopSignIn());
-    dispatch(userActions.startCreatingAccount());
   }
 
   return (
@@ -112,19 +109,15 @@ export default function SignInPage() {
           </div>
           <div className="flex flex-row w-full justify-between gap-20 mt-10">
             <NavLink to="/account-creation">
-              <Button type="button" onClick={handleCreateAccount}>
+              <Button type="button">
                 Create account
               </Button>
             </NavLink>
             <div className="flex gap-5">
               <NavLink to="/">
-                <Button type="button" onClick={cancelSignIn}>
-                  Cancel
-                </Button>
+                <Button type="button">Cancel</Button>
               </NavLink>
-              <NavLink to="/">
-                <Button>Enter</Button>
-              </NavLink>
+              <Button>Enter</Button>
             </div>
           </div>
         </div>
