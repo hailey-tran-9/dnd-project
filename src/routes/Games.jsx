@@ -1,8 +1,16 @@
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
+import {
+  getDatabase,
+  ref,
+  set,
+  remove,
+  update,
+  increment,
+} from "firebase/database";
 
-import { gamesActions } from "../store/games-slice";
+import { v4 as uuidv4 } from "uuid";
 
 import Button from "../components/Button";
 import Info from "../components/Info";
@@ -11,13 +19,16 @@ import Player from "../components/mainMenu/games/Player";
 import Session from "../components/mainMenu/games/Session";
 import GameCreation from "../components/mainMenu/games/GameCreation";
 
+// TODO: render players and sessions dynamically from the game data
+// TODO: UI for error handling
+
 export default function Games() {
   const [isCreatingGame, setIsCreatingGame] = useState(false);
   const [selectedGame, setSelectedGame] = useState();
 
-  const dispatch = useDispatch();
   const games = useSelector((state) => state.games.games);
-  // console.log(games);
+  // console.log("games", games);
+  const db = getDatabase();
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -44,7 +55,15 @@ export default function Games() {
 
   function handleDeleteGame(gameID) {
     setSelectedGame(undefined);
-    dispatch(gamesActions.deleteGame(gameID));
+    remove(ref(db, "games/games/" + gameID))
+      .then(() => {
+        console.log("game deleted successfully");
+      })
+      .catch((error) => {
+        console.log("error deleting the game from the db");
+        console.log(error.message);
+      });
+    update(ref(db), { "games/numberOfGames": increment(-1) });
   }
 
   function handleSubmit(event) {
@@ -53,15 +72,24 @@ export default function Games() {
     const data = Object.fromEntries(formData);
 
     const gameData = {
-      name: data["game-name"],
       charactersInGame: [],
+      gameID: uuidv4(),
       mapsInGame: [],
+      name: data["game-name"],
       sessions: [],
       userID,
     };
     // console.log(gameData);
 
-    dispatch(gamesActions.createGame(gameData));
+    set(ref(db, "games/games/" + gameData.gameID), gameData)
+      .then(() => {
+        console.log("game created successfully");
+      })
+      .catch((error) => {
+        console.log("error writing the new game into the db");
+        console.log(error.message);
+      });
+    update(ref(db), { "games/numberOfGames": increment(1) });
 
     handleStopCreatingGame();
   }
@@ -123,7 +151,7 @@ export default function Games() {
       <Selection>
         <Button onClick={handleStartCreatingGame}>+ Create Game</Button>
         <ul className="flex flex-col mt-10">
-          {games.map((game) => (
+          {Object.entries(games).map(([gameID, game]) => (
             <Button key={game.name} onClick={() => handleSelectGame(game)}>
               {game.name}
             </Button>

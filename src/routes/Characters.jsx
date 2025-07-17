@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getAuth } from "firebase/auth";
+import {
+  getDatabase,
+  ref,
+  set,
+  remove,
+  update,
+  increment,
+} from "firebase/database";
 
-import { gamesActions } from "../store/games-slice";
-import { charactersActions } from "../store/characters-slice";
 import { characterCreationActions } from "../store/character-creation-slice";
-import { GET_EQUIPMENT_INFO } from "../util/graphql";
+import { v4 as uuidv4 } from "uuid";
 
 import Button from "../components/Button";
 import Info from "../components/Info";
@@ -27,6 +33,7 @@ export default function Characters() {
   const characters = useSelector((state) => state.characters.characters);
   const characterCreation = useSelector((state) => state.characterCreation);
   //   console.log(characters);
+  const db = getDatabase();
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -43,6 +50,7 @@ export default function Characters() {
 
   function handleStopCreatingCharacter() {
     setIsCreatingCharacter(false);
+    setSelectedCharacter(undefined);
   }
 
   function handleSelectCharacter(character) {
@@ -64,7 +72,15 @@ export default function Characters() {
 
   function handleDeleteCharacter(characterID) {
     setSelectedCharacter(undefined);
-    dispatch(charactersActions.deleteCharacter(characterID));
+    remove(ref(db, "characters/characters/" + characterID))
+      .then(() => {
+        console.log("character deleted successfully");
+      })
+      .catch((error) => {
+        console.log("error deleting the character from the db");
+        console.log(error.message);
+      });
+    update(ref(db), { "characters/numberOfCharacters": increment(-1) });
   }
 
   function createCharacterThunk(characterName, numItemsInInventory) {
@@ -118,31 +134,42 @@ export default function Characters() {
         // spellList: structuredClone(defaultSpellList),
         // spellsLearned: structuredClone(defaultSpellList),
 
-        dispatch(
-          charactersActions.createCharacter({
-            abilitiesAndSkills: characterCreation.abilityScores,
-            armorClass: 10 + characterCreation.abilityScores.dex.modifier,
-            characterClass: Object.keys(characterCreation.classAndLvl)[0],
-            features: characterCreation.features,
-            inventory: structuredClone(state.characterCreation.inventory),
-            languages: structuredClone(state.characterCreation.languages),
-            lvl: Object.values(characterCreation.classAndLvl)[0],
-            moveSpeed: characterCreation.moveSpeed,
-            name: characterName,
-            notes: characterCreation.notes,
-            proficiencies: characterCreation.classProficiencies.concat(
-              characterCreation.raceProficiencies
-            ),
-            proficiencyBonus:
-              Math.ceil(Object.values(characterCreation.classAndLvl)[0] / 4) +
-              1,
-            race: characterCreation.race,
-            size: characterCreation.size,
-            spellcasting: structuredClone(characterCreation.spellcasting),
-            spellsLearned: structuredClone(characterCreation.spellsLearned),
-            userID,
+        const characterData = {
+          abilitiesAndSkills: characterCreation.abilityScores,
+          armorClass: 10 + characterCreation.abilityScores.dex.modifier,
+          characterClass: Object.keys(characterCreation.classAndLvl)[0],
+          characterID: uuidv4(),
+          features: characterCreation.features,
+          inGames: [],
+          inventory: structuredClone(state.characterCreation.inventory),
+          languages: structuredClone(state.characterCreation.languages),
+          lvl: Object.values(characterCreation.classAndLvl)[0],
+          moveSpeed: characterCreation.moveSpeed,
+          name: characterName,
+          notes: characterCreation.notes || null,
+          proficiencies: characterCreation.classProficiencies.concat(
+            characterCreation.raceProficiencies
+          ),
+          proficiencyBonus:
+            Math.ceil(Object.values(characterCreation.classAndLvl)[0] / 4) + 1,
+          race: characterCreation.race,
+          size: characterCreation.size,
+          spellcasting: structuredClone(characterCreation.spellcasting),
+          spellsLearned: structuredClone(characterCreation.spellsLearned),
+          userID,
+        };
+        set(
+          ref(db, "characters/characters/" + characterData.characterID),
+          characterData
+        )
+          .then(() => {
+            console.log("character created successfully");
           })
-        );
+          .catch((error) => {
+            console.log("error writing the new character into the db");
+            console.log(error.message);
+          });
+        update(ref(db), { "characters/numberOfCharacters": increment(1) });
       }
     };
   }
@@ -254,7 +281,7 @@ export default function Characters() {
           + Create Character
         </Button>
         <ul className="flex flex-col mt-10">
-          {characters.map((character) => (
+          {Object.entries(characters).map(([characterID, character]) => (
             <Button
               key={character.name}
               onClick={() => handleSelectCharacter(character)}
