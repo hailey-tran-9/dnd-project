@@ -4,7 +4,6 @@ import Button from "../../Button";
 import Input from "../../Input";
 
 export default function GameCreation({ cancelFn, submitFn }) {
-
   return (
     <Form onSubmit={submitFn}>
       <div className="flex flex-row justify-between mb-10">

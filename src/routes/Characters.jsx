@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { getAuth } from "firebase/auth";
 
 import { gamesActions } from "../store/games-slice";
 import { charactersActions } from "../store/characters-slice";
@@ -26,6 +27,13 @@ export default function Characters() {
   const characters = useSelector((state) => state.characters.characters);
   const characterCreation = useSelector((state) => state.characterCreation);
   //   console.log(characters);
+
+  const auth = getAuth();
+  const user = auth.currentUser;
+  let userID = null;
+  if (user) {
+    userID = user.uid;
+  }
 
   function handleStartCreatingCharacter() {
     if (!isCreatingCharacter) {
@@ -132,6 +140,7 @@ export default function Characters() {
             size: characterCreation.size,
             spellcasting: structuredClone(characterCreation.spellcasting),
             spellsLearned: structuredClone(characterCreation.spellsLearned),
+            userID,
           })
         );
       }

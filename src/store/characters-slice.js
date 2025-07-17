@@ -16,7 +16,6 @@ const charactersSlice = createSlice({
     createCharacter(state, action) {
       // TODO: get the logged in userID
       state.characters.push({
-        userID: "testUserID",
         inGames: [],
         characterID: uuidv4(),
         ...action.payload,

@@ -26,7 +26,7 @@ const userSlice = createSlice({
     },
     stopCreatingAccount(state) {
       state.isCreatingAccount = false;
-    }
+    },
   },
 });
 

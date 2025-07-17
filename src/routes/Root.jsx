@@ -1,11 +1,9 @@
 import { useEffect } from "react";
 import { Outlet } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getDatabase, ref, onValue } from "firebase/database";
 
-// import ClassContextProvider from "../components/contexts/ClassContext";
-// import RaceContextProvider from "../components/contexts/RaceContext";
-// import SkillContextProvider from "../components/contexts/SkillContext";
-// import AbilityScoreContextProvider from "../components/contexts/AbilityScoreContext.jsx";
 import Navbar from "../components/Navbar.jsx";
 
 import {
@@ -13,6 +11,8 @@ import {
   fetchCharactersData,
 } from "../store/characters-actions.js";
 import { sendGamesData, fetchGamesData } from "../store/games-actions.js";
+import { gamesActions } from "../store/games-slice.js";
+import { charactersActions } from "../store/characters-slice.js";
 
 let isInitial = true;
 
@@ -21,11 +21,37 @@ export default function RootLayout() {
   const charactersData = useSelector((state) => state.characters);
   const gamesData = useSelector((state) => state.games);
 
-  useEffect(() => {
-    // Get the user's pre-existing characters
-    dispatch(fetchCharactersData());
+  const db = getDatabase();
+  const gamesRef = ref(db, "games");
+  const charactersRef = ref(db, "characters");
 
-    dispatch(fetchGamesData());
+  useEffect(() => {
+    // Get the user's pre-existing characters, games
+    onValue(charactersRef, (snapshot) => {
+      const charactersData = snapshot.val();
+      // console.log(charactersData);
+      if (charactersData !== null) {
+        dispatch(
+          charactersActions.loadCharacters({
+            characters: charactersData.characters || [],
+            numberOfCharacters: charactersData.numberOfCharacters,
+          })
+        );
+      }
+    });
+
+    onValue(gamesRef, (snapshot) => {
+      const gamesData = snapshot.val();
+      // console.log(gamesData);
+      if (gamesData !== null) {
+        dispatch(
+          gamesActions.loadGames({
+            games: gamesData.games || [],
+            numberOfGames: gamesData.numberOfGames,
+          })
+        );
+      }
+    });
   }, [dispatch]);
 
   useEffect(() => {
@@ -34,14 +60,13 @@ export default function RootLayout() {
       return;
     }
 
+    // Update the database's character, game data
     if (charactersData.changed) {
-      // Update the database's character data
       dispatch(sendCharactersData(charactersData));
     }
-
-    if (gamesData.changed) {
-      dispatch(sendGamesData(gamesData));
-    }
+    // if (gamesData.changed) {
+    //   dispatch(sendGamesData(gamesData));
+    // }
   }, [charactersData, gamesData, dispatch]);
 
   return (

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { getAuth } from "firebase/auth";
 
 import { gamesActions } from "../store/games-slice";
 
@@ -17,6 +18,13 @@ export default function Games() {
   const dispatch = useDispatch();
   const games = useSelector((state) => state.games.games);
   // console.log(games);
+
+  const auth = getAuth();
+  const user = auth.currentUser;
+  let userID = null;
+  if (user) {
+    userID = user.uid;
+  }
 
   function handleStartCreatingGame() {
     if (!isCreatingGame) {
@@ -49,6 +57,7 @@ export default function Games() {
       charactersInGame: [],
       mapsInGame: [],
       sessions: [],
+      userID,
     };
     // console.log(gameData);
 

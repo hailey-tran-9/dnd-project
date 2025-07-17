@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from "uuid";
 
 const gamesSlice = createSlice({
   name: "games",
@@ -21,11 +22,9 @@ const gamesSlice = createSlice({
       // sessions
 
       // TODO: get the logged in userID
-      // TODO: generate a unique gameID
 
       state.games.push({
-        userID: "testUserID",
-        gameID: "testGameID",
+        gameID: uuidv4(),
         ...action.payload,
       });
       state.numberOfGames++;
