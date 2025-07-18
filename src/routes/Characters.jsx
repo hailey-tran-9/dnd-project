@@ -72,15 +72,21 @@ export default function Characters() {
 
   function handleDeleteCharacter(characterID) {
     setSelectedCharacter(undefined);
-    remove(ref(db, "characters/characters/" + characterID))
+    const userPath = "users/users/" + userID;
+
+    update(ref(db), {
+      ["characters/characters/" + characterID]: null,
+      "characters/numberOfCharacters": increment(-1),
+      [userPath + "/characters/characterIDs/" + characterID]: null,
+      [userPath + "/characters/numberOfCharacters"]: increment(-1),
+    })
       .then(() => {
-        console.log("character deleted successfully");
+        // console.log("character deleted successfully");
       })
       .catch((error) => {
         console.log("error deleting the character from the db");
         console.log(error.message);
       });
-    update(ref(db), { "characters/numberOfCharacters": increment(-1) });
   }
 
   function createCharacterThunk(characterName, numItemsInInventory) {
@@ -158,18 +164,22 @@ export default function Characters() {
           spellsLearned: structuredClone(characterCreation.spellsLearned),
           userID,
         };
-        set(
-          ref(db, "characters/characters/" + characterData.characterID),
-          characterData
-        )
+
+        const userPath = "users/users/" + userID;
+        update(ref(db), {
+          ["characters/characters/" + characterData.characterID]: characterData,
+          "characters/numberOfCharacters": increment(1),
+          [userPath + "/characters/characterIDs/" + characterData.characterID]:
+            characterData.name,
+          [userPath + "/characters/numberOfCharacters"]: increment(1),
+        })
           .then(() => {
-            console.log("character created successfully");
+            // console.log("character created successfully");
           })
           .catch((error) => {
             console.log("error writing the new character into the db");
             console.log(error.message);
           });
-        update(ref(db), { "characters/numberOfCharacters": increment(1) });
       }
     };
   }

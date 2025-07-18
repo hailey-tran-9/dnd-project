@@ -1,7 +1,13 @@
-import { useEffect } from "react";
 import { Outlet } from "react-router";
 import { useDispatch } from "react-redux";
-import { getDatabase, ref, onValue } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  query,
+  equalTo,
+  orderByChild,
+} from "firebase/database";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 import Navbar from "../components/Navbar.jsx";
@@ -11,36 +17,54 @@ import { charactersActions } from "../store/characters-slice.js";
 
 export default function RootLayout() {
   const dispatch = useDispatch();
-
   const db = getDatabase();
-  const gamesRef = ref(db, "games");
-  const charactersRef = ref(db, "characters");
-
   const auth = getAuth();
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
       const userID = user.uid;
 
-      onValue(gamesRef, (snapshot) => {
-        const gamesData = snapshot.val();
-        // console.log(gamesData);
-
-        if (gamesData && gamesData.games) {
-          let test = Object.fromEntries(
-            Object.entries(gamesData.games).filter(
-              ([gameID, game]) => game.userID === userID
-            )
+      // Get the user's pre-existing characters, games
+      const charactersQuery = query(
+        ref(db, "characters/characters"),
+        orderByChild("userID"),
+        equalTo(userID)
+      );
+      onValue(charactersQuery, (charactersSnapshot) => {
+        const charactersData = charactersSnapshot.val();
+        // console.log("charactersData:", charactersData);
+        if (charactersData) {
+          dispatch(
+            charactersActions.loadCharacters({
+              characters: charactersData || {},
+              numberOfCharacters: Object.keys(charactersData).length || 0,
+            })
           );
+        } else {
+          dispatch(
+            charactersActions.loadCharacters({
+              characters: {},
+              numberOfCharacters: 0,
+            })
+          );
+        }
+      });
 
-          if (test !== null) {
-            dispatch(
-              gamesActions.loadGames({
-                games: test || {},
-                numberOfGames: Object.keys(test).length || 0,
-              })
-            );
-          }
+      const gamesQuery = query(
+        ref(db, "games/games"),
+        orderByChild("userID"),
+        equalTo(userID)
+      );
+      onValue(gamesQuery, (gamesSnapshot) => {
+        const gamesData = gamesSnapshot.val();
+        // console.log("gamesData:", gamesData);
+        if (gamesData) {
+          dispatch(
+            gamesActions.loadGames({
+              games: gamesData || {},
+              numberOfGames: Object.keys(gamesData).length || 0,
+            })
+          );
         } else {
           dispatch(
             gamesActions.loadGames({
@@ -57,24 +81,14 @@ export default function RootLayout() {
           numberOfGames: 0,
         })
       );
+      dispatch(
+        charactersActions.loadCharacters({
+          characters: {},
+          numberOfCharacters: 0,
+        })
+      );
     }
   });
-
-  useEffect(() => {
-    // Get the user's pre-existing characters, games
-    onValue(charactersRef, (snapshot) => {
-      const charactersData = snapshot.val();
-      // console.log(charactersData);
-      if (charactersData !== null) {
-        dispatch(
-          charactersActions.loadCharacters({
-            characters: charactersData.characters || {},
-            numberOfCharacters: charactersData.numberOfCharacters || 0,
-          })
-        );
-      }
-    });
-  }, [dispatch]);
 
   return (
     <>

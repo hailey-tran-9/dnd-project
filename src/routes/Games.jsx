@@ -68,32 +68,17 @@ export default function Games() {
     setSelectedGame(undefined);
     const userPath = "users/users/" + userID;
 
-    remove(ref(db, "games/games/" + gameID))
-      .then(() => {
-        // console.log("game deleted successfully from GAMES");
-      })
-      .catch((error) => {
-        console.log("error deleting the game from GAMES");
-        console.log(error.message);
-      });
-    remove(ref(db, userPath + "/games/gameIDs/" + gameID))
-      .then(() => {
-        // console.log("game deleted successfully from USERS");
-      })
-      .catch((error) => {
-        console.log("error deleting the game from USERS");
-        console.log(error.message);
-      });
-
     update(ref(db), {
+      ["games/games/" + gameID]: null,
       "games/numberOfGames": increment(-1),
+      [userPath + "/games/gameIDs/" + gameID]: null,
       [userPath + "/games/numberOfGames"]: increment(-1),
     })
       .then(() => {
-        // console.log("game counters successfully updated");
+        // console.log("game successfully deleted");
       })
       .catch((error) => {
-        console.log("error updating game counters");
+        console.log("error deleting game");
         console.log(error.message);
       });
   }
