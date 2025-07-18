@@ -48,22 +48,54 @@ export default function Games() {
   }
 
   function handleSelectGame(game) {
+    if (isCreatingGame) {
+      handleStopCreatingGame();
+    }
     if (selectedGame !== game) {
       setSelectedGame(game);
     }
   }
 
+  function handleSelectionClick(event) {
+    if (event.target.localName === "button") return;
+    if (isCreatingGame) {
+      handleStopCreatingGame();
+    }
+    setSelectedGame(undefined);
+  }
+
   function handleDeleteGame(gameID) {
     setSelectedGame(undefined);
+    const userPath = "users/users/" + userID;
+
     remove(ref(db, "games/games/" + gameID))
       .then(() => {
-        console.log("game deleted successfully");
+        // console.log("game deleted successfully from GAMES");
       })
       .catch((error) => {
-        console.log("error deleting the game from the db");
+        console.log("error deleting the game from GAMES");
         console.log(error.message);
       });
-    update(ref(db), { "games/numberOfGames": increment(-1) });
+    remove(ref(db, userPath + "/games/gameIDs/" + gameID))
+      .then(() => {
+        // console.log("game deleted successfully from USERS");
+      })
+      .catch((error) => {
+        console.log("error deleting the game from USERS");
+        console.log(error.message);
+      });
+
+    update(ref(db), {
+      "games/numberOfGames": increment(-1),
+      [userPath + "/games/numberOfGames"]: increment(-1),
+    })
+      .then(() => {
+        // console.log("game counters successfully updated");
+      })
+      .catch((error) => {
+        console.log("error updating game counters");
+        console.log(error.message);
+      });
   }
 
   function handleSubmit(event) {
@@ -81,15 +113,20 @@ export default function Games() {
     };
     // console.log(gameData);
 
-    set(ref(db, "games/games/" + gameData.gameID), gameData)
+    const userPath = "users/users/" + userID;
+    update(ref(db), {
+      ["games/games/" + gameData.gameID]: gameData,
+      "games/numberOfGames": increment(1),
+      [userPath + "/games/gameIDs/" + gameData.gameID]: gameData.name,
+      [userPath + "/games/numberOfGames"]: increment(1),
+    })
       .then(() => {
-        console.log("game created successfully");
+        // console.log("game created successfully");
       })
       .catch((error) => {
         console.log("error writing the new game into the db");
         console.log(error.message);
       });
-    update(ref(db), { "games/numberOfGames": increment(1) });
 
     handleStopCreatingGame();
   }
@@ -148,7 +185,7 @@ export default function Games() {
 
   return (
     <section id="user-games" className="flex flex-row grow">
-      <Selection>
+      <Selection onClick={(event) => handleSelectionClick(event)}>
         <Button onClick={handleStartCreatingGame}>+ Create Game</Button>
         <ul className="flex flex-col mt-10">
           {Object.entries(games).map(([gameID, game]) => (

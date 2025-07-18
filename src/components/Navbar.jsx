@@ -20,12 +20,12 @@ export default function Navbar() {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       if (!loginStatus) {
-        console.log("user is signed in");
+        // console.log("user is signed in");
         dispatch(userActions.signInUser());
       }
     } else {
       if (loginStatus) {
-        console.log("user is NOT signed in");
+        // console.log("user is NOT signed in");
         dispatch(userActions.signOutUser());
       }
     }

@@ -1,8 +1,17 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Form, NavLink, useNavigate } from "react-router";
-import { userActions } from "../store/user-slice";
 import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  set,
+  update,
+  increment,
+} from "firebase/database";
+
+import { userActions } from "../store/user-slice";
 import { basicEmailCheck, validPassword } from "../util/util";
 
 import Input from "../components/Input";
@@ -12,6 +21,7 @@ export default function SignInPage() {
   const dispatch = useDispatch();
   const auth = getAuth();
   const navigate = useNavigate();
+  const db = getDatabase();
 
   useEffect(() => {
     dispatch(userActions.startSignIn());
@@ -42,6 +52,8 @@ export default function SignInPage() {
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
+        const userID = user.uid;
+
         if (!user.emailVerified) {
           console.log("user email hasn't been verified");
           signOut(auth)
@@ -53,20 +65,44 @@ export default function SignInPage() {
               // An error happened.
               const errorCode = error.code;
               const errorMessage = error.message;
-              // ...
+              
               console.log("error signing out");
               console.log(errorCode, errorMessage);
             });
         } else {
           console.log("user successfully signed in");
           dispatch(userActions.signInUser());
+
+          // Create a user in the db if no data exists yet
+          const userRef = ref(db, "users/users/" + userID);
+          onValue(userRef, (snapshot) => {
+            if (!snapshot.exists()) {
+              set(userRef, {
+                characters: {
+                  characterIDs: {},
+                  numberOfCharacters: 0,
+                },
+                games: {
+                  gameIDs: {},
+                  numberOfGames: 0,
+                },
+                maps: {
+                  mapIDs: {},
+                  numberOfMaps: 0,
+                },
+                username: "",
+              });
+              update(ref(db), { "users/numberOfUsers": increment(1) });
+            }
+          });
+
           navigate("/");
         }
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        // ...
+        
         console.log("error trying to sign in");
         console.log(errorCode, errorMessage);
       });
@@ -109,9 +145,7 @@ export default function SignInPage() {
           </div>
           <div className="flex flex-row w-full justify-between gap-20 mt-10">
             <NavLink to="/account-creation">
-              <Button type="button">
-                Create account
-              </Button>
+              <Button type="button">Create account</Button>
             </NavLink>
             <div className="flex gap-5">
               <NavLink to="/">
