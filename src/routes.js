@@ -1,11 +1,12 @@
-import { route, index, layout, prefix } from "@react-router/dev/routes";
+import { route, index, layout } from "@react-router/dev/routes";
 
 export default [
   layout("./routes/Root.jsx", [
     index("./routes/Home.jsx"),
-    route("signin", "./routes/SignIn.jsx"),
     route("account-creation", "./routes/AccountCreation.jsx"),
-    route("games", "./routes/Games.jsx"),
     route("characters", "./routes/Characters.jsx"),
+    route("games", "./routes/Games.jsx"),
+    route("maps", "./routes/Maps.jsx"),
+    route("signin", "./routes/SignIn.jsx"),
   ]),
 ];

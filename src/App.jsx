@@ -17,12 +17,12 @@ const router = createBrowserRouter([
     children: [
       { index: true, lazy: () => import("./routes/Home.jsx").then(convert) },
       {
-        path: "signin",
-        lazy: () => import("./routes/SignIn.jsx").then(convert),
-      },
-      {
         path: "account-creation",
         lazy: () => import("./routes/AccountCreation.jsx").then(convert),
+      },
+      {
+        path: "characters",
+        lazy: () => import("./routes/Characters.jsx").then(convert),
       },
       {
         path: "games",
@@ -40,8 +40,12 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "characters",
-        lazy: () => import("./routes/Characters.jsx").then(convert),
+        path: "maps",
+        lazy: () => import("./routes/Maps.jsx").then(convert),
+      },
+      {
+        path: "signin",
+        lazy: () => import("./routes/SignIn.jsx").then(convert),
       },
     ],
   },

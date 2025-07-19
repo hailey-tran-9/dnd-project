@@ -12,8 +12,9 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 import Navbar from "../components/Navbar.jsx";
 
-import { gamesActions } from "../store/games-slice.js";
 import { charactersActions } from "../store/characters-slice.js";
+import { gamesActions } from "../store/games-slice.js";
+import { mapsActions } from "../store/maps-slice.js";
 
 export default function RootLayout() {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ export default function RootLayout() {
     if (user) {
       const userID = user.uid;
 
-      // Get the user's pre-existing characters, games
+      // Get the user's pre-existing characters, games, maps
       const charactersQuery = query(
         ref(db, "characters/characters"),
         orderByChild("userID"),
@@ -74,6 +75,31 @@ export default function RootLayout() {
           );
         }
       });
+
+      const mapsQuery = query(
+        ref(db, "maps/maps"),
+        orderByChild("userID"),
+        equalTo(userID)
+      );
+      onValue(mapsQuery, (mapsSnapshot) => {
+        const mapsData = mapsSnapshot.val();
+        // console.log("mapsData:", mapsData);
+        if (mapsData) {
+          dispatch(
+            mapsActions.loadMaps({
+              maps: mapsData || {},
+              numberOfMaps: Object.keys(mapsData).length || 0,
+            })
+          );
+        } else {
+          dispatch(
+            mapsActions.loadMaps({
+              maps: {},
+              numberOfMaps: 0,
+            })
+          );
+        }
+      });
     } else {
       dispatch(
         gamesActions.loadGames({
@@ -85,6 +111,12 @@ export default function RootLayout() {
         charactersActions.loadCharacters({
           characters: {},
           numberOfCharacters: 0,
+        })
+      );
+      dispatch(
+        mapsActions.loadMaps({
+          maps: {},
+          numberOfMaps: 0,
         })
       );
     }
