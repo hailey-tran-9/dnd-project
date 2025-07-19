@@ -1,0 +1,20 @@
+{
+  "users": {
+    "$userID": {
+      "characters": {
+        "$characterID": ""
+      },
+      "maps": {
+        "$mapID": ""
+      },
+      "profilePic": ""
+    }
+  },
+  "games": {
+    "$gameID": {
+      "creatures": { "$creatureID": "" },
+      "items": { "$itemID": "" },
+      "npcs": { "$npcID": "" }
+    }
+  }
+}

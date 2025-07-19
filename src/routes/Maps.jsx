@@ -2,6 +2,13 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
 import { getDatabase, ref, update, increment } from "firebase/database";
+import {
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+  deleteObject,
+  getDownloadURL,
+} from "firebase/storage";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -20,6 +27,7 @@ export default function Maps() {
   const maps = useSelector((state) => state.maps.maps);
   // console.log("maps", maps);
   const db = getDatabase();
+  const storage = getStorage();
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -72,6 +80,21 @@ export default function Maps() {
         console.log("error deleting map");
         console.log(error.message);
       });
+
+    const mapImageRef = storageRef(
+      storage,
+      "users/" + userID + "/maps/" + mapID
+    );
+    if (mapImageRef) {
+      deleteObject(mapImageRef)
+        .then(() => {
+          // console.log("map's image was deleted successfully");
+        })
+        .catch((error) => {
+          console.log("error deleting the map's image");
+          console.log(error.message);
+        });
+    }
   }
 
   function handleSubmit(event) {
@@ -85,6 +108,7 @@ export default function Maps() {
       mapID: uuidv4(),
       name: data["map-name"],
       size: { width: data["map-width"], height: data["map-height"] },
+      src: "",
       userID,
     };
     // console.log(mapData);
@@ -103,6 +127,37 @@ export default function Maps() {
         console.log("error writing the new map into the db");
         console.log(error.message);
       });
+
+    if (mapData.image) {
+      // console.log(mapData.image);
+      const mapImageRef = storageRef(
+        storage,
+        "users/" + userID + "/maps/" + mapData.mapID
+      );
+      uploadBytes(mapImageRef, mapData.image)
+        .then((snapshot) => {
+          // console.log("uploaded map file");
+          // console.log(snapshot.metadata);
+          getDownloadURL(mapImageRef).then((url) => {
+            // console.log("url:", url);
+            mapData.src = url;
+            update(ref(db), {
+              ["maps/maps/" + mapData.mapID]: mapData,
+            })
+              .then(() => {
+                // console.log("map url updated successfully");
+              })
+              .catch((error) => {
+                console.log("error updating the map's src url in the db");
+                console.log(error.message);
+              });
+          });
+        })
+        .catch((error) => {
+          console.log("error uploading map image");
+          console.log(error.message);
+        });
+    }
 
     handleStopCreatingMap();
   }
@@ -126,7 +181,12 @@ export default function Maps() {
         <div className="flex flex-col text-center gap-15">
           <div className="flex flex-col text-center gap-5">
             <h1>{selectedMap.name}</h1>
-            <div className="h-[40vh] bg-white rounded-xl"></div>
+            {selectedMap && selectedMap.src && (
+              <img
+                src={selectedMap.src}
+                className="self-center rounded-4xl max-w-full h-[40vh] object-contain"
+              />
+            )}
             <div className="flex flex-row justify-between self-end">
               <div>
                 <Button className="mr-5">Expand Map</Button>
@@ -163,15 +223,25 @@ export default function Maps() {
       <Selection onClick={(event) => handleSelectionClick(event)}>
         <Button onClick={handleStartCreatingMap}>+ Create Map</Button>
         <ul className="flex flex-col mt-10 gap-5">
-          {Object.entries(maps).map(([mapID, map]) => (
-            <Button
-              key={map.name}
-              onClick={() => handleSelectMap(map)}
-              hasImage={true}
-            >
-              {map.name}
-            </Button>
-          ))}
+          {Object.entries(maps).map(([mapID, map]) => {
+            if (map.src) {
+              return (
+                <Button
+                  key={map.name}
+                  onClick={() => handleSelectMap(map)}
+                  imgSrc={map.src}
+                >
+                  {map.name}
+                </Button>
+              );
+            } else {
+              return (
+                <Button key={map.name} onClick={() => handleSelectMap(map)}>
+                  {map.name}
+                </Button>
+              );
+            }
+          })}
         </ul>
       </Selection>
       <Info>{content}</Info>

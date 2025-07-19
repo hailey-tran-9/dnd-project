@@ -10,12 +10,12 @@ export default function Button({
   children,
   selected = false,
   selectedColor,
-  hasImage = false,
+  imgSrc = "",
   ...props
 }) {
   let classes = [];
 
-  if (hasImage) {
+  if (imgSrc !== "") {
     padding = "pb-2";
     classes.push("border border-white/25");
   }
@@ -46,10 +46,12 @@ export default function Button({
     );
   }
 
-  if (hasImage) {
+  if (imgSrc !== "") {
     return (
       <button className={classes.join(" ")} {...props}>
-        <div className="h-25 bg-white pointer-events-none"></div>
+        <div className="h-30 self-center overflow-hidden pointer-events-none">
+          <img src={imgSrc} className="w-full object-cover object-center" />
+        </div>
         <p className="px-6 py-0 truncate pointer-events-none">{children}</p>
       </button>
     );

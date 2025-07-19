@@ -244,7 +244,7 @@ export default function Characters() {
       </div>
     );
   } else {
-    console.log("selectedCharacter:", selectedCharacter);
+    // console.log("selectedCharacter:", selectedCharacter);
     content = (
       <>
         <div className="flex flex-row justify-between items-center">
