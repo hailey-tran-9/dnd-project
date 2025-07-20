@@ -66,7 +66,7 @@ export default function Games() {
 
   function handleDeleteGame(gameID) {
     setSelectedGame(undefined);
-    const userPath = "users/users/" + userID;
+    const userPath = "users/users/" + userID + "/private";
 
     update(ref(db), {
       ["games/games/" + gameID]: null,
@@ -98,11 +98,11 @@ export default function Games() {
     };
     // console.log(gameData);
 
-    const userPath = "users/users/" + userID;
+    const userPath = "users/users/" + userID + "/private";
     update(ref(db), {
       ["games/games/" + gameData.gameID]: gameData,
       "games/numberOfGames": increment(1),
-      [userPath + "/games/gameIDs/" + gameData.gameID]: gameData.name,
+      [userPath + "/games/gameIDs/" + gameData.gameID]: uuidv4(),
       [userPath + "/games/numberOfGames"]: increment(1),
     })
       .then(() => {
@@ -132,10 +132,11 @@ export default function Games() {
   } else {
     content = (
       <>
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row justify-between flex-wrap gap-y-3">
           <h1>{selectedGame.name}</h1>
-          <div>
-            <Button className="mr-5">Enter Game</Button>
+          <div className="flex flex-row gap-5">
+            <Button>Enter Game</Button>
+            <Button>Edit</Button>
             <Button onClick={() => handleDeleteGame(selectedGame.gameID)}>
               Delete
             </Button>
@@ -143,7 +144,16 @@ export default function Games() {
         </div>
         <div className="grid grid-cols-3">
           <div className="flex flex-col gap-10">
-            <h2>Players</h2>
+            <div className="flex flex-row gap-5 items-center">
+              <h2>Players</h2>
+              <Button
+                className="mb-2"
+                padding="px-2.5 py-0.5"
+                rounded="rounded-sm"
+              >
+                +
+              </Button>
+            </div>
             <ul className="flex flex-col gap-10">
               <Player />
               <Player />

@@ -13,6 +13,7 @@ import {
 
 import { userActions } from "../store/user-slice";
 import { basicEmailCheck, validPassword } from "../util/util";
+import { v4 as uuidv4 } from "uuid";
 
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -65,12 +66,12 @@ export default function SignInPage() {
               // An error happened.
               const errorCode = error.code;
               const errorMessage = error.message;
-              
+
               console.log("error signing out");
               console.log(errorCode, errorMessage);
             });
         } else {
-          console.log("user successfully signed in");
+          // console.log("user successfully signed in");
           dispatch(userActions.signInUser());
 
           // Create a user in the db if no data exists yet
@@ -78,31 +79,46 @@ export default function SignInPage() {
           onValue(userRef, (snapshot) => {
             if (!snapshot.exists()) {
               set(userRef, {
-                characters: {
-                  characterIDs: {},
-                  numberOfCharacters: 0,
+                public: {
+                  key: uuidv4(),
+                  username: "",
                 },
-                games: {
-                  gameIDs: {},
-                  numberOfGames: 0,
+                private: {
+                  characters: {
+                    characterIDs: {},
+                    numberOfCharacters: 0,
+                  },
+                  games: {
+                    gameIDs: {},
+                    numberOfGames: 0,
+                  },
+                  key: uuidv4(),
+                  maps: {
+                    mapIDs: {},
+                    numberOfMaps: 0,
+                  },
                 },
-                maps: {
-                  mapIDs: {},
-                  numberOfMaps: 0,
-                },
-                username: "",
-              });
-              update(ref(db), { "users/numberOfUsers": increment(1) });
+              })
+                .then(() => {
+                  // console.log("user created successfully in the db");
+                  update(ref(db), { "users/numberOfUsers": increment(1) }).then(
+                    () => {
+                      navigate("/");
+                    }
+                  );
+                })
+                .catch((error) => {
+                  console.log("error creating the user in the db");
+                  console.log(error.message);
+                });
             }
           });
-
-          navigate("/");
         }
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        
+
         console.log("error trying to sign in");
         console.log(errorCode, errorMessage);
       });

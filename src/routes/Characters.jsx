@@ -4,8 +4,6 @@ import { getAuth } from "firebase/auth";
 import {
   getDatabase,
   ref,
-  set,
-  remove,
   update,
   increment,
 } from "firebase/database";
@@ -72,7 +70,7 @@ export default function Characters() {
 
   function handleDeleteCharacter(characterID) {
     setSelectedCharacter(undefined);
-    const userPath = "users/users/" + userID;
+    const userPath = "users/users/" + userID + "/private";
 
     update(ref(db), {
       ["characters/characters/" + characterID]: null,
@@ -165,7 +163,7 @@ export default function Characters() {
           userID,
         };
 
-        const userPath = "users/users/" + userID;
+        const userPath = "users/users/" + userID + "/private";
         update(ref(db), {
           ["characters/characters/" + characterData.characterID]: characterData,
           "characters/numberOfCharacters": increment(1),

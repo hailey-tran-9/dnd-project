@@ -65,7 +65,7 @@ export default function Maps() {
 
   function handleDeleteMap(mapID) {
     setSelectedMap(undefined);
-    const userPath = "users/users/" + userID;
+    const userPath = "users/users/" + userID + "/private";
 
     update(ref(db), {
       ["maps/maps/" + mapID]: null,
@@ -113,7 +113,7 @@ export default function Maps() {
     };
     // console.log(mapData);
 
-    const userPath = "users/users/" + userID;
+    const userPath = "users/users/" + userID + "/private";
     update(ref(db), {
       ["maps/maps/" + mapData.mapID]: mapData,
       "maps/numberOfMaps": increment(1),
