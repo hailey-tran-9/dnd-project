@@ -5,10 +5,12 @@ import { useDispatch } from "react-redux";
 import {
   getDatabase,
   ref,
-  onValue,
   query,
   equalTo,
   orderByChild,
+  get,
+  remove,
+  increment,
 } from "firebase/database";
 
 import { userActions } from "../store/user-slice";
@@ -30,7 +32,6 @@ export default function Navbar() {
   const [userActionBarOpen, setUserActionBarOpen] = useState(false);
 
   function handleUserActionBarToggle() {
-    console.log("user circle clicked");
     setUserActionBarOpen((prevState) => !prevState);
   }
 
@@ -66,12 +67,25 @@ export default function Navbar() {
 
   function handleDeleteUser() {
     // TODO: insert a confirmation before deleting the user
-    if (auth.currentUser) {
+    const user = auth.currentUser;
+    if (user) {
+      const userID = user.uid;
       const charactersQuery = query(
-        ref(db, "characters/characters"),
+        ref(db, "games/games"),
         orderByChild("userID"),
         equalTo(userID)
       );
+      get(charactersQuery).then((snapshot) => {
+        const data = snapshot.val();
+        console.log(data);
+        if (data) {
+          for (const [gameID, gameData] of Object.entries(data)) {
+            console.log(gameID);
+            // remove(ref(db, "games/games/" + gameID));
+            // update(ref(db), { "games/numberOfGames": increment(-1) });
+          }
+        }
+      });
     }
   }
 
@@ -95,16 +109,18 @@ export default function Navbar() {
       id={styles.navbar}
       className="flex flex-row justify-between px-10 py-5 items-center"
     >
-      <div id="userActionsBarDiv" className="absolute inset-0 w-svw h-svh">
-        <div className="w-full h-full bg-gray-500 opacity-40"></div>
-        <div className="absolute w-[40vw] h-full inset-y-0 right-0 flex flex-col bg-white text-black text-[1.5rem] px-10 py-5 gap-10">
-          <div className="flex flex-row justify-between">
-            <h3 className="text-[2rem]">Username</h3>
-            <Button>x</Button>
+      {userActionBarOpen && (
+        <div id="userActionsBarDiv" className="absolute inset-0 w-svw h-svh">
+          <div className="w-full h-full bg-gray-500 opacity-40"></div>
+          <div className="absolute w-[40vw] h-full inset-y-0 right-0 flex flex-col bg-white text-black text-[1.5rem] px-10 py-5 gap-10">
+            <div className="flex flex-row justify-between">
+              <h3 className="text-[2rem]">Username</h3>
+              <Button onClick={handleUserActionBarToggle}>x</Button>
+            </div>
+            <Button onClick={handleDeleteUser}>Delete User</Button>
           </div>
-          <Button>Delete User</Button>
         </div>
-      </div>
+      )}
       <div className="flex flex-row gap-12 items-center">
         <NavLink to="/">
           <h1 className="mr-10">dnd</h1>
