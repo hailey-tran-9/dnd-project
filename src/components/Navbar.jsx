@@ -1,6 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { NavLink } from "react-router";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+  deleteUser,
+} from "firebase/auth";
 import { useDispatch } from "react-redux";
 import {
   getDatabase,
@@ -11,6 +16,7 @@ import {
   get,
   remove,
   increment,
+  update,
 } from "firebase/database";
 
 import { userActions } from "../store/user-slice";
@@ -29,17 +35,19 @@ export default function Navbar() {
   const isCreatingAccount = useSelector(
     (state) => state.user.isCreatingAccount
   );
+
+  const modalRef = useRef(null);
   const [userActionBarOpen, setUserActionBarOpen] = useState(false);
 
   function handleUserActionBarToggle() {
-    setUserActionBarOpen((prevState) => !prevState);
+    const nextState = !userActionBarOpen;
+    setUserActionBarOpen(nextState);
+    if (nextState) {
+      modalRef.current.showModal();
+    } else {
+      modalRef.current.close();
+    }
   }
-
-  let userButton = (
-    <button onClick={handleUserActionBarToggle}>
-      <div className="w-15 h-15 rounded-4xl bg-white"></div>
-    </button>
-  );
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -58,6 +66,7 @@ export default function Navbar() {
   function handleLogout() {
     signOut(auth)
       .then(() => {
+        modalRef.current.close();
         console.log("user has been signed out");
       })
       .catch((error) => {
@@ -70,73 +79,93 @@ export default function Navbar() {
     const user = auth.currentUser;
     if (user) {
       const userID = user.uid;
-      const charactersQuery = query(
+      const gamesQuery = query(
         ref(db, "games/games"),
         orderByChild("userID"),
         equalTo(userID)
       );
-      get(charactersQuery).then((snapshot) => {
+      get(gamesQuery).then((snapshot) => {
         const data = snapshot.val();
         console.log(data);
         if (data) {
           for (const [gameID, gameData] of Object.entries(data)) {
             console.log(gameID);
-            // remove(ref(db, "games/games/" + gameID));
-            // update(ref(db), { "games/numberOfGames": increment(-1) });
+
+            update(ref(db), {
+              ["games/games/" + gameID]: null,
+              "games/numberOfGames": increment(-1),
+            }).catch((erorr) => {
+              console.log("error deleting the user's info from the db 1");
+              console.log(erorr.message);
+              return;
+            });
           }
+
+          update(ref(db), {
+            ["users/users/" + userID]: null,
+            "users/numberOfUsers": increment(-1),
+          }).catch((erorr) => {
+            console.log("error deleting the user's info from the db 2");
+            console.log(erorr.message);
+            return;
+          });
+
+          // TODO: actually delete the user from firebase auth and sign out, not doing that now for testing purposes
         }
       });
     }
   }
 
-  let displayButton;
-  if (loginStatus) {
-    displayButton = (
-      <NavLink to="/" onClick={handleLogout}>
-        <Button>Sign Out</Button>
-      </NavLink>
-    );
-  } else if (!isSigningIn && !isCreatingAccount) {
-    displayButton = (
-      <NavLink to="/signin">
-        <Button>Sign In</Button>
-      </NavLink>
-    );
-  }
+  let userButton = (
+    <button onClick={handleUserActionBarToggle}>
+      <div className="w-15 h-15 rounded-4xl bg-white"></div>
+    </button>
+  );
+
+  let signInBtn = (
+    <NavLink to="/signin">
+      <Button>Sign In</Button>
+    </NavLink>
+  );
 
   return (
-    <div
-      id={styles.navbar}
-      className="flex flex-row justify-between px-10 py-5 items-center"
-    >
-      {userActionBarOpen && (
-        <div id="userActionsBarDiv" className="absolute inset-0 w-svw h-svh">
-          <div className="w-full h-full bg-gray-500 opacity-40"></div>
-          <div className="absolute w-[40vw] h-full inset-y-0 right-0 flex flex-col bg-white text-black text-[1.5rem] px-10 py-5 gap-10">
-            <div className="flex flex-row justify-between">
-              <h3 className="text-[2rem]">Username</h3>
-              <Button onClick={handleUserActionBarToggle}>x</Button>
-            </div>
-            <Button onClick={handleDeleteUser}>Delete User</Button>
+    <>
+      <dialog
+        id="userActionsBarDiv"
+        ref={modalRef}
+        className="max-w-full max-h-full w-full h-full bg-black/40"
+      >
+        <div className="fixed w-[60vw] lg:w-[30vw] xxl:w-[40vw] h-full inset-y-0 right-0 flex flex-col bg-white text-black text-[1.5rem] px-10 py-5 gap-10">
+          <div className="flex flex-row justify-between flex-wrap">
+            <h3 className="text-[2rem]">Username</h3>
+            <Button onClick={handleUserActionBarToggle}>x</Button>
           </div>
+          <NavLink to="/" onClick={handleLogout}>
+            <Button>Sign Out</Button>
+          </NavLink>
+          <Button onClick={handleDeleteUser}>Delete User</Button>
         </div>
-      )}
-      <div className="flex flex-row gap-12 items-center">
-        <NavLink to="/">
-          <h1 className="mr-10">dnd</h1>
-        </NavLink>
-        <NavLink to="/games">
-          <h3>Games</h3>
-        </NavLink>
-        <NavLink to="/characters">
-          <h3>Characters</h3>
-        </NavLink>
-        <NavLink to="/maps">
-          <h3>Maps</h3>
-        </NavLink>
+      </dialog>
+      <div
+        id={styles.navbar}
+        className="flex flex-row justify-between px-10 py-5 md:px-7 md:py-2 items-center flex-wrap"
+      >
+        <div className="flex flex-row gap-12 md:gap-7 items-center">
+          <NavLink to="/">
+            <h1 className="mr-10">dnd</h1>
+          </NavLink>
+          <NavLink to="/games">
+            <h3>Games</h3>
+          </NavLink>
+          <NavLink to="/characters">
+            <h3>Characters</h3>
+          </NavLink>
+          <NavLink to="/maps">
+            <h3>Maps</h3>
+          </NavLink>
+        </div>
+        {loginStatus ? userButton : signInBtn}
       </div>
-      {displayButton}
-      {userButton}
-    </div>
+    </>
   );
 }

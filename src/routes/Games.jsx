@@ -116,6 +116,14 @@ export default function Games() {
     handleStopCreatingGame();
   }
 
+  function handleCreateGameInvite() {
+    // TODO: finish implementation
+    console.log("create game inv");
+    const tokenInfo = {
+      sender: userID,
+    };
+  }
+
   let content;
 
   if (isCreatingGame) {

@@ -101,11 +101,7 @@ export default function SignInPage() {
               })
                 .then(() => {
                   // console.log("user created successfully in the db");
-                  update(ref(db), { "users/numberOfUsers": increment(1) }).then(
-                    () => {
-                      navigate("/");
-                    }
-                  );
+                  update(ref(db), { "users/numberOfUsers": increment(1) });
                 })
                 .catch((error) => {
                   console.log("error creating the user in the db");
@@ -113,6 +109,9 @@ export default function SignInPage() {
                 });
             }
           });
+
+          // TODO: if there are errors, display them to the user instead of automatically navigating
+          navigate("/");
         }
       })
       .catch((error) => {
@@ -154,7 +153,7 @@ export default function SignInPage() {
             <Input
               id="entered-password"
               name="entered-password"
-              type="text"
+              type="password"
               className="w-100 text-md"
               required
             />
