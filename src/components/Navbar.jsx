@@ -95,24 +95,25 @@ export default function Navbar() {
               ["games/games/" + gameID]: null,
               "games/numberOfGames": increment(-1),
             }).catch((erorr) => {
-              console.log("error deleting the user's info from the db 1");
+              console.log("error deleting the user's games from the db");
               console.log(erorr.message);
               return;
             });
           }
-
-          update(ref(db), {
-            ["users/users/" + userID]: null,
-            "users/numberOfUsers": increment(-1),
-          }).catch((erorr) => {
-            console.log("error deleting the user's info from the db 2");
-            console.log(erorr.message);
-            return;
-          });
-
-          // TODO: actually delete the user from firebase auth and sign out, not doing that now for testing purposes
         }
       });
+
+      update(ref(db), {
+        ["users/users/" + userID]: null,
+        "users/numberOfUsers": increment(-1),
+      }).catch((erorr) => {
+        console.log("error deleting the user's info from the db");
+        console.log(erorr.message);
+        return;
+      });
+
+      // TODO: actually delete the user from firebase auth and sign out, not doing that now for testing purposes
+      handleLogout();
     }
   }
 
@@ -143,12 +144,14 @@ export default function Navbar() {
           <NavLink to="/" onClick={handleLogout}>
             <Button>Sign Out</Button>
           </NavLink>
-          <Button onClick={handleDeleteUser}>Delete User</Button>
+          <NavLink to="/" onClick={handleDeleteUser}>
+            <Button>Delete User</Button>
+          </NavLink>
         </div>
       </dialog>
       <div
         id={styles.navbar}
-        className="flex flex-row justify-between px-10 py-5 md:px-7 md:py-2 items-center flex-wrap"
+        className="flex flex-row justify-between px-10 py-5 md:px-7 sm:py-2 md:py-3 items-center flex-wrap border-b border-b-white/20"
       >
         <div className="flex flex-row gap-12 md:gap-7 items-center">
           <NavLink to="/">

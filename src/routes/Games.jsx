@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
-import {
-  getDatabase,
-  ref,
-  set,
-  remove,
-  update,
-  increment,
-} from "firebase/database";
+import { getDatabase, ref, get, update, increment } from "firebase/database";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -36,6 +29,13 @@ export default function Games() {
   if (user) {
     userID = user.uid;
   }
+
+  const cryptoAPI = window.crypto.subtle || window.crypto.webkitSubtle;
+  // if (!cryptoAPI) {
+  //   console.log("no web crypto api on this browser");
+  // } else {
+  //   console.log("there's web crypto api YIPPEE");
+  // }
 
   function handleStartCreatingGame() {
     if (!isCreatingGame) {
@@ -116,12 +116,75 @@ export default function Games() {
     handleStopCreatingGame();
   }
 
-  function handleCreateGameInvite() {
+  function importPrivateKey(jwk) {
+    return cryptoAPI.importKey(
+      "jwk",
+      jwk,
+      {
+        name: "ECDSA",
+        namedCurve: "P-256",
+      },
+      true,
+      ["sign"]
+    );
+  }
+
+  function base64UrlEncode(str) {
+    return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+
+  function encodeStr(str) {
+    const encoder = new TextEncoder();
+    return encoder.encode(str);
+  }
+
+  function decodeUintArr(uintArr) {
+    const decoder = new TextDecoder("utf8");
+    return decoder.decode(uintArr);
+  }
+
+  function handleCreateGameInvite(gameID) {
     // TODO: finish implementation
     console.log("create game inv");
-    const tokenInfo = {
-      sender: userID,
+
+    const header = {
+      alg: "ES256",
+      typ: "JWT",
     };
+    const data = {
+      action: "game-invite",
+      expiration: Math.floor(Date.now() + 3600000), // Expires in 1 hr
+      gameID,
+      issuerID: userID,
+    };
+    const encodedHeader = base64UrlEncode(JSON.stringify(header));
+    const encodedData = base64UrlEncode(JSON.stringify(data));
+    const unsignedToken = `${encodedHeader}.${encodedData}`;
+    console.log("unsignedToken:", unsignedToken);
+
+    // Get the user's private key
+    get(ref(db, `users/users/${userID}/private/key`)).then((snapshot) => {
+      if (snapshot.exists()) {
+        importPrivateKey(snapshot.val()).then((privKey) => {
+          cryptoAPI
+            .sign(
+              { name: "ECDSA", hash: "SHA-256" },
+              privKey,
+              encodeStr(unsignedToken)
+            )
+            .then((signature) => {
+              const test = decodeUintArr(new Uint8Array(signature));
+              console.log("test:", test);
+
+              // const signedToken = base64UrlEncode(
+              //   decodeUintArr(new Uint8Array(signature))
+              // );
+              // const jwtToken = `${unsignedToken}.${signedToken}`;
+              // console.log("jwtToken:", jwtToken);
+            });
+        });
+      }
+    });
   }
 
   let content;
@@ -158,6 +221,7 @@ export default function Games() {
                 className="mb-2"
                 padding="px-2.5 py-0.5"
                 rounded="rounded-sm"
+                onClick={() => handleCreateGameInvite(selectedGame.gameID)}
               >
                 +
               </Button>

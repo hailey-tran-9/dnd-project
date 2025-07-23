@@ -5,7 +5,7 @@ import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import {
   getDatabase,
   ref,
-  onValue,
+  get,
   set,
   update,
   increment,
@@ -31,7 +31,28 @@ export default function SignInPage() {
     };
   }, [dispatch]);
 
-  function handleSignIn(event) {
+  const cryptoAPI = window.crypto.subtle || window.crypto.webkitSubtle;
+  if (!cryptoAPI) {
+    console.log("no web crypto api on this browser");
+  } else {
+    console.log("there's web crypto api YIPPEE");
+  }
+
+  async function createKeyPair() {
+    const keyPair = await cryptoAPI.generateKey(
+      { name: "ECDSA", namedCurve: "P-256" },
+      true,
+      ["sign", "verify"]
+    );
+    return keyPair;
+  }
+
+  async function exportCryptoKey(key) {
+    const exported = await cryptoAPI.exportKey("jwk", key);
+    return exported;
+  }
+
+  async function handleSignIn(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
@@ -76,37 +97,51 @@ export default function SignInPage() {
 
           // Create a user in the db if no data exists yet
           const userRef = ref(db, "users/users/" + userID);
-          onValue(userRef, (snapshot) => {
+          get(userRef).then((snapshot) => {
             if (!snapshot.exists()) {
-              set(userRef, {
-                public: {
-                  key: uuidv4(),
-                  username: "",
-                },
-                private: {
-                  characters: {
-                    characterIDs: {},
-                    numberOfCharacters: 0,
-                  },
-                  games: {
-                    gameIDs: {},
-                    numberOfGames: 0,
-                  },
-                  key: uuidv4(),
-                  maps: {
-                    mapIDs: {},
-                    numberOfMaps: 0,
-                  },
-                },
-              })
-                .then(() => {
-                  // console.log("user created successfully in the db");
-                  update(ref(db), { "users/numberOfUsers": increment(1) });
-                })
-                .catch((error) => {
-                  console.log("error creating the user in the db");
-                  console.log(error.message);
+              createKeyPair().then((keyPair) => {
+                // console.log("keyPair:", keyPair);
+                exportCryptoKey(keyPair.publicKey).then((exportedPub) => {
+                  exportCryptoKey(keyPair.privateKey).then((exportedPriv) => {
+                    // console.log("exported public:", exportedPub);
+                    // console.log("exported private:", exportedPriv);
+
+                    if (keyPair) {
+                      set(userRef, {
+                        public: {
+                          key: exportedPub,
+                          username: "",
+                        },
+                        private: {
+                          characters: {
+                            characterIDs: {},
+                            numberOfCharacters: 0,
+                          },
+                          games: {
+                            gameIDs: {},
+                            numberOfGames: 0,
+                          },
+                          key: exportedPriv,
+                          maps: {
+                            mapIDs: {},
+                            numberOfMaps: 0,
+                          },
+                        },
+                      })
+                        .then(() => {
+                          // console.log("user created successfully in the db");
+                          update(ref(db), {
+                            "users/numberOfUsers": increment(1),
+                          });
+                        })
+                        .catch((error) => {
+                          console.log("error creating the user in the db");
+                          console.log(error.message);
+                        });
+                    }
+                  });
                 });
+              });
             }
           });
 

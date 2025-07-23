@@ -18,7 +18,6 @@
     "graphql": "^16.10.0",
     "isbot": "^5",
     "jsonwebtoken": "^9.0.2",
-    "node-rsa": "^1.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-redux": "^9.2.0",
