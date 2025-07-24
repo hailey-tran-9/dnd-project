@@ -4,6 +4,7 @@ import { getAuth } from "firebase/auth";
 import { getDatabase, ref, get, update, increment } from "firebase/database";
 
 import { v4 as uuidv4 } from "uuid";
+import { encodeBase64URL, encodeStr, sigToBase64 } from "../util/util";
 
 import Button from "../components/Button";
 import Info from "../components/Info";
@@ -102,7 +103,10 @@ export default function Games() {
     update(ref(db), {
       ["games/games/" + gameData.gameID]: gameData,
       "games/numberOfGames": increment(1),
-      [userPath + "/games/gameIDs/" + gameData.gameID]: uuidv4(),
+      [userPath + "/games/gameIDs/" + gameData.gameID]: {
+        gameInvites: {},
+        numberOfGameInvites: 0,
+      },
       [userPath + "/games/numberOfGames"]: increment(1),
     })
       .then(() => {
@@ -129,62 +133,65 @@ export default function Games() {
     );
   }
 
-  function base64UrlEncode(str) {
-    return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-  }
-
-  function encodeStr(str) {
-    const encoder = new TextEncoder();
-    return encoder.encode(str);
-  }
-
-  function decodeUintArr(uintArr) {
-    const decoder = new TextDecoder("utf8");
-    return decoder.decode(uintArr);
-  }
-
   function handleCreateGameInvite(gameID) {
     // TODO: finish implementation
     console.log("create game inv");
+
+    const exp = Math.floor(Date.now() + 3600000); // Expires in 1 hr
+    const jti = uuidv4();
+
+    const gamePath =
+      "users/users/" + userID + "/private/games/gameIDs/" + gameID;
+    get(ref(db, gamePath)).then((snapshot) => {
+      const snapshotData = snapshot.val();
+      const numberOfGameInvites = snapshotData.numberOfGameInvites;
+      if (numberOfGameInvites >= 4) {
+        console.log(
+          "the max number of concurrent invites (4) has been reached. try again later"
+        );
+        return;
+      }
+
+      update(ref(db), {
+        [gamePath + "/gameInvites/" + jti]: exp,
+        [gamePath + "/numberOfGameInvites"]: increment(1),
+      });
+    });
 
     const header = {
       alg: "ES256",
       typ: "JWT",
     };
-    const data = {
-      action: "game-invite",
-      expiration: Math.floor(Date.now() + 3600000), // Expires in 1 hr
+    const payload = {
+      sub: "game-invite",
+      exp,
       gameID,
-      issuerID: userID,
+      iss: userID,
+      jti,
     };
-    const encodedHeader = base64UrlEncode(JSON.stringify(header));
-    const encodedData = base64UrlEncode(JSON.stringify(data));
+    const encodedHeader = encodeBase64URL(JSON.stringify(header));
+    const encodedData = encodeBase64URL(JSON.stringify(payload));
     const unsignedToken = `${encodedHeader}.${encodedData}`;
-    console.log("unsignedToken:", unsignedToken);
+    // console.log("unsignedToken:", unsignedToken);
 
-    // Get the user's private key
-    get(ref(db, `users/users/${userID}/private/key`)).then((snapshot) => {
-      if (snapshot.exists()) {
-        importPrivateKey(snapshot.val()).then((privKey) => {
-          cryptoAPI
-            .sign(
-              { name: "ECDSA", hash: "SHA-256" },
-              privKey,
-              encodeStr(unsignedToken)
-            )
-            .then((signature) => {
-              const test = decodeUintArr(new Uint8Array(signature));
-              console.log("test:", test);
-
-              // const signedToken = base64UrlEncode(
-              //   decodeUintArr(new Uint8Array(signature))
-              // );
-              // const jwtToken = `${unsignedToken}.${signedToken}`;
-              // console.log("jwtToken:", jwtToken);
-            });
-        });
-      }
-    });
+    // // Get the user's private key
+    // get(ref(db, `users/users/${userID}/private/key`)).then((snapshot) => {
+    //   if (snapshot.exists()) {
+    //     importPrivateKey(snapshot.val()).then((privKey) => {
+    //       cryptoAPI
+    //         .sign(
+    //           { name: "ECDSA", hash: "SHA-256" },
+    //           privKey,
+    //           encodeStr(unsignedToken)
+    //         )
+    //         .then((signature) => {
+    //           const signedToken = encodeBase64URL(sigToBase64(signature));
+    //           const jwtToken = `${unsignedToken}.${signedToken}`;
+    //           console.log("jwtToken:", jwtToken);
+    //         });
+    //     });
+    //   }
+    // });
   }
 
   let content;

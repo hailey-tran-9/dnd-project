@@ -83,3 +83,25 @@ export function validPassword(password) {
 
   return true;
 }
+
+export function encodeBase64URL(str) {
+  const base64 = Buffer.from(str).toString("base64");
+  return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+export function decodeBase64URL(str) {
+  str = str.replace(/-/g, "+").replace(/_/g, "/");
+  while (str.length % 4) {
+    str += "=";
+  }
+  return atob(str);
+}
+
+export function encodeStr(str) {
+  const encoder = new TextEncoder();
+  return encoder.encode(str);
+}
+
+export function sigToBase64(signature) {
+  return btoa(String.fromCharCode.apply(null, [...new Uint8Array(signature)]));
+}
