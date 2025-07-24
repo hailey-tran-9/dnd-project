@@ -32,11 +32,10 @@ const router = createBrowserRouter([
             lazy: () => import("./routes/Games.jsx").then(convert),
           },
           // { path: ":gameID", Component: Game },
-          // {
-          //   path: "invite/:gameID",
-          //   Component: InvitePage,
-          //   loader: inviteLoader,
-          // },
+          {
+            path: "invite/:gameID",
+            lazy: () => import("./routes/Invite.jsx").then(convert),
+          },
         ],
       },
       {
