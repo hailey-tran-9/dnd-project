@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
-import { getDatabase, ref, get, update, increment } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  get,
+  update,
+  increment,
+  query,
+  orderByValue,
+  startAfter,
+} from "firebase/database";
 
 import { v4 as uuidv4 } from "uuid";
 import { encodeBase64URL, encodeStr, sigToBase64 } from "../util/util";
@@ -137,25 +146,52 @@ export default function Games() {
     // TODO: finish implementation
     console.log("create game inv");
 
-    const exp = Math.floor(Date.now() + 3600000); // Expires in 1 hr
+    const exp = Math.floor(Date.now() + 600000); // Expires in 10 min
     const jti = uuidv4();
 
     const gamePath =
       "users/users/" + userID + "/private/games/gameIDs/" + gameID;
-    get(ref(db, gamePath)).then((snapshot) => {
-      const snapshotData = snapshot.val();
-      const numberOfGameInvites = snapshotData.numberOfGameInvites;
+    get(ref(db, gamePath + "/numberOfGameInvites")).then((snapshot) => {
+      const numberOfGameInvites = snapshot.val();
+      // console.log("numberOfGameInvites:", numberOfGameInvites);
       if (numberOfGameInvites >= 4) {
-        console.log(
-          "the max number of concurrent invites (4) has been reached. try again later"
+        const gameInviteQuery = query(
+          ref(db, gamePath + "/gameInvites"),
+          orderByValue(),
+          startAfter(Date.now())
         );
-        return;
+        get(gameInviteQuery).then((gameInviteSnapshot) => {
+          const gameInviteData = gameInviteSnapshot.val();
+          // console.log("gameInviteSnapshot:", gameInviteData);
+          let updatedNumOfGameInvites = 0;
+          if (!gameInviteData) {
+            update(ref(db), {
+              [gamePath + "/gameInvites/" + jti]: exp,
+              [gamePath + "/numberOfGameInvites"]: 1,
+            });
+          } else {
+            updatedNumOfGameInvites = Object.keys(gameInviteData).length;
+            if (updatedNumOfGameInvites >= 4) {
+              // TODO: alert user
+              console.log(
+                "the max number of concurrent invites (4) has been reached. try again later"
+              );
+              return;
+            } else {
+              update(ref(db), {
+                [gamePath + "/gameInvites"]: { ...gameInviteData, [jti]: exp },
+                [gamePath + "/numberOfGameInvites"]:
+                  updatedNumOfGameInvites + 1,
+              });
+            }
+          }
+        });
+      } else {
+        update(ref(db), {
+          [gamePath + "/gameInvites/" + jti]: exp,
+          [gamePath + "/numberOfGameInvites"]: increment(1),
+        });
       }
-
-      update(ref(db), {
-        [gamePath + "/gameInvites/" + jti]: exp,
-        [gamePath + "/numberOfGameInvites"]: increment(1),
-      });
     });
 
     const header = {
