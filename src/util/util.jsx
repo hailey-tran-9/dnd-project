@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 
+//#region Text Manipulation
 const numToWordMap = {
   1: "one",
   2: "two",
@@ -13,16 +14,12 @@ const numToWordMap = {
   10: "ten",
 };
 
-export function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-export function calculateAbilityModifier(value) {
-  return Math.floor((value - 10) / 2);
-}
-
 export function numToWord(num) {
   return numToWordMap[num];
+}
+
+export function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 export function emboldenNum(str, identifier) {
@@ -49,7 +46,13 @@ export function emboldenNum(str, identifier) {
     </p>
   );
 }
+//#endregion
 
+export function calculateAbilityModifier(value) {
+  return Math.floor((value - 10) / 2);
+}
+
+//#region Account Creation Helpers
 export function basicEmailCheck(email) {
   const emailMatch = email.match(new RegExp("^.+@[a-zA-z]+\\.[a-zA-Z]{2,3}$"));
   return emailMatch != null;
@@ -83,9 +86,11 @@ export function validPassword(password) {
 
   return true;
 }
+//#endregion
 
+//#region Cryptography
 export function encodeBase64URL(str) {
-  const base64 = Buffer.from(str).toString("base64");
+  const base64 = btoa(Buffer.from(str));
   return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
@@ -102,6 +107,51 @@ export function encodeStr(str) {
   return encoder.encode(str);
 }
 
-export function sigToBase64(signature) {
-  return btoa(String.fromCharCode.apply(null, [...new Uint8Array(signature)]));
+export function urlToBase64(base64URL) {
+  base64URL = base64URL
+    .replace(new RegExp(RegExp.escape("-"), "g"), "+")
+    .replace(new RegExp(RegExp.escape("_"), "g"), "/");
+  // Add the base64 padding
+  while (base64URL.length % 4) {
+    base64URL += "=";
+  }
+  return base64URL;
+}
+
+export function base64toURL(base64) {
+  return base64
+    .replace(new RegExp(RegExp.escape("+"), "g"), "-")
+    .replace(new RegExp(RegExp.escape("/"), "g"), "_")
+    .replace(new RegExp(RegExp.escape("="), "g"), "");
+}
+
+export function base64ToArrayBuffer(base64) {
+  var binaryString = atob(base64);
+  var bytes = new Uint8Array(binaryString.length);
+  for (var i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
+export function arrayBufferToBase64(buffer) {
+  var binary = "";
+  var bytes = new Uint8Array(buffer);
+  var len = bytes.byteLength;
+  for (var i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+}
+//#endregion
+
+export function copyToClipboard(text) {
+  navigator.clipboard
+    .writeText(text)
+    .then(() => {
+      console.log("successfully copied to clipboard");
+    })
+    .catch((error) => {
+      console.log("error copying to clipboard");
+    });
 }

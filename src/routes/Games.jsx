@@ -13,7 +13,13 @@ import {
 } from "firebase/database";
 
 import { v4 as uuidv4 } from "uuid";
-import { encodeBase64URL, encodeStr, sigToBase64 } from "../util/util";
+import {
+  copyToClipboard,
+  encodeBase64URL,
+  encodeStr,
+  arrayBufferToBase64,
+  base64toURL,
+} from "../util/util";
 
 import Button from "../components/Button";
 import Info from "../components/Info";
@@ -142,58 +148,7 @@ export default function Games() {
     );
   }
 
-  function handleCreateGameInvite(gameID) {
-    // TODO: finish implementation
-    console.log("create game inv");
-
-    const exp = Math.floor(Date.now() + 600000); // Expires in 10 min
-    const jti = uuidv4();
-
-    const gamePath =
-      "users/users/" + userID + "/private/games/gameIDs/" + gameID;
-    get(ref(db, gamePath + "/numberOfGameInvites")).then((snapshot) => {
-      const numberOfGameInvites = snapshot.val();
-      // console.log("numberOfGameInvites:", numberOfGameInvites);
-      if (numberOfGameInvites >= 4) {
-        const gameInviteQuery = query(
-          ref(db, gamePath + "/gameInvites"),
-          orderByValue(),
-          startAfter(Date.now())
-        );
-        get(gameInviteQuery).then((gameInviteSnapshot) => {
-          const gameInviteData = gameInviteSnapshot.val();
-          // console.log("gameInviteSnapshot:", gameInviteData);
-          let updatedNumOfGameInvites = 0;
-          if (!gameInviteData) {
-            update(ref(db), {
-              [gamePath + "/gameInvites/" + jti]: exp,
-              [gamePath + "/numberOfGameInvites"]: 1,
-            });
-          } else {
-            updatedNumOfGameInvites = Object.keys(gameInviteData).length;
-            if (updatedNumOfGameInvites >= 4) {
-              // TODO: alert user
-              console.log(
-                "the max number of concurrent invites (4) has been reached. try again later"
-              );
-              return;
-            } else {
-              update(ref(db), {
-                [gamePath + "/gameInvites"]: { ...gameInviteData, [jti]: exp },
-                [gamePath + "/numberOfGameInvites"]:
-                  updatedNumOfGameInvites + 1,
-              });
-            }
-          }
-        });
-      } else {
-        update(ref(db), {
-          [gamePath + "/gameInvites/" + jti]: exp,
-          [gamePath + "/numberOfGameInvites"]: increment(1),
-        });
-      }
-    });
-
+  function createURL(jti, exp, gameID) {
     const header = {
       alg: "ES256",
       typ: "JWT",
@@ -210,24 +165,90 @@ export default function Games() {
     const unsignedToken = `${encodedHeader}.${encodedData}`;
     // console.log("unsignedToken:", unsignedToken);
 
-    // // Get the user's private key
-    // get(ref(db, `users/users/${userID}/private/key`)).then((snapshot) => {
-    //   if (snapshot.exists()) {
-    //     importPrivateKey(snapshot.val()).then((privKey) => {
-    //       cryptoAPI
-    //         .sign(
-    //           { name: "ECDSA", hash: "SHA-256" },
-    //           privKey,
-    //           encodeStr(unsignedToken)
-    //         )
-    //         .then((signature) => {
-    //           const signedToken = encodeBase64URL(sigToBase64(signature));
-    //           const jwtToken = `${unsignedToken}.${signedToken}`;
-    //           console.log("jwtToken:", jwtToken);
-    //         });
-    //     });
-    //   }
-    // });
+    // Get the user's private key, create a signature, and send the url
+    get(ref(db, `users/users/${userID}/private/key`)).then((snapshot) => {
+      if (snapshot.exists()) {
+        importPrivateKey(snapshot.val()).then((privKey) => {
+          cryptoAPI
+            .sign(
+              { name: "ECDSA", hash: "SHA-256" },
+              privKey,
+              encodeStr(unsignedToken)
+            )
+            .then((signature) => {
+              const signedToken = base64toURL(arrayBufferToBase64(signature));
+              const jwtToken = `${unsignedToken}.${signedToken}`;
+              // console.log("jwtToken:", jwtToken);
+
+              copyToClipboard(
+                "http://localhost:5173/games/invite/" +
+                  gameID +
+                  "?token=" +
+                  jwtToken
+              );
+            });
+        });
+      }
+    });
+  }
+
+  function handleCreateGameInvite(gameID) {
+    // TODO: finish implementation
+
+    const jti = uuidv4();
+    const exp = Math.floor(Date.now() + 60000); // Expires in 1 min
+    // const exp = Math.floor(Date.now() + 600000); // Expires in 10 min
+
+    const gamePath =
+      "users/users/" + userID + "/private/games/gameIDs/" + gameID;
+    get(ref(db, gamePath + "/numberOfGameInvites")).then((snapshot) => {
+      const numberOfGameInvites = snapshot.val();
+      // console.log("numberOfGameInvites:", numberOfGameInvites);
+      if (numberOfGameInvites >= 4) {
+        const gameInviteQuery = query(
+          ref(db, gamePath + "/gameInvites"),
+          orderByValue(),
+          startAfter(Date.now())
+        );
+        get(gameInviteQuery).then((gameInviteSnapshot) => {
+          const gameInviteData = gameInviteSnapshot.val();
+          // console.log("games that haven't expired yet:", gameInviteData);
+          let updatedNumOfGameInvites = 0;
+          if (!gameInviteData) {
+            update(ref(db), {
+              [gamePath + "/gameInvites"]: { [jti]: exp },
+              [gamePath + "/numberOfGameInvites"]: 1,
+            }).then(() => {
+              createURL(jti, exp, gameID);
+            });
+          } else {
+            updatedNumOfGameInvites = Object.keys(gameInviteData).length;
+            if (updatedNumOfGameInvites >= 4) {
+              // TODO: alert user
+              console.log(
+                "the max number of concurrent invites (4) has been reached. try again later"
+              );
+              return;
+            } else {
+              update(ref(db), {
+                [gamePath + "/gameInvites"]: { ...gameInviteData, [jti]: exp },
+                [gamePath + "/numberOfGameInvites"]:
+                  updatedNumOfGameInvites + 1,
+              }).then(() => {
+                createURL(jti, exp, gameID);
+              });
+            }
+          }
+        });
+      } else {
+        update(ref(db), {
+          [gamePath + "/gameInvites/" + jti]: exp,
+          [gamePath + "/numberOfGameInvites"]: increment(1),
+        }).then(() => {
+          createURL(jti, exp, gameID);
+        });
+      }
+    });
   }
 
   let content;
