@@ -84,17 +84,19 @@ export default function RootLayout() {
           (joinedGamesSnapshot) => {
             const joinedGamesData = joinedGamesSnapshot.val();
             // console.log("joinedGamesData:", joinedGamesData);
-            const joinedGameIDs = Object.values(joinedGamesData);
-            joinedGameIDs.forEach((gameID) => {
-              get(ref(db, "games/games/" + gameID)).then((gameSnapshot) => {
-                const gameData = gameSnapshot.val();
-                if (gameData) {
-                  // console.log("joinedGameData:", gameData);
-                  dispatch(gamesActions.loadAJoinedGame(gameData));
-                }
+            if (joinedGamesData) {
+              const joinedGameIDs = Object.values(joinedGamesData);
+              joinedGameIDs.forEach((gameID) => {
+                get(ref(db, "games/games/" + gameID)).then((gameSnapshot) => {
+                  const gameData = gameSnapshot.val();
+                  if (gameData) {
+                    // console.log("joinedGameData:", gameData);
+                    dispatch(gamesActions.loadAJoinedGame(gameData));
+                  }
+                });
               });
-            });
-            // console.log("joinedGamesArr:", joinedGamesArr);
+              // console.log("joinedGamesArr:", joinedGamesArr);
+            }
           }
         );
 

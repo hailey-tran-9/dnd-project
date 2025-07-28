@@ -325,7 +325,7 @@ export default function Games() {
                 Delete Game
               </Button>
             )}
-            {!isEditingGame && <Button>Enter Game</Button>}
+            {!isEditingGame && <Button disabled>Enter Game</Button>}
           </div>
         </div>
         <div className="flex flex-row gap-x-[10vw]">

@@ -14,7 +14,7 @@ export default function MapCreation({ cancelFn, submitFn }) {
           Cancel
         </Button>
       </div>
-      <div className="flex flex-col w-full gap-15">
+      <div className="w-full flex flex-col xl:flex-row xl:items-center flex-wrap gap-15 xl:gap-x-[10vw]">
         <div className="flex flex-col items-start gap-3">
           <label
             htmlFor="map-name"
@@ -43,50 +43,52 @@ export default function MapCreation({ cancelFn, submitFn }) {
             type="file"
             accept="image/png, image/jpeg"
             className="text-[2rem] rounded-4xl file:bg-[#8E1616] file:text-white file:px-5 file:py-1 file:mr-5"
+            required
           />
         </div>
-        <div className="flex flex-row justify-between">
-          <div className="flex flex-col items-start gap-3">
+        <div className="flex flex-row gap-20 xl:gap-x-[10vw]">
+          <div className="flex flex-col items-start">
             <label
               htmlFor="map-width"
               className="text-black text-[2.5rem] font-[500] mr-10"
             >
-              Width (cell count)
+              Width
             </label>
+            <p className="mb-5">(Optional Cell Count)</p>
             <Input
               id="map-width"
               name="map-width"
               type="number"
               className="text-[2rem]"
-              required
             />
           </div>
-          <div className="flex flex-col items-start gap-3">
+          <div className="flex flex-col items-start">
             <label
               htmlFor="map-height"
               className="text-black text-[2.5rem] font-[500] mr-10"
             >
-              Height (cell count)
+              Height
             </label>
+            <p className="mb-5">(Optional Cell Count)</p>
             <Input
               id="map-height"
               name="map-height"
               type="number"
               className="text-[2rem]"
-              required
             />
           </div>
         </div>
-        <div className="mt-10">
-          <h2>Notes</h2>
+        <div className="w-full">
+          <p className="text-[2.5rem] font-semibold text-black">Notes</p>
+          <p>(Optional)</p>
           <textarea
             id="map-notes"
             name="map-notes"
-            className="bg-white rounded-md text-[1.5rem] w-full h-50 p-1"
+            className="bg-white rounded-md text-[1.5rem] w-full h-50 p-1 mt-5"
           />
         </div>
 
-        <Button type="submit" className="self-end">
+        <Button type="submit" className="self-end xl:ml-auto">
           Submit
         </Button>
       </div>

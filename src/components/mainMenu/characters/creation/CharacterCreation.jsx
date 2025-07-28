@@ -161,7 +161,9 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
             className="bg-white rounded-md text-[1.5rem] w-full h-50 p-1"
           />
         </div>
-        <Button type="submit">Submit</Button>
+        <Button type="submit" className="self-end xl:ml-auto">
+          Submit
+        </Button>
       </div>
     </Form>
   );

@@ -45,10 +45,16 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col flex-grow bg-black text-white text-center justify-center gap-3 p-32">
-      <p className="text-[3rem] font-[650]">
+      {/* <p className="text-[3rem] font-[650]">
         A web application that lets you play dnd together with friends!
       </p>
-      <p className="text-[1rem] font-[400]">Hopefully it works lol</p>
+      <p className="text-[1rem] font-[400]">Hopefully it works lol</p> */}
+      <p className="text-[3rem] font-[650]">
+        Record your dnd characters, games, and maps all in one place!
+      </p>
+      <p className="text-[1rem] font-[400]">
+        {"This site is still under construction. Playable games coming soon :)"}
+      </p>
     </div>
   );
 }

@@ -189,7 +189,9 @@ export default function Maps() {
             )}
             <div className="flex flex-row justify-between self-end">
               <div>
-                <Button className="mr-5">Expand Map</Button>
+                <Button className="mr-5" disabled>
+                  Expand Map
+                </Button>
                 <Button onClick={() => handleDeleteMap(selectedMap.mapID)}>
                   Delete
                 </Button>

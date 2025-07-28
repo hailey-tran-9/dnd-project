@@ -143,9 +143,18 @@ export default function Navbar() {
         className="max-w-full max-h-full w-full h-full bg-black/40"
       >
         <div className="fixed w-[60vw] lg:w-[30vw] xxl:w-[40vw] h-full inset-y-0 right-0 flex flex-col bg-white text-black text-[1.5rem] px-10 py-5 gap-10">
-          <div className="flex flex-row justify-between flex-wrap">
+          <div className="flex flex-row justify-between text-center flex-wrap">
             <h3 className="text-[2rem]">Username</h3>
-            <Button onClick={handleUserActionBarToggle}>x</Button>
+            <Button
+              onClick={handleUserActionBarToggle}
+              bgColor="bg-none"
+              hoverColor="hover:bg-none"
+              textColor="text-gray-300 hover:text-gray-700"
+              padding="p-0"
+              className="text-4xl"
+            >
+              x
+            </Button>
           </div>
           <NavLink to="/" onClick={handleLogout}>
             <Button>Sign Out</Button>
@@ -159,15 +168,15 @@ export default function Navbar() {
         id={styles.navbar}
         className="flex flex-row justify-between px-10 py-5 md:px-7 sm:py-2 md:py-3 items-center flex-wrap border-b border-b-white/20"
       >
-        <div className="flex flex-row gap-12 md:gap-7 items-center">
+        <div className="flex flex-row gap-7 xl:gap-12 items-center">
           <NavLink to="/">
             <h1 className="mr-10">dnd</h1>
           </NavLink>
-          <NavLink to="/games">
-            <h3>Games</h3>
-          </NavLink>
           <NavLink to="/characters">
             <h3>Characters</h3>
+          </NavLink>
+          <NavLink to="/games">
+            <h3>Games</h3>
           </NavLink>
           <NavLink to="/maps">
             <h3>Maps</h3>
