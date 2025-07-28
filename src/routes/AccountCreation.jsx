@@ -122,7 +122,7 @@ export default function AccountCreation() {
             <Input
               id="entered-password"
               name="entered-password"
-              type="text"
+              type="password"
               className="w-100 text-md"
               required
             />
@@ -137,7 +137,7 @@ export default function AccountCreation() {
             <Input
               id="confirm-password"
               name="confirm-password"
-              type="text"
+              type="password"
               className="w-100 text-md"
               required
             />

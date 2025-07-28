@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
 import {
@@ -34,9 +34,16 @@ import GameCreation from "../components/mainMenu/games/GameCreation";
 export default function Games() {
   const [isCreatingGame, setIsCreatingGame] = useState(false);
   const [selectedGame, setSelectedGame] = useState();
+  const [isEditingGame, setIsEditingGame] = useState(false);
+
+  const myGamesRef = useRef(null);
+  const [myGamesVisible, setMyGamesVisible] = useState(true);
+  const joinedGamesRef = useRef(null);
+  const [joinedGamesVisible, setJoinedGamesVisible] = useState(true);
 
   const games = useSelector((state) => state.games.games);
   // console.log("games", games);
+  const joinedGames = useSelector((state) => state.games.joinedGames);
   const db = getDatabase();
 
   const auth = getAuth();
@@ -80,8 +87,45 @@ export default function Games() {
     setSelectedGame(undefined);
   }
 
+  function handleToggleMyGames() {
+    let prevAriaState = myGamesRef.current.ariaExpanded;
+    // console.log("prevAriaState:", prevAriaState);
+    if (prevAriaState === "false") {
+      myGamesRef.current.style.display = "block";
+      myGamesRef.current.ariaExpanded = "true";
+      setMyGamesVisible(true);
+    } else {
+      myGamesRef.current.style.display = "none";
+      myGamesRef.current.ariaExpanded = "false";
+      setMyGamesVisible(false);
+    }
+  }
+
+  function handleToggleJoinedGames() {
+    let prevAriaState = joinedGamesRef.current.ariaExpanded;
+    // console.log("prevAriaState:", prevAriaState);
+    if (prevAriaState === "false") {
+      joinedGamesRef.current.style.display = "block";
+      joinedGamesRef.current.ariaExpanded = "true";
+      setJoinedGamesVisible(true);
+    } else {
+      joinedGamesRef.current.style.display = "none";
+      joinedGamesRef.current.ariaExpanded = "false";
+      setJoinedGamesVisible(false);
+    }
+  }
+
+  function handleToggleEditingGame() {
+    if (isEditingGame) {
+      setIsEditingGame(false);
+    } else {
+      setIsEditingGame(true);
+    }
+  }
+
   function handleDeleteGame(gameID) {
     setSelectedGame(undefined);
+    handleToggleEditingGame();
     const userPath = "users/users/" + userID + "/private";
 
     update(ref(db), {
@@ -196,8 +240,9 @@ export default function Games() {
     // TODO: finish implementation
 
     const jti = uuidv4();
-    const exp = Math.floor(Date.now() + 60000); // Expires in 1 min
-    // const exp = Math.floor(Date.now() + 600000); // Expires in 10 min
+    // const exp = Math.floor(Date.now() + 60000); // Expires in 1 min
+    // const exp = Math.floor(Date.now() + 300000); // Expires in 5 min
+    const exp = Math.floor(Date.now() + 600000); // Expires in 10 min
 
     const gamePath =
       "users/users/" + userID + "/private/games/gameIDs/" + gameID;
@@ -270,43 +315,62 @@ export default function Games() {
         <div className="flex flex-row justify-between flex-wrap gap-y-3">
           <h1>{selectedGame.name}</h1>
           <div className="flex flex-row gap-5">
-            <Button>Enter Game</Button>
-            <Button>Edit</Button>
-            <Button onClick={() => handleDeleteGame(selectedGame.gameID)}>
-              Delete
-            </Button>
+            {selectedGame.userID === userID && (
+              <Button onClick={handleToggleEditingGame}>
+                {!isEditingGame ? "Edit" : "Stop Editing"}
+              </Button>
+            )}
+            {isEditingGame && (
+              <Button onClick={() => handleDeleteGame(selectedGame.gameID)}>
+                Delete Game
+              </Button>
+            )}
+            {!isEditingGame && <Button>Enter Game</Button>}
           </div>
         </div>
-        <div className="grid grid-cols-3">
+        <div className="grid grid-cols-3 gap-x-10">
           <div className="flex flex-col gap-10">
             <div className="flex flex-row gap-5 items-center">
               <h2>Players</h2>
-              <Button
-                className="mb-2"
-                padding="px-2.5 py-0.5"
-                rounded="rounded-sm"
-                onClick={() => handleCreateGameInvite(selectedGame.gameID)}
-              >
-                +
-              </Button>
+              {isEditingGame && (
+                <Button
+                  className="mb-2"
+                  padding="px-2.5 py-0.5"
+                  rounded="rounded-sm"
+                  onClick={() => handleCreateGameInvite(selectedGame.gameID)}
+                >
+                  +
+                </Button>
+              )}
             </div>
             <ul className="flex flex-col gap-10">
-              <Player />
-              <Player />
-              <Player />
-              <Player />
+              {selectedGame.playersInGame ? (
+                Object.entries(selectedGame.playersInGame).map(
+                  (player, index) => (
+                    <Player
+                      key={`${selectedGame.gameID}-player-component-${index}`}
+                    />
+                  )
+                )
+              ) : (
+                <p>There are no players in this game.</p>
+              )}
             </ul>
           </div>
           <div className="col-span-2 flex flex-col gap-10">
             <h2>Sessions</h2>
             <ul className="flex flex-col gap-5">
-              <Session />
-              <Session />
-              <Session />
-              <Session />
-              <Session />
-              <Session />
-              <Session />
+              {/* {selectedGame.sessions &&
+                selectedGame.sessions.map((session, index) => (
+                  <Session
+                    key={`${selectedGame.gameID}-session-component-${index}`}
+                  />
+                ))} */}
+              <li>
+                <div className="relative inset-0 flex z-2 bg-gray-400 p-10 rounded-sm text-gray-50">
+                  Under construction
+                </div>
+              </li>
             </ul>
           </div>
         </div>
@@ -314,17 +378,94 @@ export default function Games() {
     );
   }
 
+  let userCreatedGames = Object.keys(games).length !== 0;
+  let userJoinedGames = Object.keys(joinedGames).length !== 0;
+
   return (
     <section id="user-games" className="flex flex-row grow">
       <Selection onClick={(event) => handleSelectionClick(event)}>
         <Button onClick={handleStartCreatingGame}>+ Create Game</Button>
-        <ul className="flex flex-col mt-10">
-          {Object.entries(games).map(([gameID, game]) => (
-            <Button key={game.name} onClick={() => handleSelectGame(game)}>
-              {game.name}
-            </Button>
-          ))}
-        </ul>
+        <div className="w-full flex flex-col items-start mt-10">
+          <div className="w-full flex flex-row items-center">
+            <p className="shrink mr-2">My Games</p>
+            <div className="grow border-t border-white"></div>
+            {userCreatedGames && (
+              <Button
+                onClick={handleToggleMyGames}
+                padding="p-0 px-2"
+                className="border border-white/30"
+                aria-expanded="true"
+                aria-controls="my-games"
+              >
+                {myGamesVisible ? "-" : "+"}
+              </Button>
+            )}
+          </div>
+
+          {userCreatedGames ? (
+            <menu
+              id="my-games"
+              ref={myGamesRef}
+              className="w-full flex flex-col mt-3"
+            >
+              {Object.entries(games).map(([gameID, game]) => (
+                <li key={game.name}>
+                  <Button
+                    onClick={() => handleSelectGame(game)}
+                    className="w-full text-start"
+                  >
+                    {game.name}
+                  </Button>
+                </li>
+              ))}
+            </menu>
+          ) : (
+            <p className="text-[1rem] text-gray-200">
+              You haven't created any games.
+            </p>
+          )}
+        </div>
+
+        <div className="w-full flex flex-col items-start mt-10">
+          <div className="w-full flex flex-row items-center">
+            <p className="shrink mr-2">Joined Games</p>
+            <div className="grow border-t border-white"></div>
+            {userJoinedGames && (
+              <Button
+                onClick={handleToggleJoinedGames}
+                padding="p-0 px-2"
+                className="border border-white/30"
+                aria-expanded="true"
+                aria-controls="joined-games"
+              >
+                {joinedGamesVisible ? "-" : "+"}
+              </Button>
+            )}
+          </div>
+
+          {userJoinedGames ? (
+            <menu
+              id="joined-games"
+              ref={joinedGamesRef}
+              className="w-full flex flex-col mt-3"
+            >
+              {Object.entries(joinedGames).map(([gameID, game]) => (
+                <li key={game.name}>
+                  <Button
+                    onClick={() => handleSelectGame(game)}
+                    className="w-full text-start"
+                  >
+                    {game.name}
+                  </Button>
+                </li>
+              ))}
+            </menu>
+          ) : (
+            <p className="text-[1rem] text-gray-200">
+              You haven't joined any games.
+            </p>
+          )}
+        </div>
       </Selection>
       <Info>{content}</Info>
     </section>

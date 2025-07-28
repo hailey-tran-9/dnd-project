@@ -32,11 +32,11 @@ export default function SignInPage() {
   }, [dispatch]);
 
   const cryptoAPI = window.crypto.subtle || window.crypto.webkitSubtle;
-  if (!cryptoAPI) {
-    console.log("no web crypto api on this browser");
-  } else {
-    console.log("there's web crypto api YIPPEE");
-  }
+  // if (!cryptoAPI) {
+  //   console.log("no web crypto api on this browser");
+  // } else {
+  //   console.log("there's web crypto api YIPPEE");
+  // }
 
   async function createKeyPair() {
     const keyPair = await cryptoAPI.generateKey(

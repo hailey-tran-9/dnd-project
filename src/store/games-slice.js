@@ -4,6 +4,7 @@ const gamesSlice = createSlice({
   name: "games",
   initialState: {
     games: {},
+    joinedGames: {},
     numberOfGames: 0,
     changed: false,
   },
@@ -11,6 +12,9 @@ const gamesSlice = createSlice({
     loadGames(state, action) {
       state.games = action.payload.games;
       state.numberOfGames = action.payload.numberOfGames;
+    },
+    loadAJoinedGame(state, action) {
+      state.joinedGames[action.payload.gameID] = action.payload;
     },
   },
 });
