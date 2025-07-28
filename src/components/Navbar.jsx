@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { NavLink } from "react-router";
 import {
   getAuth,
@@ -14,7 +14,6 @@ import {
   equalTo,
   orderByChild,
   get,
-  remove,
   increment,
   update,
 } from "firebase/database";
@@ -38,6 +37,13 @@ export default function Navbar() {
 
   const modalRef = useRef(null);
   const [userActionBarOpen, setUserActionBarOpen] = useState(false);
+  const [delayed, setDelayed] = useState(true);
+
+  useEffect(() => {
+    // Delay just to prevent the sign in/user button from blinking
+    const timeout = setTimeout(() => setDelayed(false), 300);
+    return () => clearTimeout(timeout);
+  }, []);
 
   function handleUserActionBarToggle() {
     const nextState = !userActionBarOpen;
@@ -167,7 +173,7 @@ export default function Navbar() {
             <h3>Maps</h3>
           </NavLink>
         </div>
-        {loginStatus ? userButton : signInBtn}
+        {!delayed && (loginStatus ? userButton : signInBtn)}
       </div>
     </>
   );

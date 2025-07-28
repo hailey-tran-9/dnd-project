@@ -23,7 +23,7 @@ export default function Button({
   if (!selected) {
     classes.push(
       ...[
-        "h-fit justify-center align-middle overflow-clip hover:overflow-x-auto",
+        "h-fit justify-center align-middle overflow-clip hover:overflow-x-auto disabled:bg-[#8d8d8dc0]",
         bgColor,
         hoverColor,
         textColor,
@@ -35,7 +35,7 @@ export default function Button({
   } else {
     classes.push(
       ...[
-        "h-fit justify-center align-middle overflow-clip hover:overflow-x-auto",
+        "h-fit justify-center align-middle overflow-clip hover:overflow-x-auto disabled:bg-[#8d8d8dc0]",
         bgColor,
         "hover:bg-" + selectedColor,
         textColor,

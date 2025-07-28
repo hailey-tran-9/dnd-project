@@ -28,13 +28,18 @@ export default function GameCreation({ cancelFn, submitFn }) {
             required
           />
         </div>
-        <div className="flex flex-row justify-between mb-10">
+        <p>Map Selection is under construction.</p>
+        {/* <div className="flex flex-row justify-between">
           <h2>Maps</h2>
-          <Button type="button">Select Maps</Button>
-        </div>
+          <Button type="button" disabled>
+            Select Maps
+          </Button>
+        </div> */}
       </div>
 
-      <Button type="submit">Submit</Button>
+      <Button type="submit" className="mt-15 float-right">
+        Submit
+      </Button>
     </Form>
   );
 }

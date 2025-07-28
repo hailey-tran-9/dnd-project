@@ -328,18 +328,16 @@ export default function Games() {
             {!isEditingGame && <Button>Enter Game</Button>}
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-x-10">
+        <div className="flex flex-row gap-x-[10vw]">
           <div className="flex flex-col gap-10">
             <div className="flex flex-row gap-5 items-center">
               <h2>Players</h2>
               {isEditingGame && (
                 <Button
                   className="mb-2"
-                  padding="px-2.5 py-0.5"
-                  rounded="rounded-sm"
                   onClick={() => handleCreateGameInvite(selectedGame.gameID)}
                 >
-                  +
+                  Invite
                 </Button>
               )}
             </div>
@@ -357,7 +355,7 @@ export default function Games() {
               )}
             </ul>
           </div>
-          <div className="col-span-2 flex flex-col gap-10">
+          <div className="grow flex flex-col gap-10">
             <h2>Sessions</h2>
             <ul className="flex flex-col gap-5">
               {/* {selectedGame.sessions &&
@@ -367,7 +365,7 @@ export default function Games() {
                   />
                 ))} */}
               <li>
-                <div className="relative inset-0 flex z-2 bg-gray-400 p-10 rounded-sm text-gray-50">
+                <div className="w-full bg-gray-400 p-10 rounded-sm text-gray-50">
                   Under construction
                 </div>
               </li>
@@ -412,7 +410,7 @@ export default function Games() {
                 <li key={game.name}>
                   <Button
                     onClick={() => handleSelectGame(game)}
-                    className="w-full text-start"
+                    className="w-full text-start text-[1.3rem]"
                   >
                     {game.name}
                   </Button>
@@ -453,7 +451,7 @@ export default function Games() {
                 <li key={game.name}>
                   <Button
                     onClick={() => handleSelectGame(game)}
-                    className="w-full text-start"
+                    className="w-full text-start text-[1.3rem]"
                   >
                     {game.name}
                   </Button>
