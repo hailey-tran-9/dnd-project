@@ -8,18 +8,11 @@ import {
   update,
   increment,
   query,
-  orderByValue,
   startAfter,
+  orderByChild,
 } from "firebase/database";
 
 import { v4 as uuidv4 } from "uuid";
-import {
-  copyToClipboard,
-  encodeBase64URL,
-  encodeStr,
-  arrayBufferToBase64,
-  base64toURL,
-} from "../util/util";
 
 import Button from "../components/Button";
 import Info from "../components/Info";
@@ -27,9 +20,11 @@ import Selection from "../components/Selection";
 import Player from "../components/mainMenu/games/Player";
 import Session from "../components/mainMenu/games/Session";
 import GameCreation from "../components/mainMenu/games/GameCreation";
+import ActiveInvites from "../components/mainMenu/games/ActiveInvites";
 
 // TODO: render players and sessions dynamically from the game data
 // TODO: UI for error handling
+// TODO: error handling for failure to create a game invite
 
 export default function Games() {
   const [isCreatingGame, setIsCreatingGame] = useState(false);
@@ -40,6 +35,8 @@ export default function Games() {
   const [myGamesVisible, setMyGamesVisible] = useState(true);
   const joinedGamesRef = useRef(null);
   const [joinedGamesVisible, setJoinedGamesVisible] = useState(true);
+  const activeInvitesRef = useRef(null);
+  const [activeInvitesVisible, setActiveInvitesVisible] = useState(false);
 
   const games = useSelector((state) => state.games.games);
   // console.log("games", games);
@@ -52,13 +49,6 @@ export default function Games() {
   if (user) {
     userID = user.uid;
   }
-
-  const cryptoAPI = window.crypto.subtle || window.crypto.webkitSubtle;
-  // if (!cryptoAPI) {
-  //   console.log("no web crypto api on this browser");
-  // } else {
-  //   console.log("there's web crypto api YIPPEE");
-  // }
 
   function handleStartCreatingGame() {
     if (!isCreatingGame) {
@@ -112,6 +102,16 @@ export default function Games() {
       joinedGamesRef.current.style.display = "none";
       joinedGamesRef.current.ariaExpanded = "false";
       setJoinedGamesVisible(false);
+    }
+  }
+
+  function handleToggleActiveInvites() {
+    if (!activeInvitesVisible) {
+      activeInvitesRef.current.style.display = "block";
+      setActiveInvitesVisible(true);
+    } else {
+      activeInvitesRef.current.style.display = "none";
+      setActiveInvitesVisible(false);
     }
   }
 
@@ -179,123 +179,6 @@ export default function Games() {
     handleStopCreatingGame();
   }
 
-  function importPrivateKey(jwk) {
-    return cryptoAPI.importKey(
-      "jwk",
-      jwk,
-      {
-        name: "ECDSA",
-        namedCurve: "P-256",
-      },
-      true,
-      ["sign"]
-    );
-  }
-
-  function createURL(jti, exp, gameID) {
-    const header = {
-      alg: "ES256",
-      typ: "JWT",
-    };
-    const payload = {
-      sub: "game-invite",
-      exp,
-      gameID,
-      iss: userID,
-      jti,
-    };
-    const encodedHeader = encodeBase64URL(JSON.stringify(header));
-    const encodedData = encodeBase64URL(JSON.stringify(payload));
-    const unsignedToken = `${encodedHeader}.${encodedData}`;
-    // console.log("unsignedToken:", unsignedToken);
-
-    // Get the user's private key, create a signature, and send the url
-    get(ref(db, `users/users/${userID}/private/key`)).then((snapshot) => {
-      if (snapshot.exists()) {
-        importPrivateKey(snapshot.val()).then((privKey) => {
-          cryptoAPI
-            .sign(
-              { name: "ECDSA", hash: "SHA-256" },
-              privKey,
-              encodeStr(unsignedToken)
-            )
-            .then((signature) => {
-              const signedToken = base64toURL(arrayBufferToBase64(signature));
-              const jwtToken = `${unsignedToken}.${signedToken}`;
-              // console.log("jwtToken:", jwtToken);
-
-              copyToClipboard(
-                "http://localhost:5173/games/invite/" +
-                  gameID +
-                  "?token=" +
-                  jwtToken
-              );
-            });
-        });
-      }
-    });
-  }
-
-  function handleCreateGameInvite(gameID) {
-    // TODO: finish implementation
-
-    const jti = uuidv4();
-    // const exp = Math.floor(Date.now() + 60000); // Expires in 1 min
-    // const exp = Math.floor(Date.now() + 300000); // Expires in 5 min
-    const exp = Math.floor(Date.now() + 600000); // Expires in 10 min
-
-    const gamePath =
-      "users/users/" + userID + "/private/games/gameIDs/" + gameID;
-    get(ref(db, gamePath + "/numberOfGameInvites")).then((snapshot) => {
-      const numberOfGameInvites = snapshot.val();
-      // console.log("numberOfGameInvites:", numberOfGameInvites);
-      if (numberOfGameInvites >= 4) {
-        const gameInviteQuery = query(
-          ref(db, gamePath + "/gameInvites"),
-          orderByValue(),
-          startAfter(Date.now())
-        );
-        get(gameInviteQuery).then((gameInviteSnapshot) => {
-          const gameInviteData = gameInviteSnapshot.val();
-          // console.log("games that haven't expired yet:", gameInviteData);
-          let updatedNumOfGameInvites = 0;
-          if (!gameInviteData) {
-            update(ref(db), {
-              [gamePath + "/gameInvites"]: { [jti]: exp },
-              [gamePath + "/numberOfGameInvites"]: 1,
-            }).then(() => {
-              createURL(jti, exp, gameID);
-            });
-          } else {
-            updatedNumOfGameInvites = Object.keys(gameInviteData).length;
-            if (updatedNumOfGameInvites >= 4) {
-              // TODO: alert user
-              console.log(
-                "the max number of concurrent invites (4) has been reached. try again later"
-              );
-              return;
-            } else {
-              update(ref(db), {
-                [gamePath + "/gameInvites"]: { ...gameInviteData, [jti]: exp },
-                [gamePath + "/numberOfGameInvites"]:
-                  updatedNumOfGameInvites + 1,
-              }).then(() => {
-                createURL(jti, exp, gameID);
-              });
-            }
-          }
-        });
-      } else {
-        update(ref(db), {
-          [gamePath + "/gameInvites/" + jti]: exp,
-          [gamePath + "/numberOfGameInvites"]: increment(1),
-        }).then(() => {
-          createURL(jti, exp, gameID);
-        });
-      }
-    });
-  }
-
   let content;
 
   if (isCreatingGame) {
@@ -333,14 +216,18 @@ export default function Games() {
             <div className="flex flex-row gap-5 items-center">
               <h2>Players</h2>
               {isEditingGame && (
-                <Button
-                  className="mb-2"
-                  onClick={() => handleCreateGameInvite(selectedGame.gameID)}
-                >
-                  Invite
+                <Button className="mb-2" onClick={handleToggleActiveInvites}>
+                  Invites
                 </Button>
               )}
             </div>
+
+            <ActiveInvites
+              htmlRef={activeInvitesRef}
+              userID={userID}
+              gameID={selectedGame.gameID}
+            />
+
             <ul className="flex flex-col gap-10">
               {selectedGame.playersInGame ? (
                 Object.entries(selectedGame.playersInGame).map(

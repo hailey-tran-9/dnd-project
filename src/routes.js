@@ -7,6 +7,7 @@ export default [
     route("characters", "./routes/Characters.jsx"),
     route("games", "./routes/Games.jsx"),
     route("games/invite/:gameID", "./routes/Invite.jsx"),
+    route("help", "./routes/Help.jsx"),
     route("maps", "./routes/Maps.jsx"),
     route("signin", "./routes/SignIn.jsx"),
   ]),

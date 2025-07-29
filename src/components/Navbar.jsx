@@ -69,7 +69,7 @@ export default function Navbar() {
     }
   });
 
-  function handleLogout() {
+  function handleSignOut() {
     signOut(auth)
       .then(() => {
         modalRef.current.close();
@@ -124,7 +124,7 @@ export default function Navbar() {
   }
 
   let userButton = (
-    <button onClick={handleUserActionBarToggle}>
+    <button onClick={handleUserActionBarToggle} className="cursor-pointer">
       <div className="w-15 h-15 rounded-4xl bg-white"></div>
     </button>
   );
@@ -142,8 +142,8 @@ export default function Navbar() {
         ref={modalRef}
         className="max-w-full max-h-full w-full h-full bg-black/40"
       >
-        <div className="fixed w-[60vw] lg:w-[30vw] xxl:w-[40vw] h-full inset-y-0 right-0 flex flex-col bg-white text-black text-[1.5rem] px-10 py-5 gap-10">
-          <div className="flex flex-row justify-between text-center flex-wrap">
+        <div className="fixed w-[60vw] lg:w-[30vw] xxl:w-[40vw] h-full inset-y-0 right-0 flex flex-col bg-white text-black text-[1.5rem] px-10 py-7">
+          <div className="flex flex-row flex-wrap justify-between text-center mb-7">
             <h3 className="text-[2rem]">Username</h3>
             <Button
               onClick={handleUserActionBarToggle}
@@ -156,12 +156,29 @@ export default function Navbar() {
               x
             </Button>
           </div>
-          <NavLink to="/" onClick={handleLogout}>
+
+          <NavLink to="/help" onClick={handleUserActionBarToggle}>
+            <button className="w-full text-start hover:bg-neutral-50 px-5 py-1 rounded-md">
+              Help
+            </button>
+          </NavLink>
+          <button className="text-start hover:bg-neutral-50 px-5 py-1 rounded-md">
+            Profile
+          </button>
+          <button className="text-start hover:bg-neutral-50 px-5 py-1 rounded-md">
+            Settings
+          </button>
+          <hr className="border-neutral-300 mb-7 mt-auto"></hr>
+          <NavLink to="/" onClick={handleSignOut}>
+            <Button className="w-full">Sign Out</Button>
+          </NavLink>
+
+          {/* <NavLink to="/" onClick={handleLogout}>
             <Button>Sign Out</Button>
           </NavLink>
           <NavLink to="/" onClick={handleDeleteUser}>
             <Button>Delete User</Button>
-          </NavLink>
+          </NavLink> */}
         </div>
       </dialog>
       <div
@@ -172,13 +189,13 @@ export default function Navbar() {
           <NavLink to="/">
             <h1 className="mr-10">dnd</h1>
           </NavLink>
-          <NavLink to="/characters">
+          <NavLink to="/characters" className="hover:text-neutral-200">
             <h3>Characters</h3>
           </NavLink>
-          <NavLink to="/games">
+          <NavLink to="/games" className="hover:text-neutral-200">
             <h3>Games</h3>
           </NavLink>
-          <NavLink to="/maps">
+          <NavLink to="/maps" className="hover:text-neutral-200">
             <h3>Maps</h3>
           </NavLink>
         </div>

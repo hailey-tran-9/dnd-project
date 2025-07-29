@@ -10,11 +10,13 @@ body {
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 3.75rem;
+  font-weight: 500;
 }
 
 h2 {
-  font-size: 1.25rem;
+  font-size: 2.5rem;
+  font-weight: 500;
 }
 
 .charInfoBox h3 {

@@ -39,6 +39,10 @@ const router = createBrowserRouter([
         ],
       },
       {
+        path: "help",
+        lazy: () => import("./routes/Help.jsx").then(convert),
+      },
+      {
         path: "maps",
         lazy: () => import("./routes/Maps.jsx").then(convert),
       },
