@@ -1,16 +1,7 @@
 import { useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
-import {
-  getDatabase,
-  ref,
-  get,
-  update,
-  increment,
-  query,
-  startAfter,
-  orderByChild,
-} from "firebase/database";
+import { getDatabase, ref, update, increment } from "firebase/database";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -213,20 +204,22 @@ export default function Games() {
         </div>
         <div className="flex flex-row gap-x-[10vw]">
           <div className="flex flex-col gap-10">
-            <div className="flex flex-row gap-5 items-center">
-              <h2>Players</h2>
-              {isEditingGame && (
-                <Button className="mb-2" onClick={handleToggleActiveInvites}>
-                  Invites
-                </Button>
-              )}
-            </div>
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-row gap-5 items-center">
+                <h2>Players</h2>
+                {isEditingGame && (
+                  <Button className="mb-2" onClick={handleToggleActiveInvites}>
+                    Invites
+                  </Button>
+                )}
+              </div>
 
-            <ActiveInvites
-              htmlRef={activeInvitesRef}
-              userID={userID}
-              gameID={selectedGame.gameID}
-            />
+              <ActiveInvites
+                htmlRef={activeInvitesRef}
+                userID={userID}
+                gameID={selectedGame.gameID}
+              />
+            </div>
 
             <ul className="flex flex-col gap-10">
               {selectedGame.playersInGame ? (

@@ -18,9 +18,10 @@ import {
   arrayBufferToBase64,
   base64toURL,
 } from "../../../util/util.jsx";
+import ms from "ms";
 
 const noInvitesP = (
-  <p className="col-span-3 text-center">There aren't any active invites.</p>
+  <p className="col-span-full text-center">There aren't any active invites.</p>
 );
 
 export default function ActiveInvites({ htmlRef, userID, gameID }) {
@@ -47,13 +48,32 @@ export default function ActiveInvites({ htmlRef, userID, gameID }) {
       if (!gameInviteData) {
         setNoInvites(true);
       } else {
+        const dateFormatOptions = {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        };
+
         setNoInvites(false);
         setContent(
           Object.entries(gameInviteData).map(([jti, invData], index) => (
             <Fragment key={jti}>
-              <p>Invite {index + 1}</p>
-              <p className="truncate">{invData.exp}</p>
-              <p className="truncate">Date</p>
+              <a
+                onClick={() => {
+                  copyToClipboard(invData.inviteLink);
+                }}
+                href={invData.inviteLink}
+                className="text-sky-300 hover:text-sky-200"
+              >
+                Invite {index + 1}
+              </a>
+              <p className="truncate">{ms(invData.exp - Date.now())}</p>
+              <p className="truncate">
+                {new Date(invData.createdOn).toLocaleDateString(
+                  undefined,
+                  dateFormatOptions
+                )}
+              </p>
             </Fragment>
           ))
         );
@@ -213,16 +233,24 @@ export default function ActiveInvites({ htmlRef, userID, gameID }) {
   }
 
   return (
-    <div ref={htmlRef} className="hidden bg-white p-5 rounded-md">
-      <div className="flex flex-row justify-between text-center">
-        <h3>Active Invites</h3>
-        <button onClick={() => handleCreateGameInvite(gameID)}>+</button>
+    <div
+      ref={htmlRef}
+      className="hidden bg-white p-5 rounded-md overflow-hidden"
+    >
+      <div className="flex flex-row justify-between items-center">
+        <h3 className="align-middle">Active Invites</h3>
+        <button
+          onClick={() => handleCreateGameInvite(gameID)}
+          className="text-[2rem] text-gray-300 hover:text-gray-700 align-middle"
+        >
+          +
+        </button>
       </div>
       <hr className="my-3"></hr>
-      <div className="grid grid-cols-3 grid-flow-row-dense gap-x-5 gap-y-1 text-[1.25rem] text-start">
-        <p className="text-nowrap mb-1">Link</p>
-        <p className="text-nowrap mb-1">Expires In</p>
-        <p className="text-nowrap mb-1">Created On</p>
+      <div className="grid grid-cols-3 gap-x-5 gap-y-1 text-[1.25rem] text-start text-clip">
+        <p className="text-nowrap text-clip mb-1">Link</p>
+        <p className="text-nowrap text-clip mb-1">Expires In</p>
+        <p className="text-nowrap text-clip mb-1">Created On</p>
         {noInvites ? noInvitesP : content}
       </div>
     </div>
