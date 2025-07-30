@@ -6,6 +6,8 @@ const userSlice = createSlice({
     loginStatus: false,
     isSigningIn: false,
     isCreatingAccount: false,
+    username: "",
+    statusMessage: "",
   },
   reducers: {
     startSignIn(state) {
@@ -26,6 +28,12 @@ const userSlice = createSlice({
     },
     stopCreatingAccount(state) {
       state.isCreatingAccount = false;
+    },
+    updateUsername(state, action) {
+      state.username = action.payload;
+    },
+    updateStatusMessage(state, action) {
+      state.statusMessage = action.payload;
     },
   },
 });

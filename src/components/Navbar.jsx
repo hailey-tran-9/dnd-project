@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useLocation } from "react-router";
 import {
   getAuth,
   onAuthStateChanged,
@@ -16,6 +16,7 @@ import {
   get,
   increment,
   update,
+  onValue,
 } from "firebase/database";
 
 import { userActions } from "../store/user-slice";
@@ -28,12 +29,10 @@ export default function Navbar() {
   const auth = getAuth();
   const db = getDatabase();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const loginStatus = useSelector((state) => state.user.loginStatus);
-  const isSigningIn = useSelector((state) => state.user.isSigningIn);
-  const isCreatingAccount = useSelector(
-    (state) => state.user.isCreatingAccount
-  );
+  const username = useSelector((state) => state.user.username);
 
   const modalRef = useRef(null);
   const [userActionBarOpen, setUserActionBarOpen] = useState(false);
@@ -44,6 +43,12 @@ export default function Navbar() {
     const timeout = setTimeout(() => setDelayed(false), 300);
     return () => clearTimeout(timeout);
   }, []);
+
+  useEffect(() => {
+    if (userActionBarOpen) {
+      handleUserActionBarToggle();
+    }
+  }, [location]);
 
   function handleUserActionBarToggle() {
     const nextState = !userActionBarOpen;
@@ -60,6 +65,14 @@ export default function Navbar() {
       if (!loginStatus) {
         // console.log("user is signed in");
         dispatch(userActions.signInUser());
+        onValue(ref(db, "users/users/" + user.uid + "/public"), (snapshot) => {
+          const userPublicData = snapshot.val();
+          // console.log("userPublicData:", userPublicData);
+          dispatch(userActions.updateUsername(userPublicData.username));
+          dispatch(
+            userActions.updateStatusMessage(userPublicData.statusMessage)
+          );
+        });
       }
     } else {
       if (loginStatus) {
@@ -78,49 +91,6 @@ export default function Navbar() {
       .catch((error) => {
         console.log("error trying to sign the user out");
       });
-  }
-
-  function handleDeleteUser() {
-    // TODO: insert a confirmation before deleting the user
-    const user = auth.currentUser;
-    if (user) {
-      const userID = user.uid;
-      const gamesQuery = query(
-        ref(db, "games/games"),
-        orderByChild("userID"),
-        equalTo(userID)
-      );
-      get(gamesQuery).then((snapshot) => {
-        const data = snapshot.val();
-        console.log(data);
-        if (data) {
-          for (const [gameID, gameData] of Object.entries(data)) {
-            console.log(gameID);
-
-            update(ref(db), {
-              ["games/games/" + gameID]: null,
-              "games/numberOfGames": increment(-1),
-            }).catch((erorr) => {
-              console.log("error deleting the user's games from the db");
-              console.log(erorr.message);
-              return;
-            });
-          }
-        }
-      });
-
-      update(ref(db), {
-        ["users/users/" + userID]: null,
-        "users/numberOfUsers": increment(-1),
-      }).catch((erorr) => {
-        console.log("error deleting the user's info from the db");
-        console.log(erorr.message);
-        return;
-      });
-
-      // TODO: actually delete the user from firebase auth and sign out, not doing that now for testing purposes
-      handleLogout();
-    }
   }
 
   let userButton = (
@@ -144,7 +114,7 @@ export default function Navbar() {
       >
         <div className="fixed w-[60vw] lg:w-[30vw] xxl:w-[40vw] h-full inset-y-0 right-0 flex flex-col bg-white text-black text-[1.5rem] px-10 py-7">
           <div className="flex flex-row flex-wrap justify-between text-center mb-7">
-            <h3 className="text-[2rem]">Username</h3>
+            <h3 className="text-[2rem]">{username}</h3>
             <button
               onClick={handleUserActionBarToggle}
               className="text-4xl text-gray-300 hover:text-gray-700"
@@ -153,28 +123,25 @@ export default function Navbar() {
             </button>
           </div>
 
-          <NavLink to="/help" onClick={handleUserActionBarToggle}>
+          <NavLink to="/help">
             <button className="w-full text-start hover:bg-neutral-50 px-5 py-1 rounded-md">
               Help
             </button>
           </NavLink>
-          <button className="text-start hover:bg-neutral-50 px-5 py-1 rounded-md">
-            Profile
-          </button>
-          <button className="text-start hover:bg-neutral-50 px-5 py-1 rounded-md">
-            Settings
-          </button>
+          <NavLink to={auth.currentUser && "/users/" + auth.currentUser.uid}>
+            <button className="w-full text-start hover:bg-neutral-50 px-5 py-1 rounded-md">
+              Profile
+            </button>
+          </NavLink>
+          <NavLink to="/settings">
+            <button className="w-full text-start hover:bg-neutral-50 px-5 py-1 rounded-md">
+              Settings
+            </button>
+          </NavLink>
           <hr className="border-neutral-300 mb-7 mt-auto"></hr>
           <NavLink to="/" onClick={handleSignOut}>
             <Button className="w-full">Sign Out</Button>
           </NavLink>
-
-          {/* <NavLink to="/" onClick={handleLogout}>
-            <Button>Sign Out</Button>
-          </NavLink>
-          <NavLink to="/" onClick={handleDeleteUser}>
-            <Button>Delete User</Button>
-          </NavLink> */}
         </div>
       </dialog>
       <div

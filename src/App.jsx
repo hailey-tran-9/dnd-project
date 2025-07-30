@@ -47,8 +47,21 @@ const router = createBrowserRouter([
         lazy: () => import("./routes/Maps.jsx").then(convert),
       },
       {
+        path: "settings",
+        lazy: () => import("./routes/Settings.jsx").then(convert),
+      },
+      {
         path: "signin",
         lazy: () => import("./routes/SignIn.jsx").then(convert),
+      },
+      {
+        path: "user",
+        children: [
+          {
+            index: ":userID",
+            lazy: () => import("./routes/UserProfile.jsx").then(convert),
+          },
+        ],
       },
     ],
   },
