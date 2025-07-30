@@ -9,6 +9,7 @@ import {
   update,
   increment,
 } from "firebase/database";
+import { useDispatch } from "react-redux";
 
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -19,6 +20,7 @@ import {
   base64toURL,
 } from "../../../util/util.jsx";
 import ms from "ms";
+import { toastThunk } from "../../Toasts.jsx";
 
 const noInvitesP = (
   <p className="col-span-full text-center">There aren't any active invites.</p>
@@ -26,6 +28,8 @@ const noInvitesP = (
 
 export default function ActiveInvites({ htmlRef, userID, gameID }) {
   const db = getDatabase();
+  const dispatch = useDispatch();
+
   const [noInvites, setNoInvites] = useState(true);
   const [content, setContent] = useState(null);
 
@@ -58,15 +62,17 @@ export default function ActiveInvites({ htmlRef, userID, gameID }) {
         setContent(
           Object.entries(gameInviteData).map(([jti, invData], index) => (
             <Fragment key={jti}>
-              <a
+              <p
                 onClick={() => {
                   copyToClipboard(invData.inviteLink);
+                  dispatch(
+                    toastThunk("Success", "Invite link copied to clipboard.")
+                  );
                 }}
-                href={invData.inviteLink}
-                className="text-sky-300 hover:text-sky-200"
+                className="text-sky-300 hover:text-sky-200 select-none"
               >
                 Invite {index + 1}
-              </a>
+              </p>
               <p className="truncate">{ms(invData.exp - Date.now())}</p>
               <p className="truncate">
                 {new Date(invData.createdOn).toLocaleDateString(
@@ -155,6 +161,12 @@ export default function ActiveInvites({ htmlRef, userID, gameID }) {
                 [gameInvitesPath + "/" + jti + "/inviteLink"]: inviteLink,
               }).then(() => {
                 queryGameInvites(gameInvitesPath);
+                dispatch(
+                  toastThunk(
+                    "Success",
+                    "Game invite was created! Invite link copied to clipboard."
+                  )
+                );
               });
             });
         });
@@ -200,11 +212,12 @@ export default function ActiveInvites({ htmlRef, userID, gameID }) {
           } else {
             updatedNumOfGameInvites = Object.keys(gameInviteData).length;
             if (updatedNumOfGameInvites >= 4) {
-              // TODO: alert user
-              console.log(
-                "the max number of concurrent invites (4) has been reached. try again later"
+              dispatch(
+                toastThunk(
+                  "Error",
+                  "Invite max has been reached. Try again later."
+                )
               );
-              return;
             } else {
               const createdOn = Date.now();
               update(ref(db), {
@@ -235,7 +248,7 @@ export default function ActiveInvites({ htmlRef, userID, gameID }) {
   return (
     <div
       ref={htmlRef}
-      className="hidden bg-white p-5 rounded-md overflow-hidden"
+      className="hidden bg-white px-7 py-5 rounded-md overflow-hidden"
     >
       <div className="flex flex-row justify-between items-center">
         <h3 className="align-middle">Active Invites</h3>
@@ -247,7 +260,7 @@ export default function ActiveInvites({ htmlRef, userID, gameID }) {
         </button>
       </div>
       <hr className="my-3"></hr>
-      <div className="grid grid-cols-3 gap-x-5 gap-y-1 text-[1.25rem] text-start text-clip">
+      <div className="flex-none grid grid-cols-3 gap-x-5 gap-y-1 text-[1.25rem] text-start text-clip">
         <p className="text-nowrap text-clip mb-1">Link</p>
         <p className="text-nowrap text-clip mb-1">Expires In</p>
         <p className="text-nowrap text-clip mb-1">Created On</p>

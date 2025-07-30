@@ -202,9 +202,9 @@ export default function Games() {
             {!isEditingGame && <Button disabled>Enter Game</Button>}
           </div>
         </div>
-        <div className="flex flex-row gap-x-[10vw]">
+        <div className="flex flex-row gap-x-[5vw] xl:gap-x-[7vw]">
           <div className="flex flex-col gap-10">
-            <div className="flex flex-col gap-3">
+            <div className="w-[35vw] flex flex-col gap-3">
               <div className="flex flex-row gap-5 items-center">
                 <h2>Players</h2>
                 {isEditingGame && (

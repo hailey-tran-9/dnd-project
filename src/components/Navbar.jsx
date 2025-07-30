@@ -145,16 +145,12 @@ export default function Navbar() {
         <div className="fixed w-[60vw] lg:w-[30vw] xxl:w-[40vw] h-full inset-y-0 right-0 flex flex-col bg-white text-black text-[1.5rem] px-10 py-7">
           <div className="flex flex-row flex-wrap justify-between text-center mb-7">
             <h3 className="text-[2rem]">Username</h3>
-            <Button
+            <button
               onClick={handleUserActionBarToggle}
-              bgColor="bg-none"
-              hoverColor="hover:bg-none"
-              textColor="text-gray-300 hover:text-gray-700"
-              padding="p-0"
-              className="text-4xl"
+              className="text-4xl text-gray-300 hover:text-gray-700"
             >
               x
-            </Button>
+            </button>
           </div>
 
           <NavLink to="/help" onClick={handleUserActionBarToggle}>

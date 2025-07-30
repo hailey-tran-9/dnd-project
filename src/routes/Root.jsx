@@ -17,6 +17,7 @@ import Navbar from "../components/Navbar.jsx";
 import { charactersActions } from "../store/characters-slice.js";
 import { gamesActions } from "../store/games-slice.js";
 import { mapsActions } from "../store/maps-slice.js";
+import Toasts from "../components/Toasts.jsx";
 
 export default function RootLayout() {
   const dispatch = useDispatch();
@@ -150,6 +151,7 @@ export default function RootLayout() {
   return (
     <>
       <Navbar />
+      <Toasts />
       <Outlet />
     </>
   );
