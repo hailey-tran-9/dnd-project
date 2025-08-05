@@ -40,7 +40,7 @@ export default function Toasts() {
   return (
     <section
       id="gui-toast-group"
-      className="fixed top-[17.5vh] right-10 w-[30vw]"
+      className="fixed top-30 right-10 w-[30vw]"
     >
       {toasts.map((toast) => (
         <Toast key={toast.id} toastData={toast} />

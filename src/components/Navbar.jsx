@@ -1,23 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { NavLink, useLocation } from "react-router";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut,
-  deleteUser,
-} from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { useDispatch } from "react-redux";
-import {
-  getDatabase,
-  ref,
-  query,
-  equalTo,
-  orderByChild,
-  get,
-  increment,
-  update,
-  onValue,
-} from "firebase/database";
+import { getDatabase, ref, onValue } from "firebase/database";
 
 import { userActions } from "../store/user-slice";
 import { useSelector } from "react-redux";
@@ -33,14 +18,16 @@ export default function Navbar() {
 
   const loginStatus = useSelector((state) => state.user.loginStatus);
   const username = useSelector((state) => state.user.username);
+  const pfpURL = useSelector((state) => state.user.pfpURL);
 
   const modalRef = useRef(null);
   const [userActionBarOpen, setUserActionBarOpen] = useState(false);
   const [delayed, setDelayed] = useState(true);
 
   useEffect(() => {
+    // TODO: Remove this dummy delay once the fallback is implemented
     // Delay just to prevent the sign in/user button from blinking
-    const timeout = setTimeout(() => setDelayed(false), 300);
+    const timeout = setTimeout(() => setDelayed(false), 1000);
     return () => clearTimeout(timeout);
   }, []);
 
@@ -49,16 +36,6 @@ export default function Navbar() {
       handleUserActionBarToggle();
     }
   }, [location]);
-
-  function handleUserActionBarToggle() {
-    const nextState = !userActionBarOpen;
-    setUserActionBarOpen(nextState);
-    if (nextState) {
-      modalRef.current.showModal();
-    } else {
-      modalRef.current.close();
-    }
-  }
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -72,6 +49,7 @@ export default function Navbar() {
           dispatch(
             userActions.updateStatusMessage(userPublicData.statusMessage)
           );
+          dispatch(userActions.updatePfpURL(user.photoURL));
         });
       }
     } else {
@@ -81,6 +59,16 @@ export default function Navbar() {
       }
     }
   });
+
+  function handleUserActionBarToggle() {
+    const nextState = !userActionBarOpen;
+    setUserActionBarOpen(nextState);
+    if (nextState) {
+      modalRef.current.showModal();
+    } else {
+      modalRef.current.close();
+    }
+  }
 
   function handleSignOut() {
     signOut(auth)
@@ -95,7 +83,14 @@ export default function Navbar() {
 
   let userButton = (
     <button onClick={handleUserActionBarToggle} className="cursor-pointer">
-      <div className="w-15 h-15 rounded-4xl bg-white"></div>
+      {pfpURL ? (
+        <img
+          src={pfpURL}
+          className="size-15 object-cover object-center rounded-full"
+        />
+      ) : (
+        <div className="size-15 object-cover object-center rounded-full bg-white" />
+      )}
     </button>
   );
 
@@ -149,18 +144,24 @@ export default function Navbar() {
         className="flex flex-row justify-between px-10 py-5 md:px-7 sm:py-2 md:py-3 items-center flex-wrap border-b border-b-white/20"
       >
         <div className="flex flex-row gap-7 xl:gap-12 items-center">
-          <NavLink to="/">
+          {loginStatus ? (
+            <>
+              <NavLink to="/">
+                <h1 className="mr-10">dnd</h1>
+              </NavLink>
+              <NavLink to="/characters" className="hover:text-neutral-200">
+                <h3>Characters</h3>
+              </NavLink>
+              <NavLink to="/games" className="hover:text-neutral-200">
+                <h3>Games</h3>
+              </NavLink>
+              <NavLink to="/maps" className="hover:text-neutral-200">
+                <h3>Maps</h3>
+              </NavLink>
+            </>
+          ) : (
             <h1 className="mr-10">dnd</h1>
-          </NavLink>
-          <NavLink to="/characters" className="hover:text-neutral-200">
-            <h3>Characters</h3>
-          </NavLink>
-          <NavLink to="/games" className="hover:text-neutral-200">
-            <h3>Games</h3>
-          </NavLink>
-          <NavLink to="/maps" className="hover:text-neutral-200">
-            <h3>Maps</h3>
-          </NavLink>
+          )}
         </div>
         {!delayed && (loginStatus ? userButton : signInBtn)}
       </div>

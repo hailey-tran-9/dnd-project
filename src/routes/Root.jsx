@@ -9,6 +9,7 @@ import {
   equalTo,
   orderByChild,
   get,
+  update,
 } from "firebase/database";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -86,17 +87,35 @@ export default function RootLayout() {
             const joinedGamesData = joinedGamesSnapshot.val();
             // console.log("joinedGamesData:", joinedGamesData);
             if (joinedGamesData) {
-              const joinedGameIDs = Object.values(joinedGamesData);
-              joinedGameIDs.forEach((gameID) => {
-                get(ref(db, "games/games/" + gameID)).then((gameSnapshot) => {
-                  const gameData = gameSnapshot.val();
-                  if (gameData) {
-                    // console.log("joinedGameData:", gameData);
-                    dispatch(gamesActions.loadAJoinedGame(gameData));
+              // TODO: Delete the gameIDs of games that don't exist anymore from joinedGames
+              for (const [randomKey, joinedGameID] of Object.entries(
+                joinedGamesData
+              )) {
+                get(ref(db, "games/games/" + joinedGameID)).then(
+                  (gameSnapshot) => {
+                    const gameData = gameSnapshot.val();
+                    if (gameData) {
+                      // console.log("joinedGameData:", gameData);
+                      if (
+                        gameData.hasOwnProperty("playersInGame") &&
+                        gameData["playersInGame"].hasOwnProperty(userID)
+                      ) {
+                        dispatch(gamesActions.loadAJoinedGame(gameData));
+                      } else {
+                        update(ref(db), {
+                          [`users/users/${userID}/public/joinedGames/${randomKey}`]:
+                            null,
+                        });
+                      }
+                    } else {
+                      update(ref(db), {
+                        [`users/users/${userID}/public/joinedGames/${randomKey}`]:
+                          null,
+                      });
+                    }
                   }
-                });
-              });
-              // console.log("joinedGamesArr:", joinedGamesArr);
+                );
+              }
             }
           }
         );

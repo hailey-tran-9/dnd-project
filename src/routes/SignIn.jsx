@@ -56,7 +56,7 @@ export default function SignInPage() {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
-    console.log("submitted data:", data);
+    // console.log("submitted data:", data);
 
     const email = data["entered-email"];
     if (!basicEmailCheck(email)) {
@@ -190,15 +190,16 @@ export default function SignInPage() {
               name="entered-password"
               type="password"
               className="w-100 text-md"
+              autoComplete="off"
               required
             />
           </div>
           <div className="flex flex-row w-full justify-between gap-20 mt-10">
-            <NavLink to="/account-creation">
+            <NavLink to="/account-creation" className="rounded-xl">
               <Button type="button">Create account</Button>
             </NavLink>
             <div className="flex gap-5">
-              <NavLink to="/">
+              <NavLink to="/" className="rounded-xl">
                 <Button type="button">Cancel</Button>
               </NavLink>
               <Button>Enter</Button>

@@ -1,7 +1,14 @@
 import { useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
-import { getDatabase, ref, update, increment } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  update,
+  increment,
+  get,
+  set,
+} from "firebase/database";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -15,7 +22,7 @@ import ActiveInvites from "../components/mainMenu/games/ActiveInvites";
 
 // TODO: render players and sessions dynamically from the game data
 // TODO: UI for error handling
-// TODO: error handling for failure to create a game invite
+// - error handling for failure to create a game invite
 
 export default function Games() {
   const [isCreatingGame, setIsCreatingGame] = useState(false);
@@ -108,6 +115,9 @@ export default function Games() {
 
   function handleToggleEditingGame() {
     if (isEditingGame) {
+      if (activeInvitesVisible) {
+        handleToggleActiveInvites();
+      }
       setIsEditingGame(false);
     } else {
       setIsEditingGame(true);
@@ -115,7 +125,6 @@ export default function Games() {
   }
 
   function handleDeleteGame(gameID) {
-    setSelectedGame(undefined);
     handleToggleEditingGame();
     const userPath = "users/users/" + userID + "/private";
 
@@ -132,6 +141,8 @@ export default function Games() {
         console.log("error deleting game");
         console.log(error.message);
       });
+
+    setSelectedGame(undefined);
   }
 
   function handleSubmit(event) {
@@ -186,12 +197,12 @@ export default function Games() {
   } else {
     content = (
       <>
-        <div className="flex flex-row justify-between flex-wrap gap-y-3">
+        <div className="flex flex-row justify-between items-center flex-wrap gap-y-3">
           <h1>{selectedGame.name}</h1>
           <div className="flex flex-row gap-5">
             {selectedGame.userID === userID && (
               <Button onClick={handleToggleEditingGame}>
-                {!isEditingGame ? "Edit" : "Stop Editing"}
+                {!isEditingGame ? "Edit" : "Cancel"}
               </Button>
             )}
             {isEditingGame && (
@@ -218,6 +229,7 @@ export default function Games() {
                 htmlRef={activeInvitesRef}
                 userID={userID}
                 gameID={selectedGame.gameID}
+                gameName={selectedGame.name}
               />
             </div>
 

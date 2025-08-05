@@ -3,12 +3,10 @@ import { Form } from "react-router";
 import Button from "../../Button";
 import Input from "../../Input";
 
-// TODO: make the image input required later
-
 export default function MapCreation({ cancelFn, submitFn }) {
   return (
     <Form onSubmit={submitFn}>
-      <div className="flex flex-row justify-between mb-10">
+      <div className="flex flex-row justify-between items-center flex-wrap gap-y-3 mb-10">
         <h1>Map Creation</h1>
         <Button type="button" onClick={cancelFn}>
           Cancel

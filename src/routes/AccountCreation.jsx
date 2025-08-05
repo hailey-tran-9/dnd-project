@@ -124,6 +124,7 @@ export default function AccountCreation() {
               name="entered-password"
               type="password"
               className="w-100 text-md"
+              autoComplete="off"
               required
             />
           </div>
@@ -139,6 +140,7 @@ export default function AccountCreation() {
               name="confirm-password"
               type="password"
               className="w-100 text-md"
+              autoComplete="off"
               required
             />
           </div>

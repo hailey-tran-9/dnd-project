@@ -1,104 +1,28 @@
 import { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "react-router";
+import { useParams, useSearchParams, useNavigate, NavLink } from "react-router";
 import { getDatabase, ref, get, set, push } from "firebase/database";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useDispatch } from "react-redux";
 
 import { decodeBase64URL, urlToBase64, encodeStr } from "../util/util";
+import { toastThunk } from "../components/Toasts";
 
 import Button from "../components/Button";
 
-// TODO: continue implementing when you can test with another user
+// TODO: delete the invite token after it's been used
 
 function InvitePage() {
+  const auth = getAuth();
   const db = getDatabase();
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   let params = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [content, setContent] = useState(<></>);
   const [inviteStatus, setInviteStatus] = useState("");
-  const auth = getAuth();
 
   const cryptoAPI = window.crypto.subtle || window.crypto.webkitSubtle;
-
-  function importPublicKey(jwk) {
-    return cryptoAPI.importKey(
-      "jwk",
-      jwk,
-      {
-        name: "ECDSA",
-        namedCurve: "P-256",
-      },
-      true,
-      ["verify"]
-    );
-  }
-
-  function addPlayerToGame(payload) {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const userID = user.uid;
-        const gamePath = "games/games/" + payload.gameID;
-        get(ref(db, gamePath)).then((snapshot) => {
-          const gameData = snapshot.val();
-          if (gameData.userID === userID) {
-            console.log(
-              "you're the owner of this game, cannot be invited to it"
-            );
-            return;
-          } else if (
-            gameData.playersInGame &&
-            userID in gameData.playersInGame
-          ) {
-            console.log("you're already in the game, cannot be added again");
-            return;
-          }
-
-          set(ref(db, gamePath + "/playersInGame/" + userID), "");
-          const pushJoined = push(
-            ref(db, "users/users/" + userID + "/public/joinedGames")
-          );
-          set(pushJoined, payload.gameID);
-        });
-      }
-    });
-  }
-
-  function checkExpiration(payload) {
-    const exp = payload.exp;
-    if (exp <= Date.now()) {
-      console.log("invite has expired");
-      if (inviteStatus !== "expired") {
-        setContent(
-          <div>
-            <h1 className="lg:text-[3rem]">Invite has expired</h1>
-            <h3>Please ask the game owner for another link.</h3>
-          </div>
-        );
-        setInviteStatus("expired");
-      }
-    } else {
-      console.log("valid invite");
-      if (inviteStatus !== "valid") {
-        setContent(
-          <>
-            <div>
-              <h1>Invite to [Game Name]</h1>
-              <h3>Would you like to join?</h3>
-            </div>
-            <div className="flex flex-row justify-around">
-              <Button
-                onClick={() => addPlayerToGame(payload)}
-                className="w-[30%] bg-green-600 hover:bg-green-400"
-              >
-                Yes
-              </Button>
-              <Button className="w-[30%]">No</Button>
-            </div>
-          </>
-        );
-        setInviteStatus("valid");
-      }
-    }
-  }
 
   useEffect(() => {
     let interval;
@@ -164,6 +88,105 @@ function InvitePage() {
       }
     };
   }, []);
+
+  function importPublicKey(jwk) {
+    return cryptoAPI.importKey(
+      "jwk",
+      jwk,
+      {
+        name: "ECDSA",
+        namedCurve: "P-256",
+      },
+      true,
+      ["verify"]
+    );
+  }
+
+  function addPlayerToGame(payload) {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const userID = user.uid;
+        const gamePath = "games/games/" + payload.gameID;
+        get(ref(db, gamePath)).then((snapshot) => {
+          const gameData = snapshot.val();
+          if (gameData.userID === userID) {
+            dispatch(
+              toastThunk(
+                "Error",
+                "You're the owner of this game, you cannot be invited to it."
+              )
+            );
+            setTimeout(() => {
+              navigate("/games");
+            }, 3000);
+          } else if (
+            gameData.playersInGame &&
+            userID in gameData.playersInGame
+          ) {
+            dispatch(
+              toastThunk(
+                "Error",
+                "You're already in the game, you cannot be added again."
+              )
+            );
+            setTimeout(() => {
+              navigate("/games");
+            }, 3000);
+          } else {
+            set(ref(db, gamePath + "/playersInGame/" + userID), "");
+            const pushJoined = push(
+              ref(db, "users/users/" + userID + "/public/joinedGames")
+            );
+            set(pushJoined, payload.gameID);
+            dispatch(toastThunk("Success", "You've been added to the game!"));
+            setTimeout(() => {
+              navigate("/games");
+            }, 3000);
+          }
+        });
+      }
+    });
+  }
+
+  function checkExpiration(payload) {
+    const exp = payload.exp;
+    if (exp <= Date.now()) {
+      console.log("invite has expired");
+      if (inviteStatus !== "expired") {
+        setContent(
+          <div>
+            <h1 className="lg:text-[3rem]">Invite has expired</h1>
+            <h3>Please ask the game owner for another link.</h3>
+          </div>
+        );
+        setInviteStatus("expired");
+      }
+    } else {
+      console.log("valid invite");
+      if (inviteStatus !== "valid") {
+        setContent(
+          <>
+            <div>
+              <h1>Invite to {payload.gameName}</h1>
+              <h3>Would you like to join?</h3>
+            </div>
+            <div className="flex flex-row justify-around">
+              <Button
+                onClick={() => addPlayerToGame(payload)}
+                className="w-[30%] bg-green-600 hover:bg-green-400"
+              >
+                Yes
+              </Button>
+              <NavLink to="/games" className="w-[30%]">
+                <Button className="w-full">No</Button>
+              </NavLink>
+            </div>
+          </>
+        );
+        setInviteStatus("valid");
+      }
+    }
+  }
 
   return (
     <>

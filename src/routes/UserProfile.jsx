@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, updateProfile } from "firebase/auth";
 import { Form, useLocation } from "react-router";
 import { ref, getDatabase, update } from "firebase/database";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
 
 import { userActions } from "../store/user-slice.js";
 
@@ -11,14 +17,16 @@ import Input from "../components/Input.jsx";
 
 export default function UserProfile() {
   const auth = getAuth();
-  const location = useLocation();
   const db = getDatabase();
+  const storage = getStorage();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   const currUser = useSelector((state) => state.user);
   const [userAuth, setUserAuth] = useState(false);
   const [userID, setUserID] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [inputFileName, setInputFileName] = useState("Profile Pic");
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -41,35 +49,66 @@ export default function UserProfile() {
     setIsEditing((prevEditingState) => !prevEditingState);
   }
 
-  function handleStartEditing() {
-    if (!isEditing) {
-      setIsEditing(true);
-    }
-  }
-
   function handleStopEditing() {
     if (isEditing) {
       setIsEditing(false);
     }
   }
 
-  function handleTextSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
-    // console.log("editing user:", data);
+    console.log("editing user:", data);
 
     const publicPath = "users/users/" + userID + "/public";
     update(ref(db), {
       [publicPath + "/username"]: data["user-profile-username"],
       [publicPath + "/statusMessage"]: data["user-profile-status-message"],
+    }).catch((error) => {
+      console.log("error updating user's information");
+      console.log(error.message);
+      return;
     });
+
+    const pfp = data["user-pfp"];
+    if (pfp) {
+      const pfpRef = storageRef(storage, `users/${userID}/pfp`);
+      uploadBytes(pfpRef, pfp)
+        .then((snapshot) => {
+          getDownloadURL(pfpRef).then((url) => {
+            // console.log("url:", url);
+            updateProfile(auth.currentUser, { photoURL: url })
+              .then(() => {
+                dispatch(userActions.updatePfpURL(url));
+                handleStopEditing();
+              })
+              .catch((error) => {
+                console.log("error updating the user's pfp");
+                console.log(error.message);
+              });
+          });
+        })
+        .catch((error) => {
+          console.log("error uploading pfp image");
+          console.log(error.message);
+        });
+    }
   }
 
   let content = (
     <div className="w-full flex flex-col gap-30">
       <div className="w-[60vw] flex flex-row gap-10 items-center">
-        <div className="size-35 bg-white rounded-xl"></div>
+        {currUser.pfpURL ? (
+          <img
+            src={currUser.pfpURL}
+            className="size-[150px] xl:size-[200px] object-cover object-center rounded-xl"
+          />
+        ) : (
+          <div className="flex size-[150px] xl:size-[200px] bg-white text-neutral-500 justify-center items-center text-center break-all overflow-hidden p-3 rounded-xl">
+            Empty pfp
+          </div>
+        )}
         <div className="grow flex flex-col gap-2">
           <h2>{currUser.username}</h2>
           <div className="bg-white px-3 py-1 rounded-md">
@@ -83,16 +122,31 @@ export default function UserProfile() {
 
   if (isEditing) {
     content = (
-      <Form onSubmit={(event) => handleTextSubmit(event)}>
+      <Form onSubmit={(event) => handleSubmit(event)}>
         <div className="w-full flex flex-col gap-30">
           <div className="w-[60vw] flex flex-row gap-10 items-center">
-            <div className="size-35 bg-white rounded-xl"></div>
+            <input
+              type="file"
+              name="user-pfp"
+              id="user-pfp"
+              className="inputFile"
+              onChange={(event) => {
+                let fileName = event.target.value.split("\\").pop();
+                setInputFileName(fileName);
+              }}
+            />
+            <label
+              htmlFor="user-pfp"
+              className="flex size-[150px] xl:size-[200px] bg-white text-neutral-500 justify-center items-center text-center break-all overflow-hidden p-3 rounded-xl hover:bg-neutral-50 focus:ring"
+            >
+              {inputFileName}
+            </label>
             <div className="grow flex flex-col gap-2">
               <Input
                 id="user-profile-username"
                 name="user-profile-username"
                 type="text"
-                className="text-[2rem] px-3"
+                className="text-[2rem] px-3 cursor-pointer hover:bg-neutral-50"
                 minLength={1}
                 maxLength={12}
                 pattern="[ -~]+"
@@ -103,7 +157,7 @@ export default function UserProfile() {
                 id="user-profile-status-message"
                 name="user-profile-status-message"
                 type="text"
-                className="px-3"
+                className="px-3 py-1 cursor-pointer hover:bg-neutral-50"
                 minLength={0}
                 maxLength={50}
                 pattern="[ -~]+"
@@ -124,7 +178,7 @@ export default function UserProfile() {
         <h1>User Profile</h1>
         {userAuth && (
           <Button onClick={handleToggleEditing} type="button">
-            {!isEditing ? "Edit" : "Stop Editing"}
+            {!isEditing ? "Edit" : "Cancel"}
           </Button>
         )}
       </div>

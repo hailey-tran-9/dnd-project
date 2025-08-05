@@ -30,7 +30,7 @@ export default function Characters() {
   const dispatch = useDispatch();
   const characters = useSelector((state) => state.characters.characters);
   const characterCreation = useSelector((state) => state.characterCreation);
-  //   console.log(characters);
+  // console.log(characters);
   const db = getDatabase();
 
   const auth = getAuth();
@@ -245,7 +245,7 @@ export default function Characters() {
     // console.log("selectedCharacter:", selectedCharacter);
     content = (
       <>
-        <div className="flex flex-row justify-between items-center">
+        <div className="flex flex-row justify-between items-center flex-wrap gap-y-3">
           <Header selectedCharacter={selectedCharacter} />
           <div>
             {/* TODO: implement Edit functionality */}

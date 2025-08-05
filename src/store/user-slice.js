@@ -8,6 +8,7 @@ const userSlice = createSlice({
     isCreatingAccount: false,
     username: "",
     statusMessage: "",
+    pfpURL: null,
   },
   reducers: {
     startSignIn(state) {
@@ -34,6 +35,9 @@ const userSlice = createSlice({
     },
     updateStatusMessage(state, action) {
       state.statusMessage = action.payload;
+    },
+    updatePfpURL(state, action) {
+      state.pfpURL = action.payload;
     },
   },
 });

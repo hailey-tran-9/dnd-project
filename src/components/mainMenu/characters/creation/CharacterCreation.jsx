@@ -47,7 +47,7 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
   return (
     <Form onSubmit={submitFn}>
       <div className="flex flex-col gap-25">
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row justify-between items-center flex-wrap gap-y-3">
           <h1>Character Creation</h1>
           <Button type="button" onClick={cancelFn}>
             Cancel

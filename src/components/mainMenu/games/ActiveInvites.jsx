@@ -26,7 +26,7 @@ const noInvitesP = (
   <p className="col-span-full text-center">There aren't any active invites.</p>
 );
 
-export default function ActiveInvites({ htmlRef, userID, gameID }) {
+export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
   const db = getDatabase();
   const dispatch = useDispatch();
 
@@ -39,6 +39,18 @@ export default function ActiveInvites({ htmlRef, userID, gameID }) {
   // } else {
   //   console.log("there's web crypto api YIPPEE");
   // }
+
+  useEffect(() => {
+    const gameInvitesPath = `users/users/${userID}/private/games/gameIDs/${gameID}/gameInvites`;
+    queryGameInvites(gameInvitesPath);
+    const interval = setInterval(() => {
+      queryGameInvites(gameInvitesPath);
+    }, 60000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   function queryGameInvites(gameInvitesPath) {
     const gameInviteQuery = query(
@@ -87,18 +99,6 @@ export default function ActiveInvites({ htmlRef, userID, gameID }) {
     });
   }
 
-  useEffect(() => {
-    const gameInvitesPath = `users/users/${userID}/private/games/gameIDs/${gameID}/gameInvites`;
-    queryGameInvites(gameInvitesPath);
-    const interval = setInterval(() => {
-      queryGameInvites(gameInvitesPath);
-    }, 60000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-
   function importPrivateKey(jwk) {
     return cryptoAPI.importKey(
       "jwk",
@@ -121,8 +121,10 @@ export default function ActiveInvites({ htmlRef, userID, gameID }) {
       sub: "game-invite",
       exp,
       gameID,
+      gameName,
       iss: userID,
       jti,
+      used: false,
     };
     const encodedHeader = encodeBase64URL(JSON.stringify(header));
     const encodedData = encodeBase64URL(JSON.stringify(payload));
@@ -203,7 +205,7 @@ export default function ActiveInvites({ htmlRef, userID, gameID }) {
             const createdOn = Date.now();
             update(ref(db), {
               [gamePath + "/gameInvites"]: {
-                [jti]: { createdOn, exp },
+                [jti]: { createdOn, exp, used: false },
               },
               [gamePath + "/numberOfGameInvites"]: 1,
             }).then(() => {
@@ -223,7 +225,7 @@ export default function ActiveInvites({ htmlRef, userID, gameID }) {
               update(ref(db), {
                 [gamePath + "/gameInvites"]: {
                   ...gameInviteData,
-                  [jti]: { createdOn, exp },
+                  [jti]: { createdOn, exp, used: false },
                 },
                 [gamePath + "/numberOfGameInvites"]:
                   updatedNumOfGameInvites + 1,
@@ -236,7 +238,7 @@ export default function ActiveInvites({ htmlRef, userID, gameID }) {
       } else {
         const createdOn = Date.now();
         update(ref(db), {
-          [gamePath + "/gameInvites/" + jti]: { createdOn, exp },
+          [gamePath + "/gameInvites/" + jti]: { createdOn, exp, used: false },
           [gamePath + "/numberOfGameInvites"]: increment(1),
         }).then(() => {
           createURL(jti, exp, gameID);
