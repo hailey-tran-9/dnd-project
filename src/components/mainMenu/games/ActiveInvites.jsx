@@ -154,8 +154,8 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
     // TODO: finish implementation
 
     const jti = uuidv4();
-    const exp = Math.floor(Date.now() + 60000); // Expires in 1 min
-    // const exp = Math.floor(Date.now() + 300000); // Expires in 5 min
+    // const exp = Math.floor(Date.now() + 60000); // Expires in 1 min
+    const exp = Math.floor(Date.now() + 300000); // Expires in 5 min
     // const exp = Math.floor(Date.now() + 600000); // Expires in 10 min
 
     const gameInvitePath = `gameInvites/${gameID}`;

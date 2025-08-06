@@ -1,6 +1,14 @@
-import { useState, useEffect } from "react";
-import { useParams, useSearchParams, useNavigate, NavLink } from "react-router";
-import { getDatabase, ref, get, set, push } from "firebase/database";
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams, useNavigate, NavLink } from "react-router";
+import {
+  getDatabase,
+  ref,
+  get,
+  set,
+  push,
+  update,
+  increment,
+} from "firebase/database";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useDispatch } from "react-redux";
 
@@ -9,7 +17,7 @@ import { toastThunk } from "../components/Toasts";
 
 import Button from "../components/Button";
 
-// TODO: delete the invite token after it's been used
+// TODO: figure out how to clear the interval when the route changes
 
 function InvitePage() {
   const auth = getAuth();
@@ -17,15 +25,14 @@ function InvitePage() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  let params = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [content, setContent] = useState(<></>);
   const [inviteStatus, setInviteStatus] = useState("");
+  const intervalRef = useRef();
 
   const cryptoAPI = window.crypto.subtle || window.crypto.webkitSubtle;
 
   useEffect(() => {
-    let interval;
     const jwt = searchParams.get("token");
     if (!jwt) {
       console.log(
@@ -72,9 +79,11 @@ function InvitePage() {
                   setInviteStatus("invalid");
                 } else {
                   checkExpiration(payloadObj);
-                  interval = setInterval(() => {
+                  const intervalID = setInterval(() => {
+                    console.log("still in check expiration interval");
                     checkExpiration(payloadObj);
                   }, 5000);
+                  intervalRef.current = intervalID;
                 }
               });
           });
@@ -83,9 +92,8 @@ function InvitePage() {
     }
 
     return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
+      console.log("CLEAR INTERVAL ON UNMOUNT");
+      clearInterval(intervalRef.current);
     };
   }, []);
 
@@ -133,9 +141,19 @@ function InvitePage() {
               navigate("/games");
             }, 3000);
           } else {
-            set(ref(db, gamePath + "/playersInGame/" + userID), "");
+            // Delete the game invitation token that was just used, add the user to the game
+            const invitesPath = `gameInvites/${payload.gameID}`;
+            update(ref(db), {
+              [`${invitesPath}/invites/${payload.jti}`]: null,
+              [`${invitesPath}/numberOfGameInvites`]: increment(-1),
+              [`${gamePath}/playersInGame/${userID}`]: "",
+            }).catch((error) => {
+              console.log("error deleting the game invitation from the db");
+              console.log(error.message);
+              return;
+            });
             const pushJoined = push(
-              ref(db, "users/users/" + userID + "/public/joinedGames")
+              ref(db, `users/users/${userID}/public/joinedGames`)
             );
             set(pushJoined, payload.gameID);
             dispatch(toastThunk("Success", "You've been added to the game!"));
@@ -162,7 +180,7 @@ function InvitePage() {
         setInviteStatus("expired");
       }
     } else {
-      console.log("valid invite");
+      // console.log("valid invite");
       if (inviteStatus !== "valid") {
         setContent(
           <>
