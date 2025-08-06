@@ -1,13 +1,15 @@
 {
-  "users": {
-    "$userID": {
-      "characters": {
-        "$characterID": ""
-      },
-      "maps": {
-        "$mapID": ""
-      },
-      "profilePic": ""
+  "gameInvites": {
+    "$gameID": {
+      "invites": {
+        "$jki": {
+          "createdOn": 0,
+          "exp": 0,
+          "inviteLink": "",
+          "used": false
+        },
+        "numberOfGameInvites": 0
+      }
     }
   },
   "games": {
@@ -16,5 +18,37 @@
       "items": { "$itemID": "" },
       "npcs": { "$npcID": "" }
     }
+  },
+  "users": {
+    "users": {
+      "$userID": {
+        "public": {
+          "key": "",
+          "statusMessage": "",
+          "username": ""
+        },
+        "private": {
+          "characters": {
+            "characterIDs": {
+              "$characterID": "characterName"
+            },
+            "numberOfCharacters": 0
+          },
+          "games": {
+            "gameIDs": {
+              "$gameID": "gameName"
+            },
+            "numberOfGames": 0
+          },
+          "maps": {
+            "mapIDs": {
+              "$mapID": "mapName"
+            },
+            "numberOfMaps": 0
+          }
+        }
+      }
+    },
+    "numberOfUsers": 0
   }
 }

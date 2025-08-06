@@ -8,6 +8,7 @@ import {
   get,
   update,
   increment,
+  orderByValue,
 } from "firebase/database";
 import { useDispatch } from "react-redux";
 
@@ -41,7 +42,7 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
   // }
 
   useEffect(() => {
-    const gameInvitesPath = `users/users/${userID}/private/games/gameIDs/${gameID}/gameInvites`;
+    const gameInvitesPath = `gameInvites/${gameID}/invites`;
     queryGameInvites(gameInvitesPath);
     const interval = setInterval(() => {
       queryGameInvites(gameInvitesPath);
@@ -55,7 +56,7 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
   function queryGameInvites(gameInvitesPath) {
     const gameInviteQuery = query(
       ref(db, gameInvitesPath),
-      orderByChild("exp"),
+      orderByValue("exp"),
       startAfter(Date.now())
     );
     get(gameInviteQuery).then((gameInviteSnapshot) => {
@@ -124,7 +125,6 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
       gameName,
       iss: userID,
       jti,
-      used: false,
     };
     const encodedHeader = encodeBase64URL(JSON.stringify(header));
     const encodedData = encodeBase64URL(JSON.stringify(payload));
@@ -153,14 +153,9 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
                 jwtToken;
               copyToClipboard(inviteLink);
 
-              const gameInvitesPath =
-                "users/users/" +
-                userID +
-                "/private/games/gameIDs/" +
-                gameID +
-                "/gameInvites";
+              const gameInvitesPath = `gameInvites/${gameID}/invites`;
               update(ref(db), {
-                [gameInvitesPath + "/" + jti + "/inviteLink"]: inviteLink,
+                [`${gameInvitesPath}/${jti}/inviteLink`]: inviteLink,
               }).then(() => {
                 queryGameInvites(gameInvitesPath);
                 dispatch(
@@ -186,28 +181,27 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
     const exp = Math.floor(Date.now() + 300000); // Expires in 5 min
     // const exp = Math.floor(Date.now() + 600000); // Expires in 10 min
 
-    const gamePath =
-      "users/users/" + userID + "/private/games/gameIDs/" + gameID;
-    get(ref(db, gamePath + "/numberOfGameInvites")).then((snapshot) => {
+    const gameInvitePath = `gameInvites/${gameID}`;
+    get(ref(db, gameInvitePath + "/numberOfGameInvites")).then((snapshot) => {
       const numberOfGameInvites = snapshot.val();
       // console.log("numberOfGameInvites:", numberOfGameInvites);
       if (numberOfGameInvites >= 4) {
         const gameInviteQuery = query(
-          ref(db, gamePath + "/gameInvites"),
-          orderByChild("exp"),
+          ref(db, gameInvitePath + "/invites"),
+          orderByValue("exp"),
           startAfter(Date.now())
         );
         get(gameInviteQuery).then((gameInviteSnapshot) => {
           const gameInviteData = gameInviteSnapshot.val();
-          // console.log("games that haven't expired yet:", gameInviteData);
+          console.log("games that haven't expired yet:", gameInviteData);
           let updatedNumOfGameInvites = 0;
           if (!gameInviteData) {
             const createdOn = Date.now();
             update(ref(db), {
-              [gamePath + "/gameInvites"]: {
-                [jti]: { createdOn, exp, used: false },
+              [gameInvitePath + "/invites"]: {
+                [jti]: { createdOn, exp },
               },
-              [gamePath + "/numberOfGameInvites"]: 1,
+              [gameInvitePath + "/numberOfGameInvites"]: 1,
             }).then(() => {
               createURL(jti, exp, gameID);
             });
@@ -223,11 +217,11 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
             } else {
               const createdOn = Date.now();
               update(ref(db), {
-                [gamePath + "/gameInvites"]: {
+                [gameInvitePath + "/invites"]: {
                   ...gameInviteData,
-                  [jti]: { createdOn, exp, used: false },
+                  [jti]: { createdOn, exp },
                 },
-                [gamePath + "/numberOfGameInvites"]:
+                [gameInvitePath + "/numberOfGameInvites"]:
                   updatedNumOfGameInvites + 1,
               }).then(() => {
                 createURL(jti, exp, gameID);
@@ -236,13 +230,19 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
           }
         });
       } else {
+        console.log("no other active invites available");
         const createdOn = Date.now();
         update(ref(db), {
-          [gamePath + "/gameInvites/" + jti]: { createdOn, exp, used: false },
-          [gamePath + "/numberOfGameInvites"]: increment(1),
-        }).then(() => {
-          createURL(jti, exp, gameID);
-        });
+          [`${gameInvitePath}/invites/${jti}`]: { createdOn, exp },
+          [`${gameInvitePath}/numberOfGameInvites`]: increment(1),
+        })
+          .then(() => {
+            createURL(jti, exp, gameID);
+          })
+          .catch((error) => {
+            console.log("error updating game invite path");
+            console.log(error.message);
+          });
       }
     });
   }

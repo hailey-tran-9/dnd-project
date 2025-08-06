@@ -133,6 +133,7 @@ export default function Games() {
       "games/numberOfGames": increment(-1),
       [userPath + "/games/gameIDs/" + gameID]: null,
       [userPath + "/games/numberOfGames"]: increment(-1),
+      [`gameInvites/${gameID}`]: null,
     })
       .then(() => {
         // console.log("game successfully deleted");
@@ -162,13 +163,14 @@ export default function Games() {
 
     const userPath = "users/users/" + userID + "/private";
     update(ref(db), {
-      ["games/games/" + gameData.gameID]: gameData,
+      [`games/games/${gameData.gameID}`]: gameData,
       "games/numberOfGames": increment(1),
-      [userPath + "/games/gameIDs/" + gameData.gameID]: {
-        gameInvites: {},
+      [`gameInvites/${gameData.gameID}`]: {
+        invites: {},
         numberOfGameInvites: 0,
       },
-      [userPath + "/games/numberOfGames"]: increment(1),
+      [`${userPath}/games/gameIDs/${gameData.gameID}`]: gameData.name,
+      [`${userPath}/games/numberOfGames`]: increment(1),
     })
       .then(() => {
         // console.log("game created successfully");
