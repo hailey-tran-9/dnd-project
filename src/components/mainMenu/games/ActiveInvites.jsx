@@ -8,9 +8,10 @@ import {
   get,
   update,
   increment,
-  orderByValue,
+  startAt,
 } from "firebase/database";
 import { useDispatch } from "react-redux";
+import { getAuth } from "firebase/auth";
 
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -22,12 +23,14 @@ import {
 } from "../../../util/util.jsx";
 import ms from "ms";
 import { toastThunk } from "../../Toasts.jsx";
+import ActiveInvite from "./ActiveInvite.jsx";
 
 const noInvitesP = (
   <p className="col-span-full text-center">There aren't any active invites.</p>
 );
 
 export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
+  const auth = getAuth();
   const db = getDatabase();
   const dispatch = useDispatch();
 
@@ -42,58 +45,32 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
   // }
 
   useEffect(() => {
-    const gameInvitesPath = `gameInvites/${gameID}/invites`;
-    queryGameInvites(gameInvitesPath);
-    const interval = setInterval(() => {
-      queryGameInvites(gameInvitesPath);
-    }, 60000);
-
-    return () => {
-      clearInterval(interval);
-    };
+    queryGameInvites(`gameInvites/${gameID}/invites`);
   }, []);
 
   function queryGameInvites(gameInvitesPath) {
+    console.log("QUERY GAME INVITES");
     const gameInviteQuery = query(
       ref(db, gameInvitesPath),
-      orderByValue("exp"),
-      startAfter(Date.now())
+      orderByChild("exp"),
+      startAt(Date.now())
     );
     get(gameInviteQuery).then((gameInviteSnapshot) => {
       const gameInviteData = gameInviteSnapshot.val();
-      //   console.log("gameInviteData:", gameInviteData);
+      // console.log("gameInviteData:", gameInviteData);
       if (!gameInviteData) {
         setNoInvites(true);
       } else {
-        const dateFormatOptions = {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        };
-
         setNoInvites(false);
         setContent(
           Object.entries(gameInviteData).map(([jti, invData], index) => (
-            <Fragment key={jti}>
-              <p
-                onClick={() => {
-                  copyToClipboard(invData.inviteLink);
-                  dispatch(
-                    toastThunk("Success", "Invite link copied to clipboard.")
-                  );
-                }}
-                className="text-sky-300 hover:text-sky-200 select-none"
-              >
-                Invite {index + 1}
-              </p>
-              <p className="truncate">{ms(invData.exp - Date.now())}</p>
-              <p className="truncate">
-                {new Date(invData.createdOn).toLocaleDateString(
-                  undefined,
-                  dateFormatOptions
-                )}
-              </p>
-            </Fragment>
+            <ActiveInvite
+              gameID={gameID}
+              refreshFn={queryGameInvites}
+              invData={invData}
+              invIndex={index}
+              key={jti}
+            />
           ))
         );
       }
@@ -177,8 +154,8 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
     // TODO: finish implementation
 
     const jti = uuidv4();
-    // const exp = Math.floor(Date.now() + 60000); // Expires in 1 min
-    const exp = Math.floor(Date.now() + 300000); // Expires in 5 min
+    const exp = Math.floor(Date.now() + 60000); // Expires in 1 min
+    // const exp = Math.floor(Date.now() + 300000); // Expires in 5 min
     // const exp = Math.floor(Date.now() + 600000); // Expires in 10 min
 
     const gameInvitePath = `gameInvites/${gameID}`;
@@ -188,7 +165,7 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
       if (numberOfGameInvites >= 4) {
         const gameInviteQuery = query(
           ref(db, gameInvitePath + "/invites"),
-          orderByValue("exp"),
+          orderByChild("exp"),
           startAfter(Date.now())
         );
         get(gameInviteQuery).then((gameInviteSnapshot) => {
@@ -230,7 +207,6 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
           }
         });
       } else {
-        console.log("no other active invites available");
         const createdOn = Date.now();
         update(ref(db), {
           [`${gameInvitePath}/invites/${jti}`]: { createdOn, exp },
