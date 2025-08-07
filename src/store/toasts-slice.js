@@ -15,6 +15,9 @@ const toastsSlice = createSlice({
     incToastCounter(state, action) {
       state.toasts[action.payload].counter += 1;
     },
+    clearToasts(state) {
+      state.toasts = [];
+    },
   },
 });
 

@@ -241,6 +241,7 @@ export default function Games() {
                   (player, index) => (
                     <Player
                       key={`${selectedGame.gameID}-player-component-${index}`}
+                      player={player}
                     />
                   )
                 )

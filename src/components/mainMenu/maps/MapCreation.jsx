@@ -4,10 +4,13 @@ import { Form } from "react-router";
 import Button from "../../Button";
 import Input from "../../Input";
 
+// TODO: save the map image with the grid
+
 export default function MapCreation({ cancelFn, submitFn }) {
-  const [selectedImgURL, setSelectedImgURL] = useState(null);
-  const [imgSize, setImgSize] = useState([0, 0]);
   const canvasRef = useRef();
+  const [selectedImgURL, setSelectedImgURL] = useState(null);
+  const [cellSize, setCellSize] = useState(50);
+  const [img, setImg] = useState(null);
 
   function handleOnChangeImg(event) {
     event.preventDefault();
@@ -16,45 +19,75 @@ export default function MapCreation({ cancelFn, submitFn }) {
       URL.revokeObjectURL(selectedImgURL);
     }
 
-    // const formData = new FormData(event.target);
-    // const data = Object.fromEntries(formData);
     const imgFile = event.target.files[0];
-    console.log("submitted img");
+    // console.log("submitted img");
     // console.log(imgFile);
 
-    const img = new Image();
+    const newImg = new Image();
     const objURL = URL.createObjectURL(imgFile);
     setSelectedImgURL(objURL);
-    img.src = objURL;
-    img.onload = () => {
-      const width = img.width;
-      const height = img.height;
-      console.log("width: " + width);
-      console.log("height: " + height);
+    newImg.src = objURL;
+    newImg.onload = () => {
+      setImg(newImg);
 
-      setImgSize([width, height]);
-      const canvasCtx = canvasRef.current.getContext("2d");
-
-      canvasCtx.drawImage(img, 0, 0, 700, 500);
-
-      let bw = 50;
-      let bh = 50;
-      let padding = 0;
-      drawGrid(canvasCtx, bw, bh, padding);
+      // Draw the img on the canvas
+      const ctx = canvasRef.current.getContext("2d");
+      ctx.drawImage(newImg, 0, 0, 700, 500);
+      ctx.save();
+      drawGrid(newImg, cellSize);
     };
   }
 
-  function drawGrid(ctx, bw, bh, padding) {
-    for (let x = 0; x <= 700; x += bw) {
-      ctx.moveTo(0.5 + x + padding, padding);
-      ctx.lineTo(0.5 + x + padding, 500 + padding);
+  function drawGrid(img, cellNum) {
+    const ctx = canvasRef.current.getContext("2d");
+    // console.log("new cell size: " + cellNum);
+
+    const canvasWidth = canvasRef.current.width;
+    const canvasHeight = canvasRef.current.height;
+
+    const wRatio = canvasRef.current.width / img.width;
+    const hRatio = canvasRef.current.height / img.height;
+    const ratio = Math.min(wRatio, hRatio);
+    const centerShiftX = (canvasRef.current.width - img.width * ratio) / 2;
+    const centerShiftY = (canvasRef.current.height - img.height * ratio) / 2;
+
+    // Clear the previous grid
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.fillStyle = "rgb(0 0 0 / 75%)";
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+    ctx.drawImage(
+      img,
+      0,
+      0,
+      img.width,
+      img.height,
+      centerShiftX,
+      centerShiftY,
+      img.width * ratio,
+      img.height * ratio
+    );
+    ctx.restore();
+
+    // Draw the grid lines
+    ctx.beginPath();
+    for (let x = 0; x <= canvasWidth; x += cellNum) {
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvasHeight);
     }
-    for (let x = 0; x <= 500; x += bh) {
-      ctx.moveTo(padding, 0.5 + x + padding);
-      ctx.lineTo(700 + padding, 0.5 + x + padding);
+    for (let x = 0; x <= canvasHeight; x += cellNum) {
+      ctx.moveTo(0, x);
+      ctx.lineTo(canvasWidth, x);
     }
-    ctx.strokeStyle = "white";
+    ctx.strokeStyle = "rgb(255 255 255 / 30%)";
     ctx.stroke();
+    ctx.closePath();
+  }
+
+  function handleOnChangeCellSize(event) {
+    // console.log(event.target.value);
+    const cellNum = Number(event.target.value);
+    setCellSize(cellNum);
+    drawGrid(img, cellNum);
   }
 
   return (
@@ -65,7 +98,7 @@ export default function MapCreation({ cancelFn, submitFn }) {
           Cancel
         </Button>
       </div>
-      <div className="w-full flex flex-col xl:flex-row xl:items-center flex-wrap gap-15 xl:gap-x-[10vw]">
+      <div className="w-full flex flex-col xl:flex-row xl:justify-around xl:items-center flex-wrap gap-15 xl:gap-x-[10vw]">
         <div className="flex flex-col items-start gap-3">
           <label
             htmlFor="map-name"
@@ -99,46 +132,31 @@ export default function MapCreation({ cancelFn, submitFn }) {
           />
         </div>
         {selectedImgURL && (
-          <canvas
-            ref={canvasRef}
-            id="map-canvas"
-            width={700}
-            height={500}
-            className="w-fit h-fit self-center"
-          ></canvas>
+          <div className="max-w-full flex flex-col items-center gap-y-3 pb-3 overflow-x-auto">
+            <canvas
+              ref={canvasRef}
+              id="map-canvas"
+              width={1000}
+              height={1000}
+              className="w-fit h-fit mx-auto"
+            ></canvas>
+            <div>
+              <input
+                type="range"
+                id="map-cell-size"
+                name="map-cell-size"
+                min="25"
+                max="100"
+                defaultValue="50"
+                onChange={(event) => handleOnChangeCellSize(event)}
+              />
+              <label
+                htmlFor="map-cell-size"
+                className="ml-5"
+              >{`Cell size (${cellSize})`}</label>
+            </div>
+          </div>
         )}
-        <div className="flex flex-row gap-20 xl:gap-x-[10vw]">
-          <div className="flex flex-col items-start">
-            <label
-              htmlFor="map-width"
-              className="text-black text-[2.5rem] font-[500] mr-10"
-            >
-              Width
-            </label>
-            <p className="mb-5">(Optional Cell Count)</p>
-            <Input
-              id="map-width"
-              name="map-width"
-              type="number"
-              className="text-[2rem]"
-            />
-          </div>
-          <div className="flex flex-col items-start">
-            <label
-              htmlFor="map-height"
-              className="text-black text-[2.5rem] font-[500] mr-10"
-            >
-              Height
-            </label>
-            <p className="mb-5">(Optional Cell Count)</p>
-            <Input
-              id="map-height"
-              name="map-height"
-              type="number"
-              className="text-[2rem]"
-            />
-          </div>
-        </div>
         <div className="w-full">
           <p className="text-[2.5rem] font-semibold text-black">Notes</p>
           <p>(Optional)</p>

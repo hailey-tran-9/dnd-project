@@ -104,75 +104,66 @@ export default function Maps() {
     // console.log("submitted map data");
     // console.log(data);
 
-    const img = new Image();
-    const objURL = URL.createObjectURL(data["map-image"]);
-    img.src = objURL;
-    img.onload = () => {
-      const width = img.width;
-      const height = img.height;
-      console.log("width: " + width);
-      console.log("height: " + height);
-
-      const mapData = {
-        image: data["map-image"],
-        inGames: [],
-        mapID: uuidv4(),
-        name: data["map-name"],
-        size: { width, height },
-        // size: { width: data["map-width"], height: data["map-height"] },
-        src: "",
-        userID,
-      };
-      console.log(mapData);
-
-      URL.revokeObjectURL(objURL);
+    const numCells = Math.floor(1000 / data["map-cell-size"]);
+    const mapData = {
+      image: data["map-image"],
+      inGames: [],
+      mapID: uuidv4(),
+      name: data["map-name"],
+      notes: data["map-notes"],
+      size: {
+        width: numCells,
+        height: numCells,
+      },
+      src: "",
+      userID,
     };
 
-    // const userPath = "users/users/" + userID + "/private";
-    // update(ref(db), {
-    //   ["maps/maps/" + mapData.mapID]: mapData,
-    //   "maps/numberOfMaps": increment(1),
-    //   [userPath + "/maps/mapIDs/" + mapData.mapID]: mapData.name,
-    //   [userPath + "/maps/numberOfMaps"]: increment(1),
-    // })
-    //   .then(() => {
-    //     // console.log("map created successfully");
-    //   })
-    //   .catch((error) => {
-    //     console.log("error writing the new map into the db");
-    //     console.log(error.message);
-    //   });
+    const userPath = "users/users/" + userID + "/private";
+    update(ref(db), {
+      ["maps/maps/" + mapData.mapID]: mapData,
+      "maps/numberOfMaps": increment(1),
+      [userPath + "/maps/mapIDs/" + mapData.mapID]: mapData.name,
+      [userPath + "/maps/numberOfMaps"]: increment(1),
+    })
+      .then(() => {
+        // console.log("map created successfully");
+      })
+      .catch((error) => {
+        console.log("error writing the new map into the db");
+        console.log(error.message);
+      });
 
-    // if (mapData.image) {
-    //   // console.log(mapData.image);
-    //   const mapImageRef = storageRef(
-    //     storage,
-    //     "users/" + userID + "/maps/" + mapData.mapID
-    //   );
-    //   uploadBytes(mapImageRef, mapData.image)
-    //     .then((snapshot) => {
-    //       // console.log("uploaded map file");
-    //       // console.log(snapshot.metadata);
-    //       getDownloadURL(mapImageRef).then((url) => {
-    //         // console.log("url:", url);
-    //         mapData.src = url;
-    //         update(ref(db), {
-    //           ["maps/maps/" + mapData.mapID]: mapData,
-    //         })
-    //           .then(() => {
-    //             // console.log("map url updated successfully");
-    //           })
-    //           .catch((error) => {
-    //             console.log("error updating the map's src url in the db");
-    //             console.log(error.message);
-    //           });
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       console.log("error uploading map image");
-    //       console.log(error.message);
-    //     });
-    // }
+    if (mapData.image) {
+      // console.log(mapData.image);
+      const mapImageRef = storageRef(
+        storage,
+        "users/" + userID + "/maps/" + mapData.mapID
+      );
+      uploadBytes(mapImageRef, mapData.image)
+        .then((snapshot) => {
+          // console.log("uploaded map file");
+          // console.log(snapshot.metadata);
+          getDownloadURL(mapImageRef).then((url) => {
+            // console.log("url:", url);
+            mapData.src = url;
+            update(ref(db), {
+              ["maps/maps/" + mapData.mapID]: mapData,
+            })
+              .then(() => {
+                // console.log("map url updated successfully");
+              })
+              .catch((error) => {
+                console.log("error updating the map's src url in the db");
+                console.log(error.message);
+              });
+          });
+        })
+        .catch((error) => {
+          console.log("error uploading map image");
+          console.log(error.message);
+        });
+    }
 
     handleStopCreatingMap();
   }
@@ -217,18 +208,21 @@ export default function Maps() {
             <div className="flex flex-col gap-1">
               <h3>Dimensions</h3>
               <p>
-                w x h (in pixels)<br></br>
                 {selectedMap.size.width} x {selectedMap.size.height} (map tiles)
               </p>
             </div>
             <div className="flex flex-col grow gap-2">
               <h3>Notes</h3>
-              <div className="h-25 bg-white rounded-xl"></div>
+              <div className="h-25 bg-white rounded-xl p-3">
+                {selectedMap.notes}
+              </div>
             </div>
           </div>
           <div className="flex flex-row gap-20">
             <h3>Appears In</h3>
-            <p>Strahd, ...</p>
+            <div className="w-full bg-gray-400 p-3 rounded-sm text-gray-50">
+              Under construction
+            </div>
           </div>
         </div>
       </>

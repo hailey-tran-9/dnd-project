@@ -71,8 +71,15 @@ export default function UserProfile() {
       return;
     });
 
+    updateProfile(auth.currentUser, {
+      displayName: data["user-profile-username"],
+    }).catch((error) => {
+      console.log("error updating the user's display name");
+      console.log(error.message);
+    });
+
     const pfp = data["user-pfp"];
-    if (pfp) {
+    if (pfp.size > 0) {
       const pfpRef = storageRef(storage, `users/${userID}/pfp`);
       uploadBytes(pfpRef, pfp)
         .then((snapshot) => {

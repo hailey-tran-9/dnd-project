@@ -146,7 +146,7 @@ function InvitePage() {
             update(ref(db), {
               [`${invitesPath}/invites/${payload.jti}`]: null,
               [`${invitesPath}/numberOfGameInvites`]: increment(-1),
-              [`${gamePath}/playersInGame/${userID}`]: "",
+              [`${gamePath}/playersInGame/${userID}`]: user.displayName,
             }).catch((error) => {
               console.log("error deleting the game invitation from the db");
               console.log(error.message);
