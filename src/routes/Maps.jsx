@@ -101,63 +101,78 @@ export default function Maps() {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData);
+    // console.log("submitted map data");
+    // console.log(data);
 
-    const mapData = {
-      image: data["map-image"],
-      inGames: [],
-      mapID: uuidv4(),
-      name: data["map-name"],
-      size: { width: data["map-width"], height: data["map-height"] },
-      src: "",
-      userID,
+    const img = new Image();
+    const objURL = URL.createObjectURL(data["map-image"]);
+    img.src = objURL;
+    img.onload = () => {
+      const width = img.width;
+      const height = img.height;
+      console.log("width: " + width);
+      console.log("height: " + height);
+
+      const mapData = {
+        image: data["map-image"],
+        inGames: [],
+        mapID: uuidv4(),
+        name: data["map-name"],
+        size: { width, height },
+        // size: { width: data["map-width"], height: data["map-height"] },
+        src: "",
+        userID,
+      };
+      console.log(mapData);
+
+      URL.revokeObjectURL(objURL);
     };
-    // console.log(mapData);
 
-    const userPath = "users/users/" + userID + "/private";
-    update(ref(db), {
-      ["maps/maps/" + mapData.mapID]: mapData,
-      "maps/numberOfMaps": increment(1),
-      [userPath + "/maps/mapIDs/" + mapData.mapID]: mapData.name,
-      [userPath + "/maps/numberOfMaps"]: increment(1),
-    })
-      .then(() => {
-        // console.log("map created successfully");
-      })
-      .catch((error) => {
-        console.log("error writing the new map into the db");
-        console.log(error.message);
-      });
+    // const userPath = "users/users/" + userID + "/private";
+    // update(ref(db), {
+    //   ["maps/maps/" + mapData.mapID]: mapData,
+    //   "maps/numberOfMaps": increment(1),
+    //   [userPath + "/maps/mapIDs/" + mapData.mapID]: mapData.name,
+    //   [userPath + "/maps/numberOfMaps"]: increment(1),
+    // })
+    //   .then(() => {
+    //     // console.log("map created successfully");
+    //   })
+    //   .catch((error) => {
+    //     console.log("error writing the new map into the db");
+    //     console.log(error.message);
+    //   });
 
-    if (mapData.image) {
-      // console.log(mapData.image);
-      const mapImageRef = storageRef(
-        storage,
-        "users/" + userID + "/maps/" + mapData.mapID
-      );
-      uploadBytes(mapImageRef, mapData.image)
-        .then((snapshot) => {
-          // console.log("uploaded map file");
-          // console.log(snapshot.metadata);
-          getDownloadURL(mapImageRef).then((url) => {
-            // console.log("url:", url);
-            mapData.src = url;
-            update(ref(db), {
-              ["maps/maps/" + mapData.mapID]: mapData,
-            })
-              .then(() => {
-                // console.log("map url updated successfully");
-              })
-              .catch((error) => {
-                console.log("error updating the map's src url in the db");
-                console.log(error.message);
-              });
-          });
-        })
-        .catch((error) => {
-          console.log("error uploading map image");
-          console.log(error.message);
-        });
-    }
+    // if (mapData.image) {
+    //   // console.log(mapData.image);
+    //   const mapImageRef = storageRef(
+    //     storage,
+    //     "users/" + userID + "/maps/" + mapData.mapID
+    //   );
+    //   uploadBytes(mapImageRef, mapData.image)
+    //     .then((snapshot) => {
+    //       // console.log("uploaded map file");
+    //       // console.log(snapshot.metadata);
+    //       getDownloadURL(mapImageRef).then((url) => {
+    //         // console.log("url:", url);
+    //         mapData.src = url;
+    //         update(ref(db), {
+    //           ["maps/maps/" + mapData.mapID]: mapData,
+    //         })
+    //           .then(() => {
+    //             // console.log("map url updated successfully");
+    //           })
+    //           .catch((error) => {
+    //             console.log("error updating the map's src url in the db");
+    //             console.log(error.message);
+    //           });
+    //       });
+    //     })
+    //     .catch((error) => {
+    //       console.log("error uploading map image");
+    //       console.log(error.message);
+    //     });
+    // }
 
     handleStopCreatingMap();
   }
