@@ -23,6 +23,11 @@ const userSlice = createSlice({
     },
     signOutUser(state) {
       state.loginStatus = false;
+      state.isSigningIn = false;
+      state.isCreatingAccount = false;
+      state.username = "";
+      state.statusMessage = "";
+      state.pfpURL = null;
     },
     startCreatingAccount(state) {
       state.isCreatingAccount = true;

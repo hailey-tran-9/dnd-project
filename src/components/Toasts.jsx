@@ -1,4 +1,6 @@
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useLocation } from "react-router";
 
 import { v4 as uuidv4 } from "uuid";
 import { toastsActions } from "../store/toasts-slice";
@@ -35,13 +37,16 @@ export function toastThunk(status, message) {
 }
 
 export default function Toasts() {
+  const dispatch = useDispatch();
+  const location = useLocation();
   const toasts = useSelector((state) => state.toasts.toasts);
 
+  useEffect(() => {
+    dispatch(toastsActions.clearToasts());
+  }, [dispatch, location]);
+
   return (
-    <section
-      id="gui-toast-group"
-      className="fixed top-30 right-10 w-[30vw]"
-    >
+    <section id="gui-toast-group" className="fixed top-30 right-10 w-[30vw] flex flex-col gap-3">
       {toasts.map((toast) => (
         <Toast key={toast.id} toastData={toast} />
       ))}

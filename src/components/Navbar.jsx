@@ -25,6 +25,34 @@ export default function Navbar() {
   const [delayed, setDelayed] = useState(true);
 
   useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        if (!loginStatus) {
+          // console.log("set user's redux info");
+          dispatch(userActions.signInUser());
+          onValue(
+            ref(db, "users/users/" + user.uid + "/public"),
+            (snapshot) => {
+              const userPublicData = snapshot.val();
+              // console.log("userPublicData:", userPublicData);
+              if (userPublicData) {
+                dispatch(userActions.updateUsername(userPublicData.username));
+                dispatch(
+                  userActions.updateStatusMessage(userPublicData.statusMessage)
+                );
+                dispatch(userActions.updatePfpURL(user.photoURL));
+              }
+            }
+          );
+        }
+      } else {
+        if (loginStatus) {
+          // console.log("sign out user that was signed in");
+          dispatch(userActions.signOutUser());
+        }
+      }
+    });
+
     // TODO: Remove this dummy delay once the fallback is implemented
     // Delay just to prevent the sign in/user button from blinking
     const timeout = setTimeout(() => setDelayed(false), 1000);
@@ -36,29 +64,6 @@ export default function Navbar() {
       handleUserActionBarToggle();
     }
   }, [location]);
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      if (!loginStatus) {
-        // console.log("user is signed in");
-        dispatch(userActions.signInUser());
-        onValue(ref(db, "users/users/" + user.uid + "/public"), (snapshot) => {
-          const userPublicData = snapshot.val();
-          // console.log("userPublicData:", userPublicData);
-          dispatch(userActions.updateUsername(userPublicData.username));
-          dispatch(
-            userActions.updateStatusMessage(userPublicData.statusMessage)
-          );
-          dispatch(userActions.updatePfpURL(user.photoURL));
-        });
-      }
-    } else {
-      if (loginStatus) {
-        // console.log("user is NOT signed in");
-        dispatch(userActions.signOutUser());
-      }
-    }
-  });
 
   function handleUserActionBarToggle() {
     const nextState = !userActionBarOpen;
@@ -74,6 +79,7 @@ export default function Navbar() {
     signOut(auth)
       .then(() => {
         modalRef.current.close();
+        dispatch(userActions.signOutUser());
         console.log("user has been signed out");
       })
       .catch((error) => {
@@ -108,8 +114,10 @@ export default function Navbar() {
         className="max-w-full max-h-full w-full h-full bg-black/40"
       >
         <div className="fixed w-[60vw] lg:w-[30vw] xxl:w-[40vw] h-full inset-y-0 right-0 flex flex-col bg-white text-black text-[1.5rem] px-10 py-7">
-          <div className="flex flex-row flex-wrap justify-between text-center mb-7">
-            <h3 className="text-[2rem]">{username}</h3>
+          <div className="flex flex-row justify-between text-center gap-5 mb-7">
+            <h3 className="text-[2rem] text-nowrap overflow-auto">
+              {username}
+            </h3>
             <button
               onClick={handleUserActionBarToggle}
               className="text-4xl text-gray-300 hover:text-gray-700"

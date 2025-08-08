@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { useSearchParams, useNavigate, NavLink } from "react-router";
+import {
+  useSearchParams,
+  useNavigate,
+  NavLink,
+  useLocation,
+} from "react-router";
 import {
   getDatabase,
   ref,
@@ -25,6 +30,8 @@ function InvitePage() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [content, setContent] = useState(<></>);
   const [inviteStatus, setInviteStatus] = useState("");
@@ -90,12 +97,14 @@ function InvitePage() {
         }
       });
     }
+  }, []);
 
+  useEffect(() => {
     return () => {
       console.log("CLEAR INTERVAL ON UNMOUNT");
       clearInterval(intervalRef.current);
     };
-  }, []);
+  }, [dispatch, location]);
 
   function importPublicKey(jwk) {
     return cryptoAPI.importKey(
@@ -146,7 +155,7 @@ function InvitePage() {
             update(ref(db), {
               [`${invitesPath}/invites/${payload.jti}`]: null,
               [`${invitesPath}/numberOfGameInvites`]: increment(-1),
-              [`${gamePath}/playersInGame/${userID}`]: user.displayName,
+              [`${gamePath}/playersInGame`]: { [userID]: user.displayName },
             }).catch((error) => {
               console.log("error deleting the game invitation from the db");
               console.log(error.message);

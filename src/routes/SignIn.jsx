@@ -1,7 +1,12 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Form, NavLink, useNavigate } from "react-router";
-import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile,
+} from "firebase/auth";
 import {
   getDatabase,
   ref,
@@ -14,6 +19,7 @@ import {
 import { userActions } from "../store/user-slice";
 import { basicEmailCheck, validPassword } from "../util/util";
 import { v4 as uuidv4 } from "uuid";
+import { toastThunk } from "../components/Toasts";
 
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -61,12 +67,19 @@ export default function SignInPage() {
     const email = data["entered-email"];
     if (!basicEmailCheck(email)) {
       console.log("make sure you've entered a valid email");
+      dispatch(toastThunk("Error", "Please enter a valid email."));
       return;
     }
 
     const password = data["entered-password"];
     if (!validPassword(password)) {
       console.log("not a valid password");
+      dispatch(
+        toastThunk(
+          "Error",
+          "Please enter a valid password. (7-12 characters/at least 1 lowercase and uppercase letter, number, and non-alphanumeric character)"
+        )
+      );
       return;
     }
 
@@ -78,6 +91,7 @@ export default function SignInPage() {
 
         if (!user.emailVerified) {
           console.log("user email hasn't been verified");
+          dispatch(toastThunk("Error", "User email hasn't been verified yet."));
           signOut(auth)
             .then(() => {
               // Sign-out successful.
@@ -99,6 +113,16 @@ export default function SignInPage() {
           const userRef = ref(db, "users/users/" + userID);
           get(userRef).then((snapshot) => {
             if (!snapshot.exists()) {
+              const defaultUsername = uuidv4();
+              updateProfile(user, { displayName: defaultUsername }).catch(
+                (error) => {
+                  console.log(
+                    "error setting a random display name for the new user"
+                  );
+                  console.log(error.message);
+                }
+              );
+
               createKeyPair().then((keyPair) => {
                 // console.log("keyPair:", keyPair);
                 exportCryptoKey(keyPair.publicKey).then((exportedPub) => {
@@ -110,7 +134,7 @@ export default function SignInPage() {
                       set(userRef, {
                         public: {
                           key: exportedPub,
-                          username: "",
+                          username: defaultUsername,
                         },
                         private: {
                           characters: {
@@ -155,6 +179,11 @@ export default function SignInPage() {
 
         console.log("error trying to sign in");
         console.log(errorCode, errorMessage);
+
+        dispatch(
+          toastThunk("Error", "Login information is incorrect. Try again.")
+        );
+        return;
       });
   }
 

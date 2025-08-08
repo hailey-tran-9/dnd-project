@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router";
-import { getAuth } from "firebase/auth";
+import { NavLink, useLocation, useNavigate } from "react-router";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import {
   ref,
   getDatabase,
@@ -11,6 +11,9 @@ import {
   update,
   increment,
 } from "firebase/database";
+import { useDispatch } from "react-redux";
+
+import { userActions } from "../store/user-slice.js";
 
 import Button from "../components/Button.jsx";
 
@@ -18,6 +21,9 @@ export default function Settings() {
   const auth = getAuth();
   const db = getDatabase();
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const modalRef = useRef(null);
   const [dacOpen, setDACOpen] = useState(false);
 
@@ -40,7 +46,10 @@ export default function Settings() {
   function handleSignOut() {
     signOut(auth)
       .then(() => {
-        console.log("user has been signed out");
+        modalRef.current.close();
+        dispatch(userActions.signOutUser());
+        console.log("user has been signed out FROM THE SETTINGS PAGE");
+        navigate("/");
       })
       .catch((error) => {
         console.log("error trying to sign the user out");
@@ -52,6 +61,31 @@ export default function Settings() {
     const user = auth.currentUser;
     if (user) {
       const userID = user.uid;
+
+      const charactersQuery = query(
+        ref(db, "characters/characters"),
+        orderByChild("userID"),
+        equalTo(userID)
+      );
+      get(charactersQuery).then((snapshot) => {
+        const data = snapshot.val();
+        console.log(data);
+        if (data) {
+          for (const [characterID, characterData] of Object.entries(data)) {
+            // console.log(characterID);
+
+            update(ref(db), {
+              ["characters/characters/" + characterID]: null,
+              "characters/numberOfCharacters": increment(-1),
+            }).catch((error) => {
+              console.log("error deleting the user's characters from the db");
+              console.log(error.message);
+              return;
+            });
+          }
+        }
+      });
+
       const gamesQuery = query(
         ref(db, "games/games"),
         orderByChild("userID"),
@@ -67,9 +101,56 @@ export default function Settings() {
             update(ref(db), {
               ["games/games/" + gameID]: null,
               "games/numberOfGames": increment(-1),
-            }).catch((erorr) => {
+            }).catch((error) => {
               console.log("error deleting the user's games from the db");
-              console.log(erorr.message);
+              console.log(error.message);
+              return;
+            });
+          }
+        }
+      });
+
+      const joinedGamesRef = ref(
+        db,
+        `users/users/${userID}/public/joinedGames`
+      );
+      get(joinedGamesRef).then((snapshot) => {
+        const joinedGamesData = snapshot.val();
+        console.log("joined games data");
+        console.log(joinedGamesData);
+
+        if (joinedGamesData) {
+          Object.values(joinedGamesData).map((gameID) => {
+            update(ref(db), {
+              [`games/games/${gameID}/playersInGame/${userID}`]: null,
+            }).catch((error) => {
+              console.log(
+                "error deleting a user and removing them from the games they joined"
+              );
+              console.log(error.message);
+            });
+          });
+        }
+      });
+
+      const mapsQuery = query(
+        ref(db, "maps/maps"),
+        orderByChild("userID"),
+        equalTo(userID)
+      );
+      get(mapsQuery).then((snapshot) => {
+        const data = snapshot.val();
+        console.log(data);
+        if (data) {
+          for (const [mapID, mapData] of Object.entries(data)) {
+            // console.log(mapID);
+
+            update(ref(db), {
+              ["maps/maps/" + mapID]: null,
+              "maps/numberOfMaps": increment(-1),
+            }).catch((error) => {
+              console.log("error deleting the user's maps from the db");
+              console.log(error.message);
               return;
             });
           }
@@ -79,9 +160,9 @@ export default function Settings() {
       update(ref(db), {
         ["users/users/" + userID]: null,
         "users/numberOfUsers": increment(-1),
-      }).catch((erorr) => {
+      }).catch((error) => {
         console.log("error deleting the user's info from the db");
-        console.log(erorr.message);
+        console.log(error.message);
         return;
       });
 
@@ -103,9 +184,9 @@ export default function Settings() {
               Are you sure you want to delete this account?
             </p>
             <div className="flex flex-row w-full justify-around">
-              <NavLink to="/" onClick={handleDeleteUser} className="w-[30%]">
-                <Button className="w-full">Yes</Button>
-              </NavLink>
+              <Button onClick={handleDeleteUser} className="w-[30%]">
+                Yes
+              </Button>
               <Button onClick={handleDACToggle} className="w-[30%]">
                 No
               </Button>

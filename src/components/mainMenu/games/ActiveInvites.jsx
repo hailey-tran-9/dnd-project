@@ -159,66 +159,42 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
     // const exp = Math.floor(Date.now() + 600000); // Expires in 10 min
 
     const gameInvitePath = `gameInvites/${gameID}`;
-    get(ref(db, gameInvitePath + "/numberOfGameInvites")).then((snapshot) => {
-      const numberOfGameInvites = snapshot.val();
-      // console.log("numberOfGameInvites:", numberOfGameInvites);
-      if (numberOfGameInvites >= 4) {
-        const gameInviteQuery = query(
-          ref(db, gameInvitePath + "/invites"),
-          orderByChild("exp"),
-          startAfter(Date.now())
-        );
-        get(gameInviteQuery).then((gameInviteSnapshot) => {
-          const gameInviteData = gameInviteSnapshot.val();
-          console.log("games that haven't expired yet:", gameInviteData);
-          let updatedNumOfGameInvites = 0;
-          if (!gameInviteData) {
-            const createdOn = Date.now();
-            update(ref(db), {
-              [gameInvitePath + "/invites"]: {
-                [jti]: { createdOn, exp },
-              },
-              [gameInvitePath + "/numberOfGameInvites"]: 1,
-            }).then(() => {
-              createURL(jti, exp, gameID);
-            });
-          } else {
-            updatedNumOfGameInvites = Object.keys(gameInviteData).length;
-            if (updatedNumOfGameInvites >= 4) {
-              dispatch(
-                toastThunk(
-                  "Error",
-                  "Invite max has been reached. Try again later."
-                )
-              );
-            } else {
-              const createdOn = Date.now();
-              update(ref(db), {
-                [gameInvitePath + "/invites"]: {
-                  ...gameInviteData,
-                  [jti]: { createdOn, exp },
-                },
-                [gameInvitePath + "/numberOfGameInvites"]:
-                  updatedNumOfGameInvites + 1,
-              }).then(() => {
-                createURL(jti, exp, gameID);
-              });
-            }
-          }
-        });
-      } else {
+    const gameInviteQuery = query(
+      ref(db, gameInvitePath + "/invites"),
+      orderByChild("exp"),
+      startAfter(Date.now())
+    );
+    get(gameInviteQuery).then((gameInviteSnapshot) => {
+      const gameInviteData = gameInviteSnapshot.val();
+      console.log("games that haven't expired yet:", gameInviteData);
+      if (!gameInviteData) {
         const createdOn = Date.now();
         update(ref(db), {
-          [`${gameInvitePath}/invites/${jti}`]: { createdOn, exp },
-          [`${gameInvitePath}/numberOfGameInvites`]: increment(1),
-        })
-          .then(() => {
+          [gameInvitePath + "/invites"]: {
+            [jti]: { createdOn, exp },
+          },
+          [gameInvitePath + "/numberOfGameInvites"]: 1,
+        }).then(() => {
+          createURL(jti, exp, gameID);
+        });
+      } else {
+        let updatedNumOfGameInvites = Object.keys(gameInviteData).length;
+        if (updatedNumOfGameInvites >= 4) {
+          dispatch(
+            toastThunk("Error", "Invite max has been reached. Try again later.")
+          );
+        } else {
+          const createdOn = Date.now();
+          update(ref(db), {
+            [gameInvitePath + "/invites"]: {
+              ...gameInviteData,
+              [jti]: { createdOn, exp },
+            },
+            [gameInvitePath + "/numberOfGameInvites"]: increment(1),
+          }).then(() => {
             createURL(jti, exp, gameID);
-          })
-          .catch((error) => {
-            console.log("error updating game invite path");
-            console.log(error.message);
           });
+        }
       }
     });
   }

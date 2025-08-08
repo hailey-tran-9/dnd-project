@@ -101,6 +101,8 @@ export default function UserProfile() {
           console.log(error.message);
         });
     }
+
+    handleStopEditing();
   }
 
   let content = (
@@ -117,9 +119,9 @@ export default function UserProfile() {
           </div>
         )}
         <div className="grow flex flex-col gap-2">
-          <h2>{currUser.username}</h2>
+          <h2>{currUser.username || "No username has been set"}</h2>
           <div className="bg-white px-3 py-1 rounded-md">
-            <p>{currUser.statusMessage}</p>
+            <p>{currUser.statusMessage || "No status message has been set"}</p>
           </div>
         </div>
       </div>
