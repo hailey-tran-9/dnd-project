@@ -6,7 +6,7 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 // https://vite.dev/config/
 export default defineConfig({
   build: {
-    base: "https://hailey-tran-9.github.io/dnd-project/",
+    base: "/dnd-project/",
   },
   plugins: [
     reactRouter(),
