@@ -30,7 +30,8 @@ export default function GameInfo({ selectedGame }) {
   }
 
   function copyInviteLink() {
-    let invLink = "http://localhost:5173/games/invite/" + selectedGame.gameID;
+    let invLink =
+      import.meta.env.BASE_URL + "games/invite/" + selectedGame.gameID;
     console.log(`The invite link ${invLink} was copied to the clipboard!`);
     navigator.clipboard.writeText(invLink);
   }

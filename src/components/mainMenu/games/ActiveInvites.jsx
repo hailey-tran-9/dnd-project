@@ -124,7 +124,8 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
               // console.log("jwtToken:", jwtToken);
 
               const inviteLink =
-                "http://localhost:5173/games/invite/" +
+                import.meta.env.BASE_URL +
+                "games/invite/" +
                 gameID +
                 "?token=" +
                 jwtToken;
