@@ -213,7 +213,7 @@ export default function Maps() {
             </div>
             <div className="flex flex-col grow gap-2">
               <h3>Notes</h3>
-              <div className="h-25 bg-white rounded-xl p-3">
+              <div className="bg-white rounded-xl p-3 whitespace-pre-wrap">
                 {selectedMap.notes}
               </div>
             </div>

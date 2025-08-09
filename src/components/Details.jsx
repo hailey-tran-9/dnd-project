@@ -10,7 +10,7 @@ export default function Details({ summary, description }) {
       <summary className="bg-[#8E1616] text-white rounded-md px-5 py-3">
         {summary}
       </summary>
-      <p className="p-7 text-[1.3rem]">{description}</p>
+      <p className="p-7 text-[1.3rem] whitespace-pre-wrap">{description}</p>
     </details>
   );
 }

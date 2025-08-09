@@ -26,12 +26,9 @@ export default function Help() {
                 description={[
                   `In Edit Mode, the user can create `,
                   <b key="editing-a-game-1">up to four</b>,
-                  ` game invitation links at a time. Sending these links to another user will invite them to the game.`,
-                  ` Currently, game invites `,
-                  <b key="editing-a-game-2">cannot be revoked</b>, ".",
-                  <br key="editing-a-game-3"></br>,
-                  <br key="editing-a-game-4"></br>,
-                  `The user can also delete the game.`,
+                  ` game invitation links at a time. Sending these links to another user will invite them to the game. Currently, game invites `,
+                  <b key="editing-a-game-2">cannot be revoked</b>,
+                  `.\n\nThe user can also delete the game.`,
                 ]}
               />
             </li>

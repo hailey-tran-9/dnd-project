@@ -55,7 +55,7 @@ export default function Navbar() {
 
     // TODO: Remove this dummy delay once the fallback is implemented
     // Delay just to prevent the sign in/user button from blinking
-    const timeout = setTimeout(() => setDelayed(false), 1000);
+    const timeout = setTimeout(() => setDelayed(false), 500);
     return () => clearTimeout(timeout);
   }, []);
 
