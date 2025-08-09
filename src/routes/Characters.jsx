@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getAuth } from "firebase/auth";
-import {
-  getDatabase,
-  ref,
-  update,
-  increment,
-} from "firebase/database";
+import { getDatabase, ref, update, increment } from "firebase/database";
 
 import { characterCreationActions } from "../store/character-creation-slice";
 import { v4 as uuidv4 } from "uuid";
@@ -276,7 +271,7 @@ export default function Characters() {
         />
         <div className="flex flex-col">
           <h2>Notes</h2>
-          <div className="h-[15vh] bg-white rounded-xl mt-3"></div>
+          <div className="bg-white rounded-xl mt-3 p-3 whitespace-pre-wrap"></div>
         </div>
       </>
     );
