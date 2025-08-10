@@ -3,10 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://hailey-tran-9.github.io/dnd-project",
+  "homepage": "https://hailey-tran-9.github.io/dnd-project/",
   "scripts": {
     "dev": "react-router dev",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d build/client",
     "build": "react-router build",
     "lint": "eslint .",
     "predeploy": "npm run build",
