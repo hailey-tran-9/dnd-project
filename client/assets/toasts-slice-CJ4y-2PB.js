@@ -1,0 +1,1 @@
+import{a as o}from"./redux-toolkit.modern-gsldsko2.js";const a=o({name:"toasts",initialState:{toasts:[]},reducers:{addToast(t,s){t.toasts.push(s.payload)},removeToast(t,s){t.toasts.splice(s.payload,1)},incToastCounter(t,s){t.toasts[s.payload].counter+=1},clearToasts(t){t.toasts=[]}}}),c=a.actions,r=a.reducer;export{c as a,r as t};
