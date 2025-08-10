@@ -55,7 +55,7 @@ export default function Navbar() {
 
     // TODO: Remove this dummy delay once the fallback is implemented
     // Delay just to prevent the sign in/user button from blinking
-    const timeout = setTimeout(() => setDelayed(false), 500);
+    const timeout = setTimeout(() => setDelayed(false), 700);
     return () => clearTimeout(timeout);
   }, []);
 
@@ -113,7 +113,7 @@ export default function Navbar() {
         ref={modalRef}
         className="max-w-full max-h-full w-full h-full bg-black/40"
       >
-        <div className="fixed w-[60vw] lg:w-[30vw] xxl:w-[40vw] h-full inset-y-0 right-0 flex flex-col bg-white text-black text-[1.5rem] px-10 py-7">
+        <div className="fixed w-[60vw] lg:w-[30vw] 2xl:w-[40vw] h-full inset-y-0 right-0 flex flex-col bg-white text-black text-[1.5rem] px-10 py-7">
           <div className="flex flex-row justify-between text-center gap-5 mb-7">
             <h3 className="text-[2rem] text-nowrap overflow-auto">
               {username}
@@ -149,7 +149,7 @@ export default function Navbar() {
       </dialog>
       <div
         id={styles.navbar}
-        className="flex flex-row justify-between px-10 py-5 md:px-7 sm:py-2 md:py-3 items-center flex-wrap border-b border-b-white/20"
+        className="flex flex-row justify-between px-10 py-5 2xl:px-15 sm:py-2 md:py-3 items-center flex-wrap border-b border-b-white/20"
       >
         <div className="flex flex-row gap-7 xl:gap-12 items-center">
           {loginStatus ? (

@@ -17,7 +17,7 @@ export default function Help() {
             <li>
               <Details
                 summary={"Viewing Game Details"}
-                description={`Any games you've created or joined will appear under the selection bar. Clicking on them will reveal the players in the game and the game's session details. It'll also let game owners edit the game and let players enter the game.`}
+                description={`Any games you've created or joined will appear under the selection bar. Clicking on them will reveal the players in the game and the game's session details. It'll also let game owners edit the game.`}
               />
             </li>
             <li>

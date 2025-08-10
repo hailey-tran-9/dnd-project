@@ -23,7 +23,7 @@ const firebaseConfig = {
   projectId: "dnd-project-c6151",
   storageBucket: "dnd-project-c6151.firebasestorage.app",
   messagingSenderId: "819142704135",
-  appId: "1:819142704135:web:b9c21f15f988db5f7abea2"
+  appId: "1:819142704135:web:b9c21f15f988db5f7abea2",
 };
 export const firebaseApp = initializeApp(firebaseConfig);
 
