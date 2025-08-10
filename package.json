@@ -3,10 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://hailey-tran-9.github.io/dnd-project/",
   "scripts": {
     "dev": "react-router dev",
+    "deploy": "gh-pages -d build",
     "build": "react-router build",
     "lint": "eslint .",
+    "predeploy": "npm run build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -15,6 +18,7 @@
     "@reduxjs/toolkit": "^2.6.1",
     "@tailwindcss/vite": "^4.0.9",
     "firebase": "^11.9.1",
+    "gh-pages": "^6.3.0",
     "graphql": "^16.10.0",
     "isbot": "^5",
     "jsonwebtoken": "^9.0.2",
