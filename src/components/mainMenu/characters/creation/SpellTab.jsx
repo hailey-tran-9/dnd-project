@@ -19,11 +19,11 @@ export default function SpellTab({ spellData, limit, ...props }) {
   let infoClassname;
   if (showInfo) {
     tabClassname =
-      "w-full flex flex-row items-center justify-between bg-white text-black px-5 py-3 rounded-t-md";
+      "w-full flex flex-row items-center justify-between bg-white text-black px-5 py-3 rounded-t-md cursor-pointer";
     infoClassname = "bg-gray-50 text-[1rem] px-5 py-5 rounded-b-md";
   } else {
     tabClassname =
-      "w-full flex flex-row items-center justify-between bg-white text-black px-5 py-3 rounded-md";
+      "w-full flex flex-row items-center justify-between bg-white text-black px-5 py-3 rounded-md cursor-pointer";
     infoClassname = "bg-gray-50 text-[1rem] px-5 py-5 rounded-b-md hidden";
   }
 
