@@ -46,11 +46,47 @@ If your character is able to cast spells, this Spells section will appear. From 
 
 ### Characters
 
-After you create a character, their name will appear under the red selection bar. You can click on it to view your character's information.
+After you create a character, their name will appear under the selection bar. You can click on it to view your character's information.
 
 ![Characters](/public/images/character.png)
 Information like your character's stats, ability scores, features, spells, inventory, and notes will be available here.
 
 ## Games Page
 
-This is the Games Page, where you can create and keep track of your games! Right now users can only enter a game name during game creation, but in the future they'll also be able to add any maps they want to use.
+This is the Games Page, where you can create and keep track of your games!
+
+### Game Creation
+
+Right now users can only enter a game name during game creation, but in the future they'll also be able to add any maps they want to use.
+
+### Games
+
+Once you create a game, they'll be viewable in the selection bar. Clicking on it will show you a list of the players in the game. In the future there'll also be a list of game sessions that show users some metadata, like what date the session was played on and any notes the DM wrote.
+
+#### Edit Mode - Creating Game Invitations
+
+Game owners can invite other users to their games by clicking on the **Edit** Button, then the **Invites** Button. This will open a panel that shows the game's active invites. Clicking on the **+** will create a game invite and automatically copy the invite link to your clipboard.
+
+*Each game can have **up to four** active game invites.*
+
+![Active Game Invites Panel](/public/images/activeInvites.jpg)
+Lost the invite link? Navigate back to the **Active Invites Panel** and click on an invite under the **Link** column to copy the invite link to your clipboard again!
+
+When users open that invite link, they'll be asked if they'd like to join the game. It'll then redirect them back to the Games Page, where the game will appear under their **Joined Games**.
+
+## Maps Page
+
+This is the Maps Page, where you can create and keep track of your maps!
+
+### Map Creation
+
+In map creation, users choose an image and name they'd like to use for the map. They're also able to use a slider that'll change the cell size of the grid that will be overlaid on the map, to use in-game.
+
+![Map Creation](/public/images/mapCreation.png)
+
+### Maps
+
+When a map is selected, it'll show a preview of the map's image and any notes the user wrote for it.
+
+![Apps Farm Map](/public/images/map.png)
+*Accurate dimension descriptions are a WIP. Right now, the width is correct but the height isn't.*

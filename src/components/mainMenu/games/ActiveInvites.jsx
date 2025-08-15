@@ -124,6 +124,7 @@ export default function ActiveInvites({ htmlRef, userID, gameID, gameName }) {
               // console.log("jwtToken:", jwtToken);
 
               const inviteLink =
+                "hailey-tran-9.github.io" +
                 import.meta.env.BASE_URL +
                 "games/invite/" +
                 gameID +
