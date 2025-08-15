@@ -82,7 +82,11 @@ export default function Characters() {
       });
   }
 
-  function createCharacterThunk(characterName, numItemsInInventory) {
+  function createCharacterThunk(
+    characterName,
+    numItemsInInventory,
+    characterNotes
+  ) {
     return (dispatch, getState) => {
       const state = getState();
       let reduxInventoryNum = 0;
@@ -145,7 +149,7 @@ export default function Characters() {
           lvl: Object.values(characterCreation.classAndLvl)[0],
           moveSpeed: characterCreation.moveSpeed,
           name: characterName,
-          notes: characterCreation.notes || null,
+          notes: characterNotes || null,
           proficiencies: characterCreation.classProficiencies.concat(
             characterCreation.raceProficiencies
           ),
@@ -185,11 +189,18 @@ export default function Characters() {
 
     let characterName;
     let numItemsInInventory = 0;
+    let characterNotes = "";
 
     for (const [key, value] of Object.entries(data)) {
       if (key === "name-character") {
         dispatch(characterCreationActions.setName(value));
         characterName = value;
+        continue;
+      }
+
+      if (key === "notes-character") {
+        dispatch(characterCreationActions.setNotes(value));
+        characterNotes = value;
         continue;
       }
 
@@ -216,7 +227,9 @@ export default function Characters() {
       }
     }
 
-    dispatch(createCharacterThunk(characterName, numItemsInInventory));
+    dispatch(
+      createCharacterThunk(characterName, numItemsInInventory, characterNotes)
+    );
     handleStopCreatingCharacter();
   }
 
@@ -269,10 +282,14 @@ export default function Characters() {
           characterID={selectedCharacter.characterID}
           inventory={selectedCharacter.inventory}
         />
-        <div className="flex flex-col">
-          <h2>Notes</h2>
-          <div className="bg-white rounded-xl mt-3 p-3 whitespace-pre-wrap"></div>
-        </div>
+        {selectedCharacter.notes && (
+          <div className="flex flex-col">
+            <h2>Notes</h2>
+            <div className="bg-white rounded-xl mt-3 p-3 whitespace-pre-wrap">
+              {selectedCharacter.notes}
+            </div>
+          </div>
+        )}
       </>
     );
   }
@@ -283,7 +300,7 @@ export default function Characters() {
         <Button onClick={handleStartCreatingCharacter}>
           + Create Character
         </Button>
-        <ul className="flex flex-col mt-10">
+        <ul className="w-full flex flex-col mt-10">
           {Object.entries(characters).map(([characterID, character]) => (
             <Button
               key={character.name}

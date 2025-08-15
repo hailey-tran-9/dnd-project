@@ -54,6 +54,7 @@ const characterCreationSlice = createSlice({
     languageChoices: [],
     moveSpeed: 0,
     name: "",
+    notes: "",
     numSpellsLearned: 0,
     points: 27,
     race: "",
@@ -353,6 +354,9 @@ const characterCreationSlice = createSlice({
         state.languages.push(action.payload);
       }
     },
+    setNotes(state, action) {
+      state.notes = action.payload;
+    }
   },
 });
 
