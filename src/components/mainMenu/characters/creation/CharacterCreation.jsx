@@ -66,7 +66,7 @@ export default function CharacterCreation({ cancelFn, submitFn }) {
               id="name-character"
               name="name-character"
               type="text"
-              className="text-[2rem] px-3"
+              className="text-[2rem]"
               required
             />
           </div>

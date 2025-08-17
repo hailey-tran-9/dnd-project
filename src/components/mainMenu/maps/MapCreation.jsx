@@ -110,7 +110,7 @@ export default function MapCreation({ cancelFn, submitFn }) {
             id="map-name"
             name="map-name"
             type="text"
-            className="text-[2rem] px-2"
+            className="text-[2rem]"
             required
           />
         </div>

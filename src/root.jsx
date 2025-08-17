@@ -32,7 +32,6 @@ export function Layout({ children }) {
     <html lang="en">
       <head>
         <meta charSet="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -57,10 +56,9 @@ export function Layout({ children }) {
   );
 }
 
-// TODO: Create a fallback page that doesn't load at the beginning
-// export function HydrateFallback() {
-//   return <Fallback />;
-// }
+export function HydrateFallback() {
+  return <Fallback />;
+}
 
 export default function Root() {
   return (

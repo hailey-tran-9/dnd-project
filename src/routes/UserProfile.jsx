@@ -155,7 +155,7 @@ export default function UserProfile() {
                 id="user-profile-username"
                 name="user-profile-username"
                 type="text"
-                className="text-[2rem] px-3 cursor-pointer hover:bg-neutral-50"
+                className="text-[2rem] cursor-pointer hover:bg-neutral-50"
                 minLength={1}
                 maxLength={12}
                 pattern="[ -~]+"
@@ -166,7 +166,7 @@ export default function UserProfile() {
                 id="user-profile-status-message"
                 name="user-profile-status-message"
                 type="text"
-                className="px-3 py-1 cursor-pointer hover:bg-neutral-50"
+                className="py-1 cursor-pointer hover:bg-neutral-50"
                 minLength={0}
                 maxLength={50}
                 pattern="[ -~]+"
