@@ -476,16 +476,16 @@ export const GET_CLASS = gql`
 export const GET_RACE = gql`
   query Race($index: String!) {
     race(index: $index) {
+      alignment
       index
       name
-      alignment
-      speed
       size
+      speed
       ability_bonuses {
-        bonus
         ability_score {
           index
         }
+        bonus
       }
       ability_bonus_options {
         choose
@@ -494,12 +494,13 @@ export const GET_RACE = gql`
           option_set_type
           options {
             option_type
-            bonus
             ability_score {
               index
             }
+            bonus
           }
         }
+        desc
       }
       languages {
         index
@@ -509,6 +510,7 @@ export const GET_RACE = gql`
         choose
         type
         from {
+          option_set_type
           options {
             option_type
             item {
@@ -516,53 +518,52 @@ export const GET_RACE = gql`
               index
               name
               type
-              typical_speakers
             }
           }
         }
-      }
-      starting_proficiencies {
-        index
-        name
-        type
-      }
-      starting_proficiency_options {
-        choose
-        type
-        from {
-          options {
-            option_type
-            item {
-              ... on Proficiency {
-                index
-                name
-                type
-              }
-              ... on ProficiencyChoice {
-                choose
-                type
-                from {
-                  options {
-                    option_type
-                    item {
-                      ... on Proficiency {
-                        index
-                        name
-                        type
-                      }
-                    }
-                  }
-                }
-                desc
-              }
-            }
-          }
-        }
-        desc
       }
       traits {
         index
         name
+        proficiencies {
+          index
+          name
+        }
+        proficiency_choices {
+          choose
+          type
+          from {
+            option_set_type
+            options {
+              option_type
+              item {
+                ... on Proficiency {
+                  index
+                  name
+                  type
+                }
+                ... on ProficiencyChoice {
+                  choose
+                  type
+                  from {
+                    option_set_type
+                    options {
+                      option_type
+                      item {
+                        ... on Proficiency {
+                          index
+                          name
+                        }
+                      }
+                    }
+                  }
+                  desc
+                }
+              }
+            }
+          }
+          desc
+        }
         desc
       }
     }

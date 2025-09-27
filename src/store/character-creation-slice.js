@@ -95,6 +95,7 @@ const characterCreationSlice = createSlice({
 
       // Update the abilityScores state to reflect this
       abilityScoreIndexes.map((ability) => {
+        // console.log("ability bonus:", ability, raceBonuses[ability]);
         let newBonus = raceBonuses[ability] || 0;
         state.abilityScores[ability].bonus = newBonus;
         state.abilityScores[ability].score = 8 + newBonus;
@@ -114,27 +115,30 @@ const characterCreationSlice = createSlice({
 
       // Find the selected race's inherent proficiencies
       let updatedProficiencies = [];
-      action.payload.raceData["starting_proficiencies"].map((proficiency) => {
-        if (proficiency.type === "SKILLS") {
-          let skill = proficiency.index.split("skill-")[1];
-          updatedProficiencies.push(skill);
-          state.skills[skill].proficient = true;
-          state.skills[skill].staticProficiency = true;
-        } else {
-          updatedProficiencies.push(proficiency.index);
-        }
-      });
-      state.raceProficiencies = updatedProficiencies;
-
       // Update race proficiency choices
       let updatedChoices = [];
-      if (action.payload.raceData["starting_proficiency_options"]) {
-        updatedChoices.push(
-          structuredClone(
-            action.payload.raceData["starting_proficiency_options"]
-          )
-        );
-      }
+
+      let traits = action.payload.raceData["traits"];
+      traits.forEach((trait) => {
+        if (trait["proficiencies"] != null) {
+          trait["proficiencies"].map((proficiency) => {
+            if (proficiency.type === "Skills") {
+              let skill = proficiency.index.split("skill-")[1];
+              updatedProficiencies.push(skill);
+              state.skills[skill].proficient = true;
+              state.skills[skill].staticProficiency = true;
+            } else {
+              updatedProficiencies.push(proficiency.index);
+            }
+          });
+        }
+
+        if (trait["proficiency_choices"] != null) {
+          updatedChoices.push(structuredClone(trait["proficiency_choices"]));
+        }
+      });
+
+      state.raceProficiencies = updatedProficiencies;
       state.raceProficiencyChoices = updatedChoices;
 
       // Update race's known language and language choices
@@ -356,7 +360,7 @@ const characterCreationSlice = createSlice({
     },
     setNotes(state, action) {
       state.notes = action.payload;
-    }
+    },
   },
 });
 

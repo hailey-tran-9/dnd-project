@@ -15,7 +15,9 @@ export default function EquipmentSelect({
 
   function handleOnChange(optionTypeAndIndex) {
     // console.log("optionTypeAndIndex", optionTypeAndIndex);
-    const [optionType, index] = optionTypeAndIndex.split(":");
+    const args = optionTypeAndIndex.split(":");
+    let optionType = args[1];
+    let index = args[4];
     // console.log("handleOnChange", optionType, index);
     setSelected([index, optionType]);
   }

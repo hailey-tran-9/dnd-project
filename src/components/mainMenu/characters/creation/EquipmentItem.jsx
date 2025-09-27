@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import {
   GET_EQUIPMENT_INFO,
@@ -50,8 +50,8 @@ export default function EquipmentItem({ index, optionType }) {
   } else if (error) {
     content = <p>Error</p>;
   } else {
-    console.log("data loaded for", index, optionType);
-    console.log("equipment data:", data.equipment);
+    // console.log("data loaded for", index, optionType);
+    // console.log("equipment data:", data.equipment);
     if (optionType === "counted_reference") {
       let itemInfo = data.equipment;
       // console.log("item data:", itemInfo);
