@@ -24,6 +24,8 @@ export default function Navbar() {
   const [userActionBarOpen, setUserActionBarOpen] = useState(false);
   const [delayed, setDelayed] = useState(true);
 
+  const [pageTitle, setPageTitle] = useState("");
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -60,8 +62,16 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
+    // console.log("location:", location.pathname);
     if (userActionBarOpen) {
       handleUserActionBarToggle();
+    }
+
+    const regex = /^\/games\/[a-z\d-]+$/;
+    if (regex.test(location.pathname)) {
+      setPageTitle("In Game");
+    } else {
+      setPageTitle("");
     }
   }, [location]);
 
@@ -106,6 +116,51 @@ export default function Navbar() {
     </NavLink>
   );
 
+  let content;
+  // TODO: implement the disconnect button functionality
+  // If the user is in-game, change the navbar content
+  if (pageTitle === "In Game") {
+    content = (
+      <>
+        <div className="flex flex-row gap-7 xl:gap-12 items-center">
+          <>
+            <NavLink to="/">
+              <h1 className="mr-10">dnd</h1>
+            </NavLink>
+            <h3>Name of the game</h3>
+          </>
+        </div>
+        <Button disabled>Disconnect</Button>
+      </>
+    );
+  } else {
+    content = (
+      <>
+        <div className="flex flex-row gap-7 xl:gap-12 items-center">
+          {loginStatus ? (
+            <>
+              <NavLink to="/">
+                <h1 className="mr-10">dnd</h1>
+              </NavLink>
+              <NavLink to="/characters" className="hover:text-neutral-200">
+                <h3>Characters</h3>
+              </NavLink>
+              <NavLink to="/games" className="hover:text-neutral-200">
+                <h3>Games</h3>
+              </NavLink>
+              <NavLink to="/maps" className="hover:text-neutral-200">
+                <h3>Maps</h3>
+              </NavLink>
+            </>
+          ) : (
+            <h1 className="mr-10">dnd</h1>
+          )}
+        </div>
+        {!delayed && (loginStatus ? userButton : signInBtn)}
+      </>
+    );
+  }
+
   return (
     <>
       <dialog
@@ -149,29 +204,9 @@ export default function Navbar() {
       </dialog>
       <div
         id={styles.navbar}
-        className="flex flex-row justify-between px-10 py-5 2xl:px-15 sm:py-2 md:py-3 items-center flex-wrap border-b border-b-white/20"
+        className="flex flex-row flex-wrap justify-between px-10 py-5 2xl:px-15 sm:py-2 md:py-3 gap-y-3 items-center border-b border-b-white/20"
       >
-        <div className="flex flex-row gap-7 xl:gap-12 items-center">
-          {loginStatus ? (
-            <>
-              <NavLink to="/">
-                <h1 className="mr-10">dnd</h1>
-              </NavLink>
-              <NavLink to="/characters" className="hover:text-neutral-200">
-                <h3>Characters</h3>
-              </NavLink>
-              <NavLink to="/games" className="hover:text-neutral-200">
-                <h3>Games</h3>
-              </NavLink>
-              <NavLink to="/maps" className="hover:text-neutral-200">
-                <h3>Maps</h3>
-              </NavLink>
-            </>
-          ) : (
-            <h1 className="mr-10">dnd</h1>
-          )}
-        </div>
-        {!delayed && (loginStatus ? userButton : signInBtn)}
+        {content}
       </div>
     </>
   );

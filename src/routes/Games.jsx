@@ -19,6 +19,7 @@ import Player from "../components/mainMenu/games/Player";
 import Session from "../components/mainMenu/games/Session";
 import GameCreation from "../components/mainMenu/games/GameCreation";
 import ActiveInvites from "../components/mainMenu/games/ActiveInvites";
+import { NavLink } from "react-router";
 
 // TODO: render players and sessions dynamically from the game data
 // TODO: UI for error handling
@@ -212,7 +213,12 @@ export default function Games() {
                 Delete Game
               </Button>
             )}
-            {!isEditingGame && <Button disabled>Enter Game</Button>}
+            {/* {!isEditingGame && <Button disabled>Enter Game</Button>} */}
+            {!isEditingGame && (
+              <NavLink to={"/games/" + selectedGame.gameID}>
+                <Button>Enter Game</Button>
+              </NavLink>
+            )}
           </div>
         </div>
         <div className="flex flex-row gap-x-[5vw] xl:gap-x-[7vw]">
