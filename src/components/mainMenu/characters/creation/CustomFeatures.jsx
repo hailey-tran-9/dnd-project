@@ -16,19 +16,20 @@ export default function CustomFeatures() {
 
   return (
     <section id="character-creation-features">
-      <div className="flex flex-row justify-between items-center">
-        <h2>Features</h2>
+      <div className="flex flex-row justify-between items-end">
+        <p className="mb-0 text-black text-[2.5rem] font-[500]">Features</p>
         <Button
           onClick={() => setFeatureAdderOpen((currState) => !currState)}
           padding="p-1"
-          className="size-12"
+          className="size-12 duration-1000"
+          rounded={featureAdderOpen ? "rounded-t-sm rounded-b-0" : "rounded-sm"}
         >
           {featureAdderOpen ? "-" : "+"}
         </Button>
       </div>
       <Form
         onSubmit={handleSubmit}
-        className={`${featureAdderOpen ? "h-fit" : "h-0"} transition-all transition-discrete duration-300 ease-in-out overflow-hidden bg-black ${featureAdderOpen ? "p-10" : "px-10 py-0"} rounded-sm mb-5`}
+        className={`${featureAdderOpen ? "h-fit" : "h-0"} transition-all transition-discrete duration-300 ease-in-out overflow-hidden bg-black ${featureAdderOpen ? "p-10" : "px-10 py-0"} rounded-b-sm rounded-tl-sm rounded-tr-0 mb-5`}
       >
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
