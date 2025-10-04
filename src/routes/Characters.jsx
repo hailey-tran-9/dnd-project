@@ -17,6 +17,7 @@ import AbilityScores from "../components/mainMenu/characters/AbilityScores";
 import Features from "../components/mainMenu/characters/Features";
 import Stats from "../components/mainMenu/characters/Stats";
 import Spells from "../components/mainMenu/characters/Spells";
+import CustomCharacter from "../components/mainMenu/characters/creation/CustomCharacter";
 
 export default function Characters() {
   const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
@@ -236,8 +237,15 @@ export default function Characters() {
   let content;
 
   if (isCreatingCharacter) {
+    // content = (
+    //   <CharacterCreation
+    //     cancelFn={handleStopCreatingCharacter}
+    //     submitFn={handleSubmit}
+    //   />
+    // );
+
     content = (
-      <CharacterCreation
+      <CustomCharacter
         cancelFn={handleStopCreatingCharacter}
         submitFn={handleSubmit}
       />
