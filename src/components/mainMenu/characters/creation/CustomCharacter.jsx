@@ -15,7 +15,9 @@ import EquipmentOptions from "./EquipmentOptions";
 import LanguageOptions from "./LanguageOptions";
 import SpellOptions from "./SpellOptions";
 import Features from "./Features";
+
 import CustomFeatures from "./CustomFeatures";
+import CustomPointBuySystem from "./CustomPointBuySystem";
 
 export default function CustomCharacter({ cancelFn, submitFn }) {
   const [enteredRace, setEnteredRace] = useState(raceIndexes[0]);
@@ -116,6 +118,7 @@ export default function CustomCharacter({ cancelFn, submitFn }) {
         </div>
       </Form>
       <CustomFeatures />
+      <CustomPointBuySystem />
       {/* <PointBuySystem />
       <ProficiencyOptions
         enteredClass={enteredClass}
